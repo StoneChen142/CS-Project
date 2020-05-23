@@ -309,6 +309,26 @@ def SaveProgress(currentFile, currency, live, gameLevel):
 
 #endprocedure
 
+#Reset Progress
+def ResetProgress(num):
+
+    f = open("Game_Files/File0.txt","r+") #Open file 0
+    data = f.read()
+    f.close()
+
+    if num == 1:
+        #Open File 1
+        f = open("Game_Files/File1.txt","w+") #Open file 1
+    elif num == 2:
+        #Open File 2
+        f = open("Game_Files/File2.txt","w+") #Open file 2
+    elif num == 3:
+        #Open File 3
+        f = open("Game_Files/File3.txt","w+") #Open file 3
+    #endif
+    f.write(data)
+    f.close()
+
 #Save Files Creation
 def CreateFile(file_list, button_list, item_list, crown_list, currentFileData_list):
 
@@ -402,6 +422,19 @@ def CreateFile(file_list, button_list, item_list, crown_list, currentFileData_li
     crown = BlockClass(3, 333, 140.5, 163.5, 7.5) #Crown
     file_list.add(crown)
     crown_list.add(crown)
+
+    #Reset Buttons
+    reset1 = Button(14, 92, 20, 1, 284, 778) #Reset Button 1
+    button_list.add(reset1)
+    file_list.add(reset1)
+
+    reset2 = Button(14, 92, 20, 2, 704, 778) #Reset Button 2
+    button_list.add(reset2)
+    file_list.add(reset2)
+
+    reset3 = Button(14, 92, 20, 3, 1124, 778) #Reset Button 3
+    button_list.add(reset3)
+    file_list.add(reset3)
 
     SetCrown(crown_list)
 
@@ -704,6 +737,7 @@ class Button(pygame.sprite.Sprite):
         self.quit = [pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Quit1.png'), (width, height)), pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Quit2.png'), (width, height))]
         self.nextLevel = [pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/NextLevel1.png'), (width, height)), pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/NextLevel2.png'), (width, height))]
         self.restart = [pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Restart1.png'), (width, height)), pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Restart2.png'), (width, height))]
+        self.reset = [pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Reset1.png'), (width, height)), pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Reset2.png'), (width, height))]
 
         if self.imageNum == 1:
 
@@ -757,6 +791,10 @@ class Button(pygame.sprite.Sprite):
 
             self.image = self.restart[0]
 
+        elif self.imageNum == 14:
+
+            self.image = self.reset[0]
+
         #endif
         
     #endprocedure
@@ -787,7 +825,7 @@ class Button(pygame.sprite.Sprite):
             
             self.image = self.back[1] #Hover on back
 
-        elif level == 3 and pos[0] >= 249.5 and pos[1] >= 680.5 and pos[0] <= 410.5 and pos[1] <= 711.5 and self.imageNum == 4 and self.num == 1: #Save Files
+        elif level == 3 and pos[0] >= 249.5 and pos[1] >= 680.5 and pos[0] <= 410.5 and pos[1] <= 711.5 and self.imageNum == 4 and self.num == 1: #Save Files Select
             
             self.image = self.select[1] #Hover on select file 1
             
@@ -838,6 +876,18 @@ class Button(pygame.sprite.Sprite):
         elif level == 4 and pos[0] >= 654.5 and pos[1] >= 500 and pos[0] <= 845.5 and pos[1] <= 540 and self.imageNum == 13:
 
             self.image = self.restart[1]
+
+        elif level == 3 and pos[0] >= 284 and pos[1] >= 778 and pos[0] <= 376 and pos[1] <= 798 and self.imageNum == 14 and self.num == 1: #Save Files Reset
+            
+            self.image = self.reset[1] #Hover on reset file 1
+            
+        elif level == 3 and pos[0] >= 704 and pos[1] >= 778 and pos[0] <= 796 and pos[1] <= 798 and self.imageNum == 14 and self.num == 2:
+            
+            self.image = self.reset[1] #Hover on reset file 2
+
+        elif level == 3 and pos[0] >= 1124 and pos[1] >= 778 and pos[0] <= 1216 and pos[1] <= 798 and self.imageNum == 14 and self.num == 3:
+            
+            self.image = self.reset[1] #Hover on reset file 3
             
         else:
 
@@ -892,6 +942,10 @@ class Button(pygame.sprite.Sprite):
             elif self.imageNum == 13:
 
                 self.image = self.restart[0]
+
+            elif self.imageNum == 14:
+
+                self.image = self.reset[0]
 
             #endif
 
@@ -7155,6 +7209,15 @@ def Game():
                     levelToGo = 4
                     currentFile = 3
                     player.FreezeTrigger(0)
+                elif level == 3 and pos[0] >= 284 and pos[1] >= 778 and pos[0] <= 376 and pos[1] <= 798: #Save Files Reset
+                    ResetProgress(1)
+                    ResetFile(file_list, currentFileData_list)
+                elif level == 3 and pos[0] >= 704 and pos[1] >= 778 and pos[0] <= 796 and pos[1] <= 798:
+                    ResetProgress(2)
+                    ResetFile(file_list, currentFileData_list)
+                elif level == 3 and pos[0] >= 1124 and pos[1] >= 778 and pos[0] <= 1216 and pos[1] <= 798:
+                    ResetProgress(3)
+                    ResetFile(file_list, currentFileData_list)
                 elif level == 3 and pos[0] >= 50 and pos[1] >= 820 and pos[0] <= 156 and pos[1] <= 851: #Go back to menu
                     level = 0
                     fileLoaded = True
