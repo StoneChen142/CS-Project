@@ -1771,7 +1771,7 @@ class GroundClass(pygame.sprite.Sprite): #Block is a sprite, because I need to c
         self.originalX = 0
 
         self.ground = []
-        for x in range(1):
+        for x in range(2):
             add_str = str(x+1)
             self.ground.append(pygame.transform.scale(loadify("Game_Images/Background/Ground" + add_str + ".png"), (3000, 100)))
         #endfor
@@ -1786,6 +1786,24 @@ class GroundClass(pygame.sprite.Sprite): #Block is a sprite, because I need to c
             self.rect.x -= 10
         elif num == 0:
             self.rect.x = self.originalX
+        #endif
+
+    #endprocedure
+
+    def ChangeTheme(self, gameLevel):
+
+        if gameLevel == 1:
+
+            self.image = self.ground[0]
+
+        elif gameLevel == 2:
+
+            self.image = self.ground[0]
+
+        elif gameLevel == 3:
+
+            self.image = self.ground[1]
+
         #endif
 
     #endprocedure
@@ -1851,6 +1869,8 @@ class BackgroundClass(pygame.sprite.Sprite): #Class of the background
             self.image = self.castle[self.num]
 
         #endif
+
+    #endprocedure
 
     def BackUpdate(self):
             
@@ -2066,29 +2086,38 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
         self.playerHealth.Update(self.hp)
 
         self.shield = shieldNum[0]
-        if self.shield > 7:
-            self.playerShield8.ShieldUpdate(1)
+        self.playerShield8.ShieldUpdate(1)
+        self.playerShield7.ShieldUpdate(1)
+        self.playerShield6.ShieldUpdate(1)
+        self.playerShield5.ShieldUpdate(1)
+        self.playerShield4.ShieldUpdate(1)
+        self.playerShield3.ShieldUpdate(1)
+        self.playerShield2.ShieldUpdate(1)
+        self.playerShield1.ShieldUpdate(1)
+        
+        if self.shield < 8:
+            self.playerShield8.ShieldUpdate(0)
         #endif
-        if self.shield > 6:
-            self.playerShield7.ShieldUpdate(1)
+        if self.shield < 7:
+            self.playerShield7.ShieldUpdate(0)
         #endif
-        if self.shield > 5:
-            self.playerShield6.ShieldUpdate(1)
+        if self.shield < 6:
+            self.playerShield6.ShieldUpdate(0)
         #endif
-        if self.shield > 4:
-            self.playerShield5.ShieldUpdate(1)
+        if self.shield < 5:
+            self.playerShield5.ShieldUpdate(0)
         #endif
-        if self.shield > 3:
-            self.playerShield4.ShieldUpdate(1)
+        if self.shield < 4:
+            self.playerShield4.ShieldUpdate(0)
         #endif
-        if self.shield > 2:
-            self.playerShield3.ShieldUpdate(1)
+        if self.shield < 3:
+            self.playerShield3.ShieldUpdate(0)
         #endif
-        if self.shield > 1:
-            self.playerShield2.ShieldUpdate(1)
+        if self.shield < 2:
+            self.playerShield2.ShieldUpdate(0)
         #endif
-        if self.shield > 0:
-            self.playerShield1.ShieldUpdate(1)
+        if self.shield < 1:
+            self.playerShield1.ShieldUpdate(0)
         #endif
 
     #endprocedure
@@ -2123,16 +2152,6 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
         self.rect.x = 50
         self.rect.y = 700
         self.getAttack = False
-
-        self.shield = 8
-        self.playerShield1.ShieldUpdate(1)
-        self.playerShield2.ShieldUpdate(1)
-        self.playerShield3.ShieldUpdate(1)
-        self.playerShield4.ShieldUpdate(1)
-        self.playerShield5.ShieldUpdate(1)
-        self.playerShield6.ShieldUpdate(1)
-        self.playerShield7.ShieldUpdate(1)
-        self.playerShield8.ShieldUpdate(1)
 
         self.playerAttackLeft.rect.x = -1000
         self.playerAttackRight.rect.x = -1000
@@ -8041,6 +8060,9 @@ def Game():
                             startLoadTime = 0
                             endLoadTime = 0
                             if levelToGo == 4:
+                                for ground in ground_list:
+                                    ground.ChangeTheme(gameLevel)
+                                #endfor
                                 for background in allBackgrounds_list:
                                     background.ChangeTheme(gameLevel)
                                 #endfor
@@ -9574,6 +9596,36 @@ def Game():
 
                 elif gameLevel == 3:
 
+                    #Player Movement
+                    for player in player_list:
+
+                        #Detection
+                        player.EnemyAttackDetection(leftEnemyAttack_list, rightEnemyAttack_list)
+                        #Blocked
+                        player.Blocked(live, shieldNum)
+                        #Hurt
+                        player.Hurt()
+                        #Attack
+                        player.Attack()
+                        #Roll
+                        player.Roll()
+                        #Horizontal Movement
+                        if gamePhase != 6:
+                            player.MoveHori(block3_list) #Player move horizontally
+                        else:
+                            player.MoveHori2()
+                        #endif
+                        #Attack Checker
+                        player.AttackChecker()
+                        #Vertical Movement
+                        player.MoveVert(block3_list)
+                        #Health
+                        player.Health(live)
+                        #Animation
+                        player.Animation()
+
+                    #endfor
+                        
                     levelThree_list.draw(screen) #Display all visible objects
 
                 #endif
