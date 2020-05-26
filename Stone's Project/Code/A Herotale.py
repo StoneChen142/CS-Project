@@ -5079,7 +5079,7 @@ class RogueClass(pygame.sprite.Sprite): #Class of the rogue
 #endclass
 
 #Warlock Class
-class MushroomClass(pygame.sprite.Sprite): #Class of the warlock
+class MushroomClass(pygame.sprite.Sprite): #Class of the mushroom
  
     def __init__(self, mType, x, y, levelTwo_list, enemyAttack_list):
         
@@ -5544,7 +5544,7 @@ class MushroomClass(pygame.sprite.Sprite): #Class of the warlock
 #endclass
 
 #Arun Swordsmith Class
-class ArunClass(pygame.sprite.Sprite): #Class of the rogue
+class ArunClass(pygame.sprite.Sprite): #Class of the Arun Swordsmith
  
     def __init__(self, x, y, levelTwo_list, leftEnemyAttack_list, rightEnemyAttack_list):
         
@@ -6353,6 +6353,850 @@ class ArunClass(pygame.sprite.Sprite): #Class of the rogue
 
 #endclass
 
+#Dark Knight Class
+class DarkKnightClass(pygame.sprite.Sprite): #Class of the Dark Knight
+ 
+    def __init__(self, x, y, levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list, darkKnightAttack_list):
+        
+        super().__init__()
+ 
+        self.image = pygame.Surface([80, 130])
+        self.rect = self.image.get_rect()
+
+        self.rect.x = x
+        self.rect.y = y
+
+        self.originalX = x
+        self.originalY = y
+
+        self.knightAnimation = EnemyAnimation(8, 250, 188, x-85, y-58)
+        self.knightAttackLeft = AttackClass(125, 188, -1000, 0)
+        self.knightAttackRight = AttackClass(125, 188, -1000, 0)
+        self.knightFlameAttack = AttackClass(125, 94, -1000, 0)
+        leftEnemyAttack_list.add(self.knightAttackLeft)
+        rightEnemyAttack_list.add(self.knightAttackRight)
+        darkKnightAttack_list.add(self.knightFlameAttack)
+        self.knightHealth1 = HealthClass(1, 5, 250, 50, 985, 10)
+        self.knightHealth2 = HealthClass(1, 5, 250, 50, 1235, 10)
+        self.knightHealth3 = HealthClass(1, 5, 250, 50, 985, 65)
+        self.knightHealth4 = HealthClass(1, 5, 250, 50, 1235, 65)
+        levelThree_list.add(self.knightAnimation)
+
+        #Attributes
+        self.hp = 20
+        self.horiSpeed = 0
+        self.lastHoriSpeed = -4
+        self.vertSpeed = -0.4
+        self.runSpeed = 5
+        self.attacked = False
+        self.flamed = False
+        self.saMove = False
+        self.freeze = False
+        self.hurt = False
+        self.death = False
+        self.spell = False
+        self.jumped = False
+        self.jumpTime = 0
+        self.jumpNum = 3
+        self.block = False
+        self.blocked = False
+        self.reduceHealth = False
+        self.preyPosX = 0
+        self.random = False
+        self.random2 = False
+        self.randomTime = 700
+        self.attackCount = 0
+        self.skill = False
+        self.throwTime = 6000
+        self.stopSelf = False
+        self.dropCoin = False
+        self.rest = False
+        self.javelinThrowed = False
+        self.restTime = 1000
+        self.attackCountNum = 4
+
+        #Timers
+        self.endAnimation = 0
+        self.startAnimation = 0
+        self.startAttack = 0
+        self.endAttack = 0
+        self.startAttackRest = -750
+        self.endAttackRest = 0
+        self.startDeath = 0
+        self.endDeath = 0
+        self.startHurt = 0
+        self.endHurt = 0
+        self.startRandom = 0
+        self.endRandom = 0
+        self.startRandom2 = 0
+        self.endRandom2 = 0
+        self.startAbove = 0
+        self.endAbove = 0
+        self.startThrow = 0
+        self.endThrow = 0
+        self.startRest = 0
+        self.endRest = 0
+
+        #Counter
+        self.idleCounter = 0
+        self.runCounter = 0
+        self.attackCounter = 0
+        self.hurtCounter = 0
+        self.deathCounter = 0
+        self.flameCounter = 0
+        self.fallCounter = 0
+        self.jumpCounter = 0
+        self.blockCounter = 0
+        self.blockedCounter = 0
+        
+    #endprocedure
+
+    def HealthDisplay(self, num, levelThree_list):
+
+        if num == 1:
+            levelThree_list.add(self.knightHealth1, self.knightHealth2, self.knightHealth3, self.knightHealth4)
+        else:
+            levelThree_list.remove(self.knightHealth1, self.knightHealth2, self.knightHealth3, self.knightHealth4)
+        #endif
+
+    #endprocedure
+
+    def Freeze(self, num):
+
+        if num == 1:
+            self.freeze = True
+        elif num != 1:
+            self.freeze = False
+        #endif
+
+    #endprocedure
+
+    def Unrandom(self):
+
+        self.random = False
+
+    #endprocedure
+
+    def Reset(self):
+
+        #Attributes
+        self.hp = 20
+        self.horiSpeed = 0
+        self.runSpeed = 8
+        self.lastHoriSpeed = -4
+        self.vertSpeed = -0.4
+        self.attacked = False
+        self.flamed = False
+        self.saMove = False
+        self.freeze = False
+        self.hurt = False
+        self.death = False
+        self.block = False
+        self.blocked = False
+        self.jumped = False
+        self.jumpTime = 0
+        self.reduceHealth = False
+        self.preyPosX = 0
+        self.random = False
+        self.random2 = False
+        self.randomTime = 600
+        self.attackCount = 0
+        self.throwTime = 6000
+        self.dropCoin = False
+        self.stopSelf = False
+        self.rest = False
+        self.rect.x = self.originalX
+        self.rect.y = self.originalY
+        self.javelinThrowed = False
+        self.restTime = 1000
+        self.attackCountNum = 4
+
+        #Timers
+        self.endAnimation = 0
+        self.startAnimation = 0
+        self.startAttack = 0
+        self.endAttack = 0
+        self.startAttackRest = -750
+        self.endAttackRest = 0
+        self.startDeath = 0
+        self.endDeath = 0
+        self.startHurt = 0
+        self.endHurt = 0
+        self.startRandom = 0
+        self.endRandom = 0
+        self.startRandom2 = 0
+        self.endRandom2 = 0
+        self.startAbove = 0
+        self.endAbove = 0
+        self.startThrow = 0
+        self.endThrow = 0
+        self.startRest = 0
+        self.endRest = 0
+
+        #Counter
+        self.attackCounter = 0
+        self.hurtCounter = 0
+        self.deathCounter = 0
+        self.flameCounter = 0
+        self.fallCounter = 0
+        self.jumpCounter = 0
+        self.blockCounter = 0
+        self.blockedCounter = 0
+        
+        self.knightAttackLeft.rect.x = -1000
+        self.knightAttackRight.rect.x = -1000
+        self.knightHealth1.Update(5)
+        self.knightHealth2.Update(5)
+        self.knightHealth3.Update(5)
+        self.knightHealth4.Update(5)
+        self.knightHealth1.rect.x = 985
+        self.knightHealth2.rect.x = 1235
+        self.knightHealth3.rect.x = 985
+        self.knightHealth4.rect.x = 1235
+
+        self.Animation()
+
+    #endprocedure
+
+    def Animation(self):
+
+        if self.startAnimation == 0: #If start timer has not started yet
+
+            self.startAnimation = pygame.time.get_ticks() #Record current time
+
+        #endif
+
+        self.endAnimation = pygame.time.get_ticks() #Get current time for end time
+
+        if self.death == False and not self.freeze:
+
+            
+            self.arunAnimation.rect.y = self.rect.y - 85
+            self.arunAnimation.rect.x = self.rect.x - 58
+        
+            if not self.hurt and self.horiSpeed == 0 and not self.attacked and not self.flamed and not self.jumped and not self.block and not self.blocked:
+
+                if self.endAnimation - self.startAnimation >= 70: #If next image
+                    
+                    self.startAnimation = self.endAnimation #If player is idle
+                    self.knightAnimation.Idle(self.lastHoriSpeed, self.idleCounter)
+
+                    if self.idleCounter != 9: #If reached the end
+                        self.idleCounter += 1
+                    else:
+                        self.idleCounter = 0
+                    #endif
+
+                #endif
+
+            elif not self.hurt and self.horiSpeed != 0 and not self.attacked and not self.flamed and not self.jumped and not self.block and not self.blocked:
+
+                if self.endAnimation - self.startAnimation >= 60:
+                    
+                    self.startAnimation = self.endAnimation #If player running
+                    self.knightAnimation.Run(self.lastHoriSpeed, self.runCounter)
+
+                    if self.runCounter != 9: #If reached the end
+                        self.runCounter += 1
+                    else:
+                        self.runCounter = 0
+                    #endif
+
+                #endif
+            
+            elif self.hurt == True:
+
+                if self.endAnimation - self.startAnimation >= 100:
+
+                    self.startAnimation = self.endAnimation #If player is hurt
+                    self.knightAnimation.Hurt(self.lastHoriSpeed, self.hurtCounter)
+
+                    if self.hurtCounter != 2: #If reached the end
+                        self.hurtCounter += 1
+                    #endif
+
+                #endif
+
+            elif self.attacked == True and not self.hurt and not self.flamed and not self.block:
+
+                if self.endAnimation - self.startAnimation >= 55:
+
+                    self.startAnimation = self.endAnimation #If player is attacking
+                    self.knightAnimation.Attack(self.lastHoriSpeed, self.attackCounter)
+
+                    if self.attackCounter != 11: #If reached the end
+                        self.attackCounter += 1
+                    #endif
+
+                #endif
+
+            elif self.flamed == True and not self.attacked and not self.block and not self.blocked:
+
+                if self.endAnimation - self.startAnimation >= 50:
+
+                    self.startAnimation = self.endAnimation #If player is special attacking
+                    self.knightAnimation.FlameAttack(self.lastHoriSpeed, self.flameCounter)
+
+                    if self.flameCounter != 12: #If reached the end
+                        self.flameCounter += 1
+                    #endif
+
+                #endif
+
+            elif self.block and not self.blocked:
+
+                if self.endAnimation - self.startAnimation >= 70:
+
+                    self.startAnimation = self.endAnimation #If player is special attacking
+                    self.knightAnimation.Block(self.lastHoriSpeed, self.blockCounter)
+
+                    if self.blockCounter != 9: #If reached the end
+                        self.blockCounter += 1
+                    else:
+                        self.blockCounter = 0
+                    #endif
+
+                #endif
+
+            elif self.block and self.blocked:
+
+                if self.endAnimation - self.startAnimation >= 70:
+
+                    self.startAnimation = self.endAnimation #If player is special attacking
+                    self.knightAnimation.Blocked(self.lastHoriSpeed, self.blockedCounter)
+
+                    if self.blockedCounter != 4: #If reached the end
+                        self.blockedCounter += 1
+                    #endif
+
+                #endif
+
+            elif self.jumped == True and self.vertSpeed >= 0 and not self.hurt:
+
+                if self.endAnimation - self.startAnimation >= 200:
+
+                    self.startAnimation = self.endAnimation #If player jumping
+                    self.knightAnimation.Jump(self.lastHoriSpeed, self.jumpCounter)
+
+                    if self.jumpCounter != 2: #If reached the end
+                        self.jumpCounter += 1
+                    else:
+                        self.jumpCounter = 2 #Stay at the last frame
+                    #endif
+
+                #endif
+
+            elif self.jumped == True and self.vertSpeed < 0 and not self.hurt:
+
+                if self.endAnimation - self.startAnimation >= 200:
+
+                    self.startAnimation = self.endAnimation #If player falling
+                    self.knightAnimation.Fall(self.lastHoriSpeed, self.fallCounter)
+
+                    if self.fallCounter != 2: #If reached the end
+                        self.fallCounter += 1
+                    else:
+                        self.fallCounter = 2 #Stay at the last frame
+                    #endif
+
+                #endif
+
+            #endif
+
+        elif self.death and not self.freeze:
+
+            if self.endAnimation - self.startAnimation >= 70:
+
+                self.startAnimation = self.endAnimation 
+                self.arunAnimation.Death(self.lastHoriSpeed, self.deathCounter)
+
+                if self.deathCounter != 16:
+                    self.deathCounter += 1
+                #endif
+
+            #endif
+                    
+        #endif
+
+    #endprocedure
+
+    def AttackTrigger(self):
+
+        self.endAttackRest = pygame.time.get_ticks() #Get current time for end time
+        
+        if not self.freeze and self.attacked == False and self.jumped == False and self.death == False and self.endAttackRest - self.startAttackRest >= 750:
+
+            self.attacked = True
+            self.endAttackRest = 0
+            self.startAttackRest = 0
+            
+        #endif
+
+    #endprocedure
+
+    def AttackChecker(self):
+
+        if self.stopSelf: #If the enemy should stop
+
+            self.stopSelf = False
+            self.horiSpeed = 0
+
+        #endif
+
+    #endprocedure
+
+    def Attack(self):
+        
+        if self.attacked == True and self.freeze == False:
+
+            self.horiSpeed = 0
+
+            if self.attackCounter == 5 or self.attackCounter == 6:
+                if self.lastHoriSpeed > 0 and not self.hurt and not self.death:
+                    self.knightAttackRight.rect.x = self.rect.x + 40
+                    self.knightAttackRight.rect.y = self.rect.y - 58
+                elif self.lastHoriSpeed < 0 and not self.hurt and not self.death:
+                    self.knightAttackLeft.rect.x = self.rect.x - 40
+                    self.knightAttackLeft.rect.y = self.rect.y - 58
+                #endif
+            elif self.attackCounter != 5 or self.attackCounter != 6:
+                self.knightAttackLeft.rect.x = -1000
+                self.knightAttackRight.rect.x = -1000
+            #endif
+            if self.hurt or self.death:
+                self.knightAttackLeft.rect.x = -1000
+                self.knightAttackRight.rect.x = -1000
+            #endif
+            if self.attackCounter == 11:
+                self.knightAttackLeft.rect.x = -1000
+                self.knightAttackRight.rect.x = -1000
+                self.attacked = False
+                self.attackCounter = 0
+                self.attackCount += 1
+            #endif
+
+        #endif
+
+    #endprocedure
+
+    def Control(self, x, y):
+
+        if not self.freeze:
+
+            if not self.random and not self.random2 and not self.skill and not self.freeze and not self.attacked and not self.rest and not self.throwed:
+
+                if self.rect.y == y:
+                    self.ChangeSpeed(2)
+                    if self.rect.x - x <= 160 and self.rect.x - x > 0 and self.lastHoriSpeed < 0:
+                        self.AttackTrigger()
+                    elif x - self.rect.x > 0 and x - self.rect.x <= 160 and self.lastHoriSpeed > 0:
+                        self.AttackTrigger()
+                    elif x <= self.rect.x and abs(x - self.rect.x) >= 160:
+                        self.ChangeSpeed(0)
+                    elif x > self.rect.x and abs(x - self.rect.x) >= 160:
+                        self.ChangeSpeed(1)
+                    #endif
+                elif y > self.rect.y:
+                    self.ChangeSpeed(2)
+                    if self.startAbove == 0: #If start timer has not started yet
+                        self.startAbove = pygame.time.get_ticks() #Record current time
+                    #endif
+                    self.endAbove = pygame.time.get_ticks()
+                    if self.endAbove - self.startAbove >= 1000:
+                        self.random2 = True
+                        self.startAbove = 0
+                        self.endAbove = 0
+                    #endif
+                    if x <= self.rect.x and abs(x - self.rect.x) >= 90:
+                        self.ChangeSpeed(0)
+                    elif x > self.rect.x and abs(x - self.rect.x) >= 90:
+                        self.ChangeSpeed(1)
+                    #endif
+                elif y < self.rect.y:
+                    self.startAbove = 0
+                    self.endAbove = 0
+                    self.ChangeSpeed(2)
+                    if x <= self.rect.x and abs(x - self.rect.x) >= 90:
+                        self.ChangeSpeed(0)
+                    elif x > self.rect.x and abs(x - self.rect.x) >= 90:
+                        self.ChangeSpeed(1)
+                    #endif
+                    self.Jump()
+                    if self.jumpTime > self.jumpNum:
+                        self.random = True
+                    #endif
+                #endif
+
+                if abs(self.rect.x - x) > 500 and self.rect.y + 20 >= y and self.rect.y + 20 <= y+100:
+                    self.endThrow = pygame.time.get_ticks() #Get current time for end time
+                    if self.endThrow - self.startThrow >= self.throwTime:
+                        self.skill = True
+                        self.endThrow = 0
+                        self.startThrow = 0
+                    #endif
+                #endif
+
+            elif self.random and not self.random2 and not self.skill and not self.freeze and not self.rest:
+
+                if self.startRandom == 0: #If start timer has not started yet
+
+                    self.startRandom = pygame.time.get_ticks() #Record current time
+                    self.ChangeSpeed(randint(0,1))
+
+                #endif
+                    
+                self.endRandom = pygame.time.get_ticks()
+                if self.endRandom - self.startRandom > 400:
+                    self.startRandom = 0
+                    self.endRandom = 0
+                    self.random = False
+                    self.rest = False
+                    self.random2 = False
+                #endif
+
+            elif self.random2 and not self.freeze and not self.rest:
+
+                if self.startRandom2 == 0: #If start timer has not started yet
+
+                    self.startRandom2 = pygame.time.get_ticks() #Record current time
+                    self.ChangeSpeed(randint(0,1))
+
+                #endif
+                    
+                self.endRandom2 = pygame.time.get_ticks()
+                if self.endRandom2 - self.startRandom2 > self.randomTime:
+                    self.startRandom2 = 0
+                    self.endRandom2 = 0
+                    self.random2 = False
+                    self.rest = False
+                    self.random = False
+                #endif
+
+            elif self.rest and not self.freeze and not self.random and not self.random2:
+
+                if self.startRest == 0: #If start timer has not started yet
+                    self.startRest = pygame.time.get_ticks() #Record current time
+                #endif
+                    
+                self.endRest = pygame.time.get_ticks()
+                if self.endRest - self.startRest >= self.restTime:
+                    self.startRest = 0
+                    self.endRest = 0
+                    self.rest = False
+                    self.random2 = False
+                    self.random = False
+                #endif
+
+            #endif
+
+            if self.skill and not self.freeze and not self.rest:
+
+                self.ChangeSpeed(2)
+                self.ThrowTrigger()
+
+            #endif
+                
+        #endif
+
+        if self.rect.x <= 0: #If player reach the end of screen
+
+            self.rect.x = 0
+
+        elif self.rect.x >= 1450:
+
+            self.rect.x = 1450
+
+        #endif
+
+    #endprocedure
+
+    def FlameTrigger(self):
+
+        if not self.attacked and not self.hurt and not self.death and not self.freeze:
+
+            self.flamed = True
+
+        #endif
+
+    #endprocedure
+
+    def FlameAttack(self):
+
+        if self.throwed == True and self.freeze == False:
+
+            if self.throwCounter == 3 and not self.javelinThrowed:
+                self.javelinThrowed = True
+                if self.lastHoriSpeed > 0:
+                    javelin = ItemClass(4, 160, 40, self.rect.x-55, self.rect.y+20, 20)
+                    rightJavelin_list.add(javelin)
+                elif self.lastHoriSpeed < 0:
+                    javelin = ItemClass(4, 160, 40, self.rect.x-55, self.rect.y+20, -20)
+                    leftJavelin_list.add(javelin)
+                #endif
+                levelTwo_list.add(javelin)
+            #endif
+            if self.throwCounter == 9:
+                self.javelinThrowed = False
+                self.throwCounter = 0
+                self.throwed = False
+                self.skill = False
+                self.random = False
+                self.rest = False
+                self.random2 = False
+                self.startThrow = pygame.time.get_ticks() #Record current time
+                self.attackCount += 1
+                if self.attackCount == self.attackCountNum:
+                    self.attackCount = 0
+                    self.rest = True
+                #endif
+            #endif
+
+        #endif
+
+    #endprocedure
+
+    def Health(self, sprite_list, coin_list, enemyCount):
+
+        if self.reduceHealth == True and not self.freeze:
+
+            self.reduceHealth = False
+            if self.hp > 0:
+                self.hp -= 1
+                if self.hp >= 15:
+                    hpNum = self.hp - 15
+                    self.knightHealth4.Update(hpNum)
+                elif self.hp >= 10 and self.hp < 15:
+                    hpNum = self.hp - 10
+                    self.knightHealth3.Update(hpNum)
+                elif self.hp >= 5 and self.hp < 10:
+                    hpNum = self.hp - 5
+                    self.knightHealth2.Update(hpNum)
+                else:
+                    self.knightHealth1.Update(self.hp)
+                #endif
+            if self.hp == 0:
+                num = enemyCount[0]
+                enemyCount[0] = num - 1
+                self.death = True
+                if not self.dropCoin:
+                    self.dropCoin = True
+                    for i in range(8):
+                        coin = ItemClass(1, 20, 20, self.rect.x + 30, self.rect.y + 70, 4)
+                        sprite_list.add(coin)
+                        coin_list.add(coin)
+                    #endfor
+                #endif
+            #endif
+            if self.hp == 10:
+                self.runSpeed = 10
+                self.restTime = 700
+                self.throwTime = 3000
+                self.attackCountNum = 6
+                self.random = False
+                self.rest = False
+                self.random2 = False
+            #endif
+
+        #endif
+
+        if self.hp == 19:
+            self.knightHealth3.rect.x = 1035
+            self.knightHealth4.rect.x = 1285
+        elif self.hp == 18:
+            self.knightHealth3.rect.x = 1085
+            self.knightHealth4.rect.x = 1335
+        elif self.hp == 17:
+            self.knightHealth3.rect.x = 1135
+            self.knightHealth4.rect.x = 1385
+        elif self.hp == 16:
+            self.knightHealth3.rect.x = 1185
+            self.knightHealth4.rect.x = 1435
+        elif self.hp == 15:
+            self.knightHealth3.rect.x = 1235
+        elif self.hp == 14:
+            self.knightHealth3.rect.x = 1285
+        elif self.hp == 13:
+            self.knightHealth3.rect.x = 1335
+        elif self.hp == 12:
+            self.knightHealth3.rect.x = 1385
+        elif self.hp == 11:
+            self.knightHealth3.rect.x = 1435
+        elif self.hp == 9:
+            self.knightHealth1.rect.x = 1035
+            self.knightHealth2.rect.x = 1285
+        elif self.hp == 8:
+            self.knightHealth1.rect.x = 1085
+            self.knightHealth2.rect.x = 1335
+        elif self.hp == 7:
+            self.knightHealth1.rect.x = 1135
+            self.knightHealth2.rect.x = 1385
+        elif self.hp == 6:
+            self.knightHealth1.rect.x = 1185
+            self.knightHealth2.rect.x = 1435
+        elif self.hp == 5:
+            self.knightHealth1.rect.x = 1235
+        elif self.hp == 4:
+            self.knightHealth1.rect.x = 1285
+        elif self.hp == 3:
+            self.knightHealth1.rect.x = 1335
+        elif self.hp == 2:
+            self.knightHealth1.rect.x = 1385
+        elif self.hp == 1:
+            self.knightHealth1.rect.x = 1435
+        #endif
+
+    #endprocedure
+
+    def EnemyAttackDetection(self, leftAttack_list, rightAttack_list):
+
+        enemyGetHit1_list = pygame.sprite.spritecollide(self, leftAttack_list, False)#If get hit
+        for attack in enemyGetHit1_list:
+            if self.hurt == False and not self.death and not self.freeze:
+                self.hurt = True
+                self.reduceHealth = True
+            #endif
+        #endfor
+
+        enemyGetHit2_list = pygame.sprite.spritecollide(self, rightAttack_list, False)#If get hit
+        for attack in enemyGetHit2_list:
+            if self.hurt == False and not self.death and not self.freeze:
+                self.hurt = True
+                self.reduceHealth = True
+            #endif
+        #endfor
+
+    #endprocedure
+
+    def Hurt(self):
+        
+        if self.hurt == True and not self.freeze:
+
+            self.horiSpeed = 0
+
+            if self.hurtCounter == 3:
+                self.hurt = False
+                self.hurtCounter = 0
+            #endif
+
+        #endif
+
+    #endprocedure
+
+    def Jump(self):
+
+        if self.freeze == False and self.attacked == False and self.death == False and not self.throwed:
+
+            if self.jumped == False: #If player has not jumped yet
+
+                self.jumpTime += 1
+                self.vertSpeed = 19
+                self.jumped = True
+                self.jumpCounter = 0
+                self.fallCounter = 0
+
+            #endif
+
+        #endif
+
+    #endprocedure
+
+    #endprocedure
+
+    def MoveVert(self, block_list):
+
+        if self.freeze == False:
+
+            if self.vertSpeed == 0: #Keep testing if player hits something
+                self.vertSpeed = -0.4
+            else: #Gravity
+                self.vertSpeed -= 0.6
+            #endif
+
+            if self.rect.y >= 700 and self.vertSpeed <= 0: #If sinks into the ground
+
+                self.rect.y = 700 #Stands on the ground
+                self.vertSpeed = 0
+                self.jumped = False
+
+            elif self.rect.y <= 0 and self.vertSpeed > 0:
+
+                self.rect.y = 0
+                self.vertSpeed = 0
+
+            #endif
+
+            self.rect.y -= self.vertSpeed #Player move
+                
+            selfVertBlock_list = pygame.sprite.spritecollide(self, block_list, False)#If collide
+            for block in selfVertBlock_list:
+                
+                if self.vertSpeed <= 0: #If player is falling
+
+                    self.rect.bottom = block.rect.top
+                    self.jumped = False
+
+                elif self.vertSpeed >= 0: #If player is jumping
+
+                    self.rect.top = block.rect.bottom
+
+                #endif
+
+                self.vertSpeed = 0 #Stop player
+
+            #endfor
+
+        #endif
+
+    #endprocedure
+
+    def ChangeSpeed(self,num):
+
+        if self.freeze == False and self.attacked == False and not self.death:
+
+            if num == 0:
+
+                self.horiSpeed = -self.runSpeed
+                self.lastHoriSpeed = self.horiSpeed
+
+            elif num == 1:
+
+                self.horiSpeed = self.runSpeed
+                self.lastHoriSpeed = self.horiSpeed
+
+            elif num == 2:
+
+                self.horiSpeed = 0
+
+            #endif
+
+        #endif
+
+    #endprocedure
+
+    def MoveHori(self, block_list):
+
+        if self.freeze == False:
+            
+            self.rect.x += self.horiSpeed
+                
+            for block in block_list:
+                        
+                if self.rect.colliderect(block.rect): #If player hit block
+                    if self.horiSpeed > 0:
+                        self.rect.right = block.rect.left
+                    else:
+                        self.rect.left = block.rect.right
+                    #endif
+                #endif
+
+            #endfor
+
+        #endif
+
+    #endprocedure
+
+#endclass
+
 #Enemy Animation Class
 class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
  
@@ -6663,6 +7507,57 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             self.rogueSpell.append(pygame.transform.scale(pygame.image.load("Game_Images/Rogue/RogueSpell" + add_str + ".png"), (250, 250)))
         #endfor
 
+        #Dark Knight
+        self.knightIdle = [] #Idle 
+        for x in range(10):
+            add_str = str(x)
+            self.knightIdle.append(pygame.transform.scale(pygame.image.load("Game_Images/DarkKnight/Idle/DarkKnight_Idle_" + add_str + ".png"), (250, 188)))
+        #endfor
+        self.knightRun = [] #Run
+        for x in range(10):
+            add_str = str(x)
+            self.knightRun.append(pygame.transform.scale(pygame.image.load("Game_Images/DarkKnight/Walk/DarkKnight_Walk_" + add_str + ".png"), (250, 188)))
+        #endfor
+        self.knightAttack = [] #Attack
+        for x in range(12):
+            add_str = str(x)
+            if x < 10:
+                add_str = "0"+str(x)
+            #endif
+            self.knightAttack.append(pygame.transform.scale(pygame.image.load("Game_Images/DarkKnight/Attack/DarkKnight_Attack_" + add_str + ".png"), (250, 188)))
+        #endfor
+        self.knightDeath = [] #Death
+        for x in range(12):
+            add_str = str(x)
+            if x < 10:
+                add_str = "0"+str(x)
+            #endif
+            self.knightDeath.append(pygame.transform.scale(pygame.image.load("Game_Images/DarkKnight/Death/DarkKnight_Death_" + add_str + ".png"), (250, 188)))
+        #endfor
+        self.knightFlameAttack = [] #Flame Attack
+        for x in range(13):
+            add_str = str(x)
+            if x < 10:
+                add_str = "0"+str(x)
+            #endif
+            self.knightFlameAttack.append(pygame.transform.scale(pygame.image.load("Game_Images/DarkKnight/Flame Attack/DarkKnight_FlameAttack_" + add_str + ".png"), (250, 188)))
+        #endfor
+        self.knightBlock = [] #Block
+        for x in range(10):
+            add_str = str(x)
+            self.knightBlock.append(pygame.transform.scale(pygame.image.load("Game_Images/DarkKnight/Block Idle/DarkKnight_Block Idle_" + add_str + ".png"), (250, 188)))
+        #endfor
+        self.knightBlocked = [] #Blocked
+        for x in range(5):
+            add_str = str(x)
+            self.knightBlocked.append(pygame.transform.scale(pygame.image.load("Game_Images/DarkKnight/Block/DarkKnight_Block_" + add_str + ".png"), (250, 188)))
+        #endfor
+        self.knightHurt = [] #Hurt
+        for x in range(3):
+            add_str = str(x)
+            self.knightHurt.append(pygame.transform.scale(pygame.image.load("Game_Images/DarkKnight/Hurt/DarkKnight_Hurt_" + add_str + ".png"), (250, 188)))
+        #endfor
+
         if self.enemy == 0:
             self.image = pygame.transform.flip(self.banditIdle2[0],1,0)
         elif self.enemy == 1: #Set
@@ -6679,6 +7574,8 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             self.image = pygame.transform.flip(self.mushroomRun2[0],1,0)
         elif self.enemy == 7:
             self.image = pygame.transform.flip(self.mushroomRun3[0],1,0)
+        elif self.enemy == 8:
+            self.image = pygame.transform.flip(self.knightIdle[0],1,0)
         #endif
         
     #endprocedure
@@ -6732,6 +7629,12 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
                 self.image = self.mushroomIdle3[i] #Right
             else:
                 self.image = pygame.transform.flip(self.mushroomIdle3[i],1,0) #Left
+            #endif
+        elif self.enemy == 8:
+            if speed > 0:
+                self.image = self.knightIdle[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.knightIdle[i],1,0) #Left
             #endif
         #endif
 
@@ -6804,6 +7707,12 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
                 self.image = self.mushroomRun3[i] #Right
             else:
                 self.image = pygame.transform.flip(self.mushroomRun3[i],1,0) #Left
+            #endif
+        elif self.enemy == 8:
+            if speed > 0:
+                self.image = self.knightRun[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.knightRun[i],1,0) #Left
             #endif
         #endif
 
@@ -6889,6 +7798,12 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             else:
                 self.image = pygame.transform.flip(self.mushroomAttack3[i],1,0) #Left
             #endif
+        elif self.enemy == 8:
+            if speed > 0:
+                self.image = self.knightAttack[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.knightAttack[i],1,0) #Left
+            #endif
         #endif
 
     #endprocedure
@@ -6942,6 +7857,12 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
                 self.image = self.mushroomHurt3[i] #Right
             else:
                 self.image = pygame.transform.flip(self.mushroomHurt3[i],1,0) #Left
+            #endif
+        elif self.enemy == 8:
+            if speed > 0:
+                self.image = self.knightHurt[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.knightHurt[i],1,0) #Left
             #endif
         #endif
 
@@ -7015,6 +7936,12 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             else:
                 self.image = pygame.transform.flip(self.mushroomDeath3[i],1,0) #Left
             #endif
+        elif self.enemy == 8:
+            if speed > 0:
+                self.image = self.knightDeath[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.knightDeath[i],1,0) #Left
+            #endif
         #endif
 
     #endprocedure
@@ -7053,6 +7980,45 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             #endif
         #endif
 
+    #endprocedure
+
+    def FlameAttack(self, speed, i):
+
+        if self.enemy == 8:
+            if speed > 0:
+                self.image = self.knightFlameAttack[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.knightFlameAttack[i],1,0) #Left
+            #endif
+
+        #endif
+
+    #endprocedure
+
+    def Block(self, speed, i):
+
+        if self.enemy == 8:
+            if speed > 0:
+                self.image = self.knightBlock[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.knightBlock[i],1,0) #Left
+            #endif
+
+        #endif
+                
+    #endprocedure
+
+    def Blocked(self, speed, i):
+
+        if self.enemy == 8:
+            if speed > 0:
+                self.image = self.knightBlocked[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.knightBlocked[i],1,0) #Left
+            #endif
+
+        #endif
+                
     #endprocedure
 
 #endclass
