@@ -3,6 +3,7 @@ import os
 #from pydub import *
 from decimal import *
 from random import randint
+import math
 
 #Colours
 
@@ -166,6 +167,19 @@ def CreateCharacters2(levelTwo_list, enemyAttack_list, leftEnemyAttack_list, rig
     
     character2_list.add(arun, bandit1, bandit2, bandit3, bandit4, bandit5)
     
+#endprocedure
+
+def CreateCharacters3(levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list, character3_list, skeleton1_list, abomination_list, abominationAttack_list, necromancer_list):
+
+    for i in range(0):
+        skeleton1 = SkeletonClass(randint(200, 1000), 680, levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list)
+        skeleton1_list.add(skeleton1)
+        character3_list.add(skeleton1)
+    #endfor
+
+    necromancer = NecromancerClass(1390, 700, levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list)
+    necromancer_list.add(necromancer)
+
 #endprocedure
 
 #Currency Creation
@@ -1079,15 +1093,20 @@ class ItemClass(pygame.sprite.Sprite):
         if self.startAnimation == 0: #If start timer has not started yet
             self.startAnimation = pygame.time.get_ticks() #Record current time
         #endif
-        if self.javelinCounter < 3:
-            self.javelinCounter += 1
-        else:
-            self.javelinCounter = 0
-        #endif
-        if self.speed > 0:
-            self.image = self.javelin[self.javelinCounter]
-        else:
-            self.image = pygame.transform.flip(self.javelin[self.javelinCounter],1,0)
+        self.endAnimation = pygame.time.get_ticks() #Record current time
+        if self.endAnimation - self.startAnimation >= 60:
+            self.endAnimation = 0
+            self.startAnimation = 0
+            if self.javelinCounter < 3:
+                self.javelinCounter += 1
+            else:
+                self.javelinCounter = 0
+            #endif
+            if self.speed > 0:
+                self.image = self.javelin[self.javelinCounter]
+            else:
+                self.image = pygame.transform.flip(self.javelin[self.javelinCounter],1,0)
+            #endif
         #endif
         self.rect.x += self.speed
         if self.rect.x <= -160:
@@ -1100,7 +1119,6 @@ class ItemClass(pygame.sprite.Sprite):
 
     #endprocedure
         
-
     def Change(self):
 
         if self.startAnimation == 0: #If start timer has not started yet
@@ -2488,6 +2506,27 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
                 self.attackCounter1 = 0
                 self.attackCounter2 = 0
                 self.attackCounter3 = 0
+            #endif
+        #endfor
+
+    #endprocedure
+
+    def ShadowBoltDetection(self, shadowBolt_list, levelThree_list):
+
+        playerGetHit_list = pygame.sprite.spritecollide(self, shadowBolt_list, False)#If get hit
+        for attack in playerGetHit_list:
+            if self.hurt == False and not self.death and not self.roll and not self.freezeAnimation and attack.rect.y >= self.rect.y:
+                self.hurt = True
+                self.reduceHealth = True
+                self.block = False
+                self.playerAttackLeft.rect.x = -1000
+                self.playerAttackRight.rect.x = -1000
+                self.attackStep = 1
+                self.attacked = False
+                self.attackCounter1 = 0
+                self.attackCounter2 = 0
+                self.attackCounter3 = 0
+                attack.DeleteSelf(levelThree_list, shadowBolt_list)
             #endif
         #endfor
 
@@ -5078,7 +5117,7 @@ class RogueClass(pygame.sprite.Sprite): #Class of the rogue
 
 #endclass
 
-#Warlock Class
+#Mushroom Class
 class MushroomClass(pygame.sprite.Sprite): #Class of the mushroom
  
     def __init__(self, mType, x, y, levelTwo_list, enemyAttack_list):
@@ -6353,6 +6392,531 @@ class ArunClass(pygame.sprite.Sprite): #Class of the Arun Swordsmith
 
 #endclass
 
+#Skeleton Warrior Class
+class SkeletonClass(pygame.sprite.Sprite): #Class of the skeleton
+ 
+    def __init__(self, x, y, levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list):
+        
+        super().__init__()
+ 
+        self.image = pygame.Surface([80, 120])
+        self.rect = self.image.get_rect()
+
+        self.rect.x = x
+        self.rect.y = y
+
+        self.originalX = x
+        self.originalY = y
+
+        self.skeletonAnimation = EnemyAnimation(9, 350, 160, self.rect.x-135, self.rect.y-35)
+        self.skeletonHealth = HealthClass(1, 0, 100, 20, self.rect.x, self.rect.y - 25)
+        self.skeletonAttackLeft = AttackClass(250, 120, -1000, 0)
+        self.skeletonAttackRight = AttackClass(250, 120, -1000, 0)
+        leftEnemyAttack_list.add(self.skeletonAttackLeft)
+        rightEnemyAttack_list.add(self.skeletonAttackRight)
+        levelThree_list.add(self.skeletonAnimation)
+
+        #Attributes
+        self.hp = 0
+        self.horiSpeed = 0
+        self.speed = randint(2,4)
+        self.attackTime = randint(60, 90)
+        self.lastHoriSpeed = -4
+        self.vertSpeed = -0.4
+        self.attacked = False
+        self.freeze = False
+        self.hurt = False
+        self.death = True
+        self.reduceHealth = False
+        self.recover = True
+        self.dice = 0
+        self.rest = False
+        self.reviveTime = randint(8000, 12000)
+
+        #Timers
+        self.endAnimation = 0
+        self.startAnimation = 0
+        self.startAttack = 0
+        self.endAttack = 0
+        self.startDeath = 0
+        self.endDeath = 0
+        self.startHurt = 0
+        self.endHurt = 0
+        self.startWalk = 0
+        self.endWalk = 0
+        self.startRest = 0
+        self.endRest = 0
+
+        #Counter
+        self.idleCounter = 0
+        self.runCounter = 0
+        self.attackCounter = 0
+        self.hurtCounter = 0
+        self.deathCounter = 0
+        self.recoverCounter = 0
+        
+    #endprocedure
+
+    def Reset(self):
+
+        #Attributes
+        self.rect.x = self.originalX
+        self.rect.y = self.originalY
+        self.hp = 5
+        self.horiSpeed = 0
+        self.lastHoriSpeed = -4
+        self.vertSpeed = -0.4
+        self.attacked = False
+        self.freeze = False
+        self.hurt = False
+        self.death = True
+        self.reduceHealth = False
+        self.recover = True
+        self.rest = False
+
+        #Timers
+        self.endAnimation = 0
+        self.startAnimation = 0
+        self.startAttack = 0
+        self.endAttack = 0
+        self.startDeath = 0
+        self.endDeath = 0
+        self.startHurt = 0
+        self.endHurt = 0
+        self.startWalk = 0
+        self.endWalk = 0
+        self.startRest = 0
+        self.endRest = 0
+
+        #Counter
+        self.attackCounter = 0
+        self.hurtCounter = 0
+        self.deathCounter = 0
+        self.recoverCounter = 0
+        
+        self.skeletonHealth.Update(5)
+        self.skeletonHealth.rect.x = self.rect.x - 10
+        self.skeletonAttackLeft.rect.x = -1000
+        self.skeletonAttackRight.rect.x = -1000
+        self.Animation()
+
+    #endprocedure
+
+    def Freeze(self, num):
+
+        if num == 1:
+            self.freeze = True
+        else:
+            self.freeze = False
+        #endif
+
+    #endprocedure
+
+    def Animation(self):
+
+        if self.startAnimation == 0: #If start timer has not started yet
+
+            self.startAnimation = pygame.time.get_ticks() #Record current time
+
+        #endif
+
+        self.endAnimation = pygame.time.get_ticks() #Get current time for end time
+
+        self.skeletonAnimation.rect.y = self.rect.y - 35
+        self.skeletonAnimation.rect.x = self.rect.x - 135
+
+        if self.death == False and self.freeze == False:
+        
+            if not self.hurt and self.horiSpeed == 0 and not self.attacked and not self.recover:
+
+                if self.endAnimation - self.startAnimation >= 80: #If next image
+                    
+                    self.startAnimation = self.endAnimation #If player is idle
+                    self.skeletonAnimation.Idle(self.lastHoriSpeed, self.idleCounter)
+
+                    if self.idleCounter != 6: #If reached the end
+                        self.idleCounter += 1
+                    else:
+                        self.idleCounter = 0
+                    #endif
+
+                #endif
+
+            elif not self.hurt and self.horiSpeed != 0 and not self.attacked and not self.recover:
+
+                if self.endAnimation - self.startAnimation >= 80:
+                    
+                    self.startAnimation = self.endAnimation #If player running
+                    self.skeletonAnimation.Run(self.lastHoriSpeed, self.runCounter)
+
+                    if self.runCounter != 9: #If reached the end
+                        self.runCounter += 1
+                    else:
+                        self.runCounter = 0
+                    #endif
+
+                #endif
+            
+            elif self.hurt == True and not self.recover:
+
+                if self.endAnimation - self.startAnimation >= 110:
+
+                    self.startAnimation = self.endAnimation #If player is hurt
+                    self.skeletonAnimation.Hurt(self.lastHoriSpeed, self.hurtCounter)
+
+                    if self.hurtCounter != 2: #If reached the end
+                        self.hurtCounter += 1
+                    #endif
+
+                #endif
+
+            elif self.attacked == True and not self.hurt:
+
+                if self.endAnimation - self.startAnimation >= self.attackTime:
+
+                    self.startAnimation = self.endAnimation #If player is hurt
+                    self.skeletonAnimation.Attack(self.lastHoriSpeed, self.attackCounter)
+
+                    if self.attackCounter != 16: #If reached the end
+                        self.attackCounter += 1
+                    #endif
+
+                #endif
+
+        elif self.death:
+
+            if not self.recover:
+
+                if self.endAnimation - self.startAnimation >= 70:
+
+                    self.startAnimation = self.endAnimation 
+                    self.skeletonAnimation.Death(self.lastHoriSpeed, self.deathCounter)
+
+                    if self.deathCounter != 12:
+                        self.deathCounter += 1
+                    #endif
+
+                #endif
+
+            else:
+
+                if self.endAnimation - self.startAnimation >= 90:
+
+                    self.startAnimation = self.endAnimation #If player is hurt
+                    self.skeletonAnimation.Recover(self.lastHoriSpeed, self.recoverCounter)
+
+                    if self.recoverCounter != 11: #If reached the end
+                        self.recoverCounter += 1
+                    #endif
+
+                #endif
+
+            #endif
+                    
+        #endif
+
+    #endprocedure
+
+    def Control(self, x, y):
+
+        if not self.freeze and not self.recover and not self.death:
+
+            if not self.rest:
+
+                if self.rect.y == y:
+                    self.ChangeSpeed(2)
+                    if self.rect.x - x <= 135 and self.rect.x - x > 0 and self.lastHoriSpeed < 0:
+                        self.AttackTrigger()
+                        if self.dice == 9:
+                            self.ChangeSpeed(2)
+                            self.rest = True
+                        #endif
+                    elif x - self.rect.x > 0 and x - self.rect.x <= 135 and self.lastHoriSpeed > 0:
+                        self.AttackTrigger()
+                        self.dice = randint(0,9)
+                        if self.dice == 9:
+                            self.ChangeSpeed(2)
+                            self.rest = True
+                        #endif
+                    elif x <= self.rect.x and abs(x - self.rect.x) >= 135:
+                        self.ChangeSpeed(0)
+                    elif x > self.rect.x and abs(x - self.rect.x) >= 135:
+                        self.ChangeSpeed(1)
+                    #endif
+                else:
+                    self.ChangeSpeed(2)
+                    if x <= self.rect.x and abs(x - self.rect.x) >= 135:
+                        self.ChangeSpeed(0)
+                    elif x > self.rect.x and abs(x - self.rect.x) >= 135:
+                        self.ChangeSpeed(1)
+                    #endif
+                #endif
+
+            elif self.rest:
+
+                if self.startRest == 0: #If start timer has not started yet
+
+                    self.startRest = pygame.time.get_ticks() #Record current time
+
+                #endif
+
+                self.endRest = pygame.time.get_ticks() #Record current time
+                if self.endRest - self.startRest >= 3000:
+                    self.rest = False
+                    self.endRest = 0
+                    self.startRest = 0
+                #endif
+
+        #endif
+
+    #endif
+
+    def Health(self):
+
+        if self.reduceHealth == True and not self.freeze:
+
+            self.reduceHealth = False
+            if self.hp > 0:
+                self.hp -= 1
+                self.skeletonHealth.Update(self.hp)
+            if self.hp == 0:
+                self.death = True
+                self.hurt = False
+                self.horiSpeed = 0
+                self.attacked = False
+                self.attackCounter = 0
+                self.hurtCounter = 0
+                self.deathCounter = 0
+                self.recoverCounter = 0
+            #endif
+
+        #endif
+
+        if self.hp == 5:
+            self.skeletonHealth.rect.x = self.rect.x - 10
+        elif self.hp == 4:
+            self.skeletonHealth.rect.x = self.rect.x
+        elif self.hp == 3:
+            self.skeletonHealth.rect.x = self.rect.x + 10
+        elif self.hp == 2:
+            self.skeletonHealth.rect.x = self.rect.x + 20
+        elif self.hp == 1:
+            self.skeletonHealth.rect.x = self.rect.x + 30
+        #endif
+        self.skeletonHealth.rect.y = self.rect.y - 25
+
+    #endprocedure
+
+    def AttackTrigger(self):
+
+        self.endAttackRest = pygame.time.get_ticks() #Get current time for end time
+        
+        if not self.freeze and self.attacked == False and self.death == False:
+
+            self.attacked = True
+            self.endAttackRest = 0
+            self.startAttackRest = 0
+            
+        #endif
+
+    #endprocedure
+
+    def Recover(self, levelThree_list):
+
+        if not self.freeze:
+            if self.death and not self.recover:
+
+                if self.startDeath == 0:
+                    self.startDeath = pygame.time.get_ticks() #Get current time for start time
+                #endif
+                self.endDeath = pygame.time.get_ticks() #Get current time for end time
+                if self.endDeath - self.startDeath >= self.reviveTime:
+                    self.endDeath = 0
+                    self.startDeath = 0
+                    self.recover = True
+                    self.recoverCounter = 0
+                #endif
+
+            elif self.recover:
+                if self.recoverCounter == 0:
+                    levelThree_list.remove(self.skeletonHealth)
+                elif self.recoverCounter == 11:
+                    self.recover = False
+                    self.death = False
+                    self.hp = 5
+                    self.skeletonHealth.Update(5)
+                    levelThree_list.add(self.skeletonHealth)
+                    self.deathCounter = 0
+                    self.recoverCounter = 0
+                #endif
+            #endif
+        #endif
+
+    #endprocedure
+
+    def Attack(self):
+        
+        if self.attacked == True and self.freeze == False:
+
+            self.horiSpeed = 0
+
+            if self.attackCounter == 6 or self.attackCounter == 7:
+                if self.lastHoriSpeed > 0 and not self.hurt and not self.death:
+                    self.skeletonAttackRight.rect.x = self.rect.x - 35
+                    self.skeletonAttackRight.rect.y = self.rect.y
+                elif self.lastHoriSpeed < 0 and not self.hurt and not self.death:
+                    self.skeletonAttackLeft.rect.x = self.rect.x - 135
+                    self.skeletonAttackLeft.rect.y = self.rect.y
+                #endif
+            elif self.attackCounter != 6 or self.attackCounter != 7:
+                self.skeletonAttackLeft.rect.x = -1000
+                self.skeletonAttackRight.rect.x = -1000
+            #endif
+            if self.hurt or self.death:
+                self.skeletonAttackLeft.rect.x = -1000
+                self.skeletonAttackRight.rect.x = -1000
+            #endif
+            if self.attackCounter == 16:
+                self.skeletonAttackLeft.rect.x = -1000
+                self.skeletonAttackRight.rect.x = -1000
+                self.attacked = False
+                self.attackCounter = 0
+            #endif
+
+        #endif
+
+    #endprocedure
+
+    def EnemyAttackDetection(self, leftAttack_list, rightAttack_list):
+
+        enemyGetHit1_list = pygame.sprite.spritecollide(self, leftAttack_list, False)#If get hit
+        for attack in enemyGetHit1_list:
+            if self.hurt == False and not self.death and not self.freeze and not self.recover:
+                self.hurt = True
+                self.reduceHealth = True
+            #endif
+        #endfor
+
+        enemyGetHit2_list = pygame.sprite.spritecollide(self, rightAttack_list, False)#If get hit
+        for attack in enemyGetHit2_list:
+            if self.hurt == False and not self.death and not self.freeze and not self.recover:
+                self.hurt = True
+                self.reduceHealth = True
+            #endif
+        #endfor
+
+    #endprocedure
+
+    def Hurt(self):
+        
+        if self.hurt == True and not self.freeze:
+
+            self.horiSpeed = 0
+            
+            if self.hurtCounter == 2:
+                self.hurt = False
+                self.hurtCounter = 0
+            #endif
+
+        #endif
+
+    #endprocedure
+
+    def MoveVert(self, block_list):
+
+        if self.freeze == False:
+
+            if self.vertSpeed == 0: #Keep testing if player hits something
+                self.vertSpeed = -0.4
+            else: #Gravity
+                self.vertSpeed -= 0.6
+            #endif
+
+            if self.rect.y >= 680 and self.vertSpeed <= 0: #If sinks into the ground
+
+                self.rect.y = 680 #Stands on the ground
+                self.vertSpeed = 0
+                self.jumped = False
+
+            elif self.rect.y <= 0 and self.vertSpeed > 0:
+
+                self.rect.y = 0
+                self.vertSpeed = 0
+
+            #endif
+
+            self.rect.y -= self.vertSpeed #Player move
+                
+            selfVertBlock_list = pygame.sprite.spritecollide(self, block_list, False)#If collide
+            for block in selfVertBlock_list:
+                
+                if self.vertSpeed <= 0: #If player is falling
+
+                    self.rect.bottom = block.rect.top
+                    self.jumped = False
+
+                elif self.vertSpeed >= 0: #If player is jumping
+
+                    self.rect.top = block.rect.bottom
+
+                #endif
+
+                self.vertSpeed = 0 #Stop player
+
+            #endfor
+
+        #endif
+
+    #endprocedure
+
+    def ChangeSpeed(self,num):
+
+        if self.freeze == False and self.attacked == False and not self.death:
+
+            if num == 0:
+
+                self.horiSpeed = -self.speed
+                self.lastHoriSpeed = self.horiSpeed
+
+            elif num == 1:
+
+                self.horiSpeed = self.speed
+                self.lastHoriSpeed = self.horiSpeed
+
+            elif num == 2:
+
+                self.horiSpeed = 0
+
+            #endif
+
+        #endif
+
+    #endprocedure
+
+    def MoveHori(self, block_list):
+
+        if self.freeze == False:
+            
+            self.rect.x += self.horiSpeed
+                
+            for block in block_list:
+                        
+                if self.rect.colliderect(block.rect): #If player hit block
+                    if self.horiSpeed > 0:
+                        self.rect.right = block.rect.left
+                    else:
+                        self.rect.left = block.rect.right
+                    #endif
+                #endif
+
+            #endfor
+
+        #endif
+
+    #endprocedure
+
+#endclass
+
 #Dark Knight Class
 class DarkKnightClass(pygame.sprite.Sprite): #Class of the Dark Knight
  
@@ -6571,8 +7135,8 @@ class DarkKnightClass(pygame.sprite.Sprite): #Class of the Dark Knight
         if self.death == False and not self.freeze:
 
             
-            self.arunAnimation.rect.y = self.rect.y - 85
-            self.arunAnimation.rect.x = self.rect.x - 58
+            self.arunAnimation.rect.y = self.rect.y - 58
+            self.arunAnimation.rect.x = self.rect.x - 85
         
             if not self.hurt and self.horiSpeed == 0 and not self.attacked and not self.flamed and not self.jumped and not self.block and not self.blocked:
 
@@ -7112,6 +7676,831 @@ class DarkKnightClass(pygame.sprite.Sprite): #Class of the Dark Knight
                 self.vertSpeed -= 0.6
             #endif
 
+            if self.rect.y >= 670 and self.vertSpeed <= 0: #If sinks into the ground
+
+                self.rect.y = 670 #Stands on the ground
+                self.vertSpeed = 0
+                self.jumped = False
+
+            elif self.rect.y <= 0 and self.vertSpeed > 0:
+
+                self.rect.y = 0
+                self.vertSpeed = 0
+
+            #endif
+
+            self.rect.y -= self.vertSpeed #Player move
+                
+            selfVertBlock_list = pygame.sprite.spritecollide(self, block_list, False)#If collide
+            for block in selfVertBlock_list:
+                
+                if self.vertSpeed <= 0: #If player is falling
+
+                    self.rect.bottom = block.rect.top
+                    self.jumped = False
+
+                elif self.vertSpeed >= 0: #If player is jumping
+
+                    self.rect.top = block.rect.bottom
+
+                #endif
+
+                self.vertSpeed = 0 #Stop player
+
+            #endfor
+
+        #endif
+
+    #endprocedure
+
+    def ChangeSpeed(self,num):
+
+        if self.freeze == False and self.attacked == False and not self.death:
+
+            if num == 0:
+
+                self.horiSpeed = -self.runSpeed
+                self.lastHoriSpeed = self.horiSpeed
+
+            elif num == 1:
+
+                self.horiSpeed = self.runSpeed
+                self.lastHoriSpeed = self.horiSpeed
+
+            elif num == 2:
+
+                self.horiSpeed = 0
+
+            #endif
+
+        #endif
+
+    #endprocedure
+
+    def MoveHori(self, block_list):
+
+        if self.freeze == False:
+            
+            self.rect.x += self.horiSpeed
+                
+            for block in block_list:
+                        
+                if self.rect.colliderect(block.rect): #If player hit block
+                    if self.horiSpeed > 0:
+                        self.rect.right = block.rect.left
+                    else:
+                        self.rect.left = block.rect.right
+                    #endif
+                #endif
+
+            #endfor
+
+        #endif
+
+    #endprocedure
+
+#endclass
+
+#Necromancer Class
+class NecromancerClass(pygame.sprite.Sprite): #Class of the Dark Knight
+ 
+    def __init__(self, x, y, levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list):
+        
+        super().__init__()
+ 
+        self.image = pygame.Surface([60, 100])
+        self.rect = self.image.get_rect()
+
+        self.rect.x = x
+        self.rect.y = y
+
+        self.originalX = x
+        self.originalY = y
+
+        self.necroAnimation = EnemyAnimation(12, 250, 160, x-95, y-60)
+        self.necroAttackAnimation = EnemyAnimation(12, 250, 200, -1000, y-100)
+        self.necroAttackLeft = AttackClass(240, 150, -1000, 0)
+        self.necroAttackRight = AttackClass(240, 150, -1000, 0)
+        leftEnemyAttack_list.add(self.necroAttackLeft)
+        rightEnemyAttack_list.add(self.necroAttackRight)
+        self.necroHealth1 = HealthClass(1, 5, 250, 50, 985, 10)
+        self.necroHealth2 = HealthClass(1, 5, 250, 50, 1235, 10)
+        self.necroHealth3 = HealthClass(1, 5, 250, 50, 985, 65)
+        self.necroHealth4 = HealthClass(1, 5, 250, 50, 1235, 65)
+        levelThree_list.add(self.necroAnimation, self.necroAttackAnimation)
+        self.HealthDisplay(1, levelThree_list)
+
+        #Attributes
+        self.hp = 20
+        self.horiSpeed = 0
+        self.lastHoriSpeed = -4
+        self.vertSpeed = -0.4
+        self.runSpeed = 10
+        self.attacked = False
+        self.freeze = False
+        self.hurt = False
+        self.death = False
+        self.spell = False
+        self.shadow = False
+        self.jumped = False
+        self.jumpTime = 0
+        self.jumpNum = 3
+        self.reduceHealth = False
+        self.random = False
+        self.random2 = False
+        self.randomTime = 700
+        self.attackCount = 0
+        self.skill = False
+        self.stopSelf = False
+        self.dropCoin = False
+        self.rest = False
+        self.restTime = 1000
+        self.attackCountNum = 4
+        self.shadowNum = 0
+
+        #Timers
+        self.endAnimation = 0
+        self.startAnimation = 0
+        self.startAttack = 0
+        self.endAttack = 0
+        self.startAttackRest = -750
+        self.endAttackRest = 0
+        self.startDeath = 0
+        self.endDeath = 0
+        self.startHurt = 0
+        self.endHurt = 0
+        self.startRandom = 0
+        self.endRandom = 0
+        self.startRandom2 = 0
+        self.endRandom2 = 0
+        self.startAbove = 0
+        self.endAbove = 0
+        self.startThrow = 0
+        self.endThrow = 0
+        self.startRest = 0
+        self.endRest = 0
+        self.startShoot = 0
+        self.endShoot = 0
+        self.startTimer = 0
+        self.endTimer = 0
+
+        #Counter
+        self.idleCounter = 0
+        self.runCounter = 0
+        self.attackCounter = 0
+        self.hurtCounter = 0
+        self.deathCounter = 0
+        self.spellCounter = 0
+        self.fallCounter = 0
+        self.jumpCounter = 0
+        
+    #endprocedure
+
+    def HealthDisplay(self, num, levelThree_list):
+
+        if num == 1:
+            levelThree_list.add(self.necroHealth1, self.necroHealth2, self.necroHealth3, self.necroHealth4)
+        else:
+            levelThree_list.remove(self.necroHealth1, self.necroHealth2, self.necroHealth3, self.necroHealth4)
+        #endif
+
+    #endprocedure
+
+    def Freeze(self, num):
+
+        if num == 1:
+            self.freeze = True
+        elif num != 1:
+            self.freeze = False
+        #endif
+
+    #endprocedure
+
+    def Unrandom(self):
+
+        self.random = False
+
+    #endprocedure
+
+    def Reset(self):
+
+        #Attributes
+        self.hp = 20
+        self.horiSpeed = 0
+        self.runSpeed = 8
+        self.lastHoriSpeed = -4
+        self.vertSpeed = -0.4
+        self.attacked = False
+        self.spell = False
+        self.freeze = False
+        self.hurt = False
+        self.death = False
+        self.jumped = False
+        self.jumpTime = 0
+        self.reduceHealth = False
+        self.random = False
+        self.random2 = False
+        self.randomTime = 600
+        self.attackCount = 0
+        self.dropCoin = False
+        self.stopSelf = False
+        self.rest = False
+        self.rect.x = self.originalX
+        self.rect.y = self.originalY
+        self.restTime = 1000
+        self.attackCountNum = 4
+        self.shadowNun = 0
+
+        #Timers
+        self.endAnimation = 0
+        self.startAnimation = 0
+        self.startAttack = 0
+        self.endAttack = 0
+        self.startAttackRest = -750
+        self.endAttackRest = 0
+        self.startDeath = 0
+        self.endDeath = 0
+        self.startHurt = 0
+        self.endHurt = 0
+        self.startRandom = 0
+        self.endRandom = 0
+        self.startRandom2 = 0
+        self.endRandom2 = 0
+        self.startAbove = 0
+        self.endAbove = 0
+        self.startThrow = 0
+        self.endThrow = 0
+        self.startRest = 0
+        self.endRest = 0
+        self.startShoot = 0
+        self.endShoot = 0
+        self.startTimer = 0
+        self.endTimer = 0
+
+        #Counter
+        self.attackCounter = 0
+        self.hurtCounter = 0
+        self.deathCounter = 0
+        self.spellCounter = 0
+        self.fallCounter = 0
+        self.jumpCounter = 0
+        
+        self.necroAttackLeft.rect.x = -1000
+        self.necroAttackRight.rect.x = -1000
+        self.necroHealth1.Update(5)
+        self.necroHealth2.Update(5)
+        self.necroHealth3.Update(5)
+        self.necroHealth4.Update(5)
+        self.necroHealth1.rect.x = 985
+        self.necroHealth2.rect.x = 1235
+        self.necroHealth3.rect.x = 985
+        self.necroHealth4.rect.x = 1235
+
+        self.Animation()
+
+    #endprocedure
+
+    def Animation(self):
+
+        if self.startAnimation == 0: #If start timer has not started yet
+
+            self.startAnimation = pygame.time.get_ticks() #Record current time
+
+        #endif
+
+        self.endAnimation = pygame.time.get_ticks() #Get current time for end time
+
+        if not self.attacked or self.hurt:
+
+            if self.death == False and not self.freeze:
+
+                self.necroAnimation.rect.y = self.rect.y - 60
+                self.necroAnimation.rect.x = self.rect.x - 95
+                self.necroAttackAnimation.rect.x = -1000
+            
+                if not self.hurt and self.horiSpeed == 0 and not self.attacked and not self.spell and not self.jumped:
+
+                    if self.endAnimation - self.startAnimation >= 70: #If next image
+                        
+                        self.startAnimation = self.endAnimation #If player is idle
+                        self.necroAnimation.Idle(self.lastHoriSpeed, self.idleCounter)
+
+                        if self.idleCounter != 10: #If reached the end
+                            self.idleCounter += 1
+                        else:
+                            self.idleCounter = 0
+                        #endif
+
+                    #endif
+
+                elif not self.hurt and self.horiSpeed != 0 and not self.attacked and not self.spell and not self.jumped:
+
+                    if self.endAnimation - self.startAnimation >= 60:
+                        
+                        self.startAnimation = self.endAnimation #If player running
+                        self.necroAnimation.Run(self.lastHoriSpeed, self.runCounter)
+
+                        if self.runCounter != 7: #If reached the end
+                            self.runCounter += 1
+                        else:
+                            self.runCounter = 0
+                        #endif
+
+                    #endif
+                
+                elif self.hurt == True:
+
+                    if self.endAnimation - self.startAnimation >= 75:
+
+                        self.startAnimation = self.endAnimation #If player is hurt
+                        self.necroAnimation.Hurt(self.lastHoriSpeed, self.hurtCounter)
+
+                        if self.hurtCounter != 3: #If reached the end
+                            self.hurtCounter += 1
+                        #endif
+
+                    #endif
+
+                elif self.spell == True and not self.attacked:
+
+                    if self.endAnimation - self.startAnimation >= 60:
+
+                        self.startAnimation = self.endAnimation #If player is special attacking
+                        self.necroAnimation.Spell(self.lastHoriSpeed, self.spellCounter)
+
+                        if self.spellCounter != 12: #If reached the end
+                            self.spellCounter += 1
+                        #endif
+
+                    #endif
+
+                elif self.jumped == True and self.vertSpeed >= 0 and not self.hurt:
+
+                    if self.endAnimation - self.startAnimation >= 200:
+
+                        self.startAnimation = self.endAnimation #If player jumping
+                        self.necroAnimation.Jump(self.lastHoriSpeed, self.jumpCounter)
+
+                        if self.jumpCounter != 2: #If reached the end
+                            self.jumpCounter += 1
+                        else:
+                            self.jumpCounter = 2 #Stay at the last frame
+                        #endif
+
+                    #endif
+
+                elif self.jumped == True and self.vertSpeed < 0 and not self.hurt:
+
+                    if self.endAnimation - self.startAnimation >= 200:
+
+                        self.startAnimation = self.endAnimation #If player falling
+                        self.necroAnimation.Fall(self.lastHoriSpeed, self.fallCounter)
+
+                        if self.fallCounter != 2: #If reached the end
+                            self.fallCounter += 1
+                        else:
+                            self.fallCounter = 2 #Stay at the last frame
+                        #endif
+
+                    #endif
+
+                #endif
+
+            elif self.death and not self.freeze:
+
+                if self.endAnimation - self.startAnimation >= 70:
+
+                    self.startAnimation = self.endAnimation 
+                    self.necroAnimation.Death(self.lastHoriSpeed, self.deathCounter)
+
+                    if self.deathCounter != 13:
+                        self.deathCounter += 1
+                    #endif
+
+                #endif
+                        
+            #endif
+
+        elif self.attacked == True and not self.hurt:
+
+            if self.endAnimation - self.startAnimation >= 50:
+
+                self.startAnimation = self.endAnimation #If player is attacking
+                self.necroAttackAnimation.Attack(self.lastHoriSpeed, self.attackCounter)
+
+                self.necroAttackAnimation.rect.x = self.rect.x - 95
+                self.necroAttackAnimation.rect.y = self.rect.y - 100
+                self.necroAnimation.rect.x = -1000
+
+                if self.attackCounter != 14: #If reached the end
+                    self.attackCounter += 1
+                #endif
+
+            #endif
+
+        #endif
+
+    #endprocedure
+
+    def AttackTrigger(self):
+
+        self.endAttackRest = pygame.time.get_ticks() #Get current time for end time
+        
+        if not self.freeze and self.attacked == False and self.jumped == False and self.death == False and self.endAttackRest - self.startAttackRest >= 850:
+
+            self.attacked = True
+            self.endAttackRest = 0
+            self.startAttackRest = 0
+            
+        #endif
+
+    #endprocedure
+
+    def AttackChecker(self):
+
+        if self.stopSelf: #If the enemy should stop
+
+            self.stopSelf = False
+            self.horiSpeed = 0
+
+        #endif
+
+    #endprocedure
+
+    def Attack(self):
+        
+        if self.attacked == True and self.freeze == False:
+
+            self.horiSpeed = 0
+
+            if self.attackCounter == 7 or self.attackCounter == 8:
+                if self.lastHoriSpeed > 0 and not self.hurt and not self.death:
+                    self.necroAttackRight.rect.x = self.rect.x - 90
+                    self.necroAttackRight.rect.y = self.rect.y - 50
+                elif self.lastHoriSpeed < 0 and not self.hurt and not self.death:
+                    self.necroAttackLeft.rect.x = self.rect.x - 90
+                    self.necroAttackLeft.rect.y = self.rect.y - 50
+                #endif
+            elif self.attackCounter != 7 or self.attackCounter != 8:
+                self.necroAttackLeft.rect.x = -1000
+                self.necroAttackRight.rect.x = -1000
+            #endif
+            if self.hurt or self.death:
+                self.necroAttackLeft.rect.x = -1000
+                self.necroAttackRight.rect.x = -1000
+            #endif
+            if self.attackCounter == 14:
+                self.necroAttackLeft.rect.x = -1000
+                self.necroAttackRight.rect.x = -1000
+                self.attacked = False
+                self.attackCounter = 0
+                self.attackCount += 1
+                if self.attackCount >= self.attackCountNum:
+                    self.attackCount = 0
+                    self.rest = True
+                #endif
+            #endif
+
+        #endif
+
+    #endprocedure
+
+    def Control(self, x, y):
+
+        if not self.freeze:
+
+            if not self.random and not self.random2 and not self.skill and not self.freeze and not self.attacked and not self.rest and not self.spell:
+
+                if self.rect.y == y:
+                    self.ChangeSpeed(2)
+                    if self.rect.x - x <= 90 and self.rect.x - x > 0 and self.lastHoriSpeed < 0:
+                        self.AttackTrigger()
+                    elif x - self.rect.x > 0 and x - self.rect.x <= 90 and self.lastHoriSpeed > 0:
+                        self.AttackTrigger()
+                    elif x <= self.rect.x and abs(x - self.rect.x) >= 90:
+                        self.ChangeSpeed(0)
+                    elif x > self.rect.x and abs(x - self.rect.x) >= 90:
+                        self.ChangeSpeed(1)
+                    #endif
+                elif y > self.rect.y:
+                    self.ChangeSpeed(2)
+                    if self.startAbove == 0: #If start timer has not started yet
+                        self.startAbove = pygame.time.get_ticks() #Record current time
+                    #endif
+                    self.endAbove = pygame.time.get_ticks()
+                    if self.endAbove - self.startAbove >= 800:
+                        self.random2 = True
+                        self.startAbove = 0
+                        self.endAbove = 0
+                    #endif
+                    if x <= self.rect.x and abs(x - self.rect.x) >= 80:
+                        self.ChangeSpeed(0)
+                    elif x > self.rect.x and abs(x - self.rect.x) >= 80:
+                        self.ChangeSpeed(1)
+                    #endif
+                elif y < self.rect.y:
+                    self.startAbove = 0
+                    self.endAbove = 0
+                    self.ChangeSpeed(2)
+                    if x <= self.rect.x and abs(x - self.rect.x) >= 80:
+                        self.ChangeSpeed(0)
+                    elif x > self.rect.x and abs(x - self.rect.x) >= 80:
+                        self.ChangeSpeed(1)
+                    #endif
+                    self.Jump()
+                    if self.jumpTime > self.jumpNum:
+                        self.random = True
+                    #endif
+                #endif
+
+                if self.startTimer == 0: #If start timer has not started yet
+                    self.startTimer = pygame.time.get_ticks() #Record current time
+                #endif
+                self.endTimer = pygame.time.get_ticks()
+                if self.endTimer - self.startTimer >= 15000:
+                    self.skill = True
+                    self.startTimer = 0
+                    self.endTimer = 0
+                #endif
+
+            elif self.random and not self.random2 and not self.skill and not self.freeze and not self.rest:
+
+                if self.startRandom == 0: #If start timer has not started yet
+
+                    self.startRandom = pygame.time.get_ticks() #Record current time
+                    self.ChangeSpeed(randint(0,1))
+
+                #endif
+                    
+                self.endRandom = pygame.time.get_ticks()
+                if self.endRandom - self.startRandom > 400:
+                    self.startRandom = 0
+                    self.endRandom = 0
+                    self.random = False
+                    self.rest = False
+                    self.random2 = False
+                #endif
+
+            elif self.random2 and not self.freeze and not self.rest:
+
+                if self.startRandom2 == 0: #If start timer has not started yet
+
+                    self.startRandom2 = pygame.time.get_ticks() #Record current time
+                    self.ChangeSpeed(randint(0,1))
+
+                #endif
+                    
+                self.endRandom2 = pygame.time.get_ticks()
+                if self.endRandom2 - self.startRandom2 > self.randomTime:
+                    self.startRandom2 = 0
+                    self.endRandom2 = 0
+                    self.random2 = False
+                    self.rest = False
+                    self.random = False
+                #endif
+
+            elif self.rest and not self.freeze and not self.random and not self.random2:
+
+                if self.startRest == 0: #If start timer has not started yet
+                    self.startRest = pygame.time.get_ticks() #Record current time
+                #endif
+                    
+                self.endRest = pygame.time.get_ticks()
+                if self.endRest - self.startRest >= self.restTime:
+                    self.startRest = 0
+                    self.endRest = 0
+                    self.rest = False
+                    self.random2 = False
+                    self.random = False
+                #endif
+
+            #endif
+
+            if self.skill and not self.freeze and not self.rest:
+
+                self.ChangeSpeed(2)
+                self.SpellTrigger()
+
+            #endif
+                
+        #endif
+
+        if self.rect.x <= 0: #If player reach the end of screen
+
+            self.rect.x = 0
+
+        elif self.rect.x >= 1450:
+
+            self.rect.x = 1450
+
+        #endif
+
+    #endprocedure
+
+    def SpellTrigger(self):
+
+        if not self.attacked and not self.hurt and not self.death and not self.freeze and not self.shadow and not self.spell:
+
+            self.spell = True
+
+        #endif
+
+    #endprocedure
+
+    def Spell(self, playerX, playerY, levelThree_list, shadowBolt_list):
+
+        if self.spell and not self.freeze:
+
+            if self.spellCounter == 12:
+                self.spellCounter = 0
+                self.shadow = True
+                self.spell = False
+                self.skill = False
+                self.random = False
+                self.rest = False
+                self.random2 = False
+            #endif
+
+        #endif
+
+        if self.shadow:
+
+            if self.startShoot == 0: #If start timer has not started yet
+                self.startShoot = pygame.time.get_ticks() #Record current time
+            #endif
+            self.endShoot = pygame.time.get_ticks() #Record current time
+            if self.endShoot - self.startShoot >= 400:
+                self.endShoot = 0
+                self.startShoot = 0
+                effect = EffectClass(1, 731, -160, playerX, playerY, levelThree_list)
+                shadowBolt_list.add(effect)
+                self.shadowNum += 1
+                if self.shadowNum == 12:
+                    self.shadow = False
+                    self.shadowNum = 0
+                #endif
+            #endif
+
+        #endif        
+
+    #endprocedure
+
+    def Health(self, sprite_list, coin_list, enemyCount):
+
+        if self.reduceHealth == True and not self.freeze:
+
+            self.reduceHealth = False
+            if self.hp > 0:
+                self.hp -= 1
+                if self.hp >= 15:
+                    hpNum = self.hp - 15
+                    self.necroHealth4.Update(hpNum)
+                elif self.hp >= 10 and self.hp < 15:
+                    hpNum = self.hp - 10
+                    self.necroHealth3.Update(hpNum)
+                elif self.hp >= 5 and self.hp < 10:
+                    hpNum = self.hp - 5
+                    self.necroHealth2.Update(hpNum)
+                else:
+                    self.necroHealth1.Update(self.hp)
+                #endif
+            if self.hp == 0:
+                num = enemyCount[0]
+                enemyCount[0] = num - 1
+                self.death = True
+                if not self.dropCoin:
+                    self.dropCoin = True
+                    for i in range(10):
+                        coin = ItemClass(1, 20, 20, self.rect.x + 20, self.rect.y + 80, 4)
+                        sprite_list.add(coin)
+                        coin_list.add(coin)
+                    #endfor
+                #endif
+            #endif
+            if self.hp == 11:
+                self.runSpeed = 10
+                self.restTime = 700
+                self.attackCountNum = 6
+                self.random = False
+                self.rest = False
+                self.random2 = False
+            #endif
+
+        #endif
+
+        if self.hp == 19:
+            self.necroHealth3.rect.x = 1035
+            self.necroHealth4.rect.x = 1285
+        elif self.hp == 18:
+            self.necroHealth3.rect.x = 1085
+            self.necroHealth4.rect.x = 1335
+        elif self.hp == 17:
+            self.necroHealth3.rect.x = 1135
+            self.necroHealth4.rect.x = 1385
+        elif self.hp == 16:
+            self.necroHealth3.rect.x = 1185
+            self.necroHealth4.rect.x = 1435
+        elif self.hp == 15:
+            self.necroHealth3.rect.x = 1235
+        elif self.hp == 14:
+            self.necroHealth3.rect.x = 1285
+        elif self.hp == 13:
+            self.necroHealth3.rect.x = 1335
+        elif self.hp == 12:
+            self.necroHealth3.rect.x = 1385
+        elif self.hp == 11:
+            self.necroHealth3.rect.x = 1435
+        elif self.hp == 9:
+            self.necroHealth1.rect.x = 1035
+            self.necroHealth2.rect.x = 1285
+        elif self.hp == 8:
+            self.necroHealth1.rect.x = 1085
+            self.necroHealth2.rect.x = 1335
+        elif self.hp == 7:
+            self.necroHealth1.rect.x = 1135
+            self.necroHealth2.rect.x = 1385
+        elif self.hp == 6:
+            self.necroHealth1.rect.x = 1185
+            self.necroHealth2.rect.x = 1435
+        elif self.hp == 5:
+            self.necroHealth1.rect.x = 1235
+        elif self.hp == 4:
+            self.necroHealth1.rect.x = 1285
+        elif self.hp == 3:
+            self.necroHealth1.rect.x = 1335
+        elif self.hp == 2:
+            self.necroHealth1.rect.x = 1385
+        elif self.hp == 1:
+            self.necroHealth1.rect.x = 1435
+        #endif
+
+    #endprocedure
+
+    def EnemyAttackDetection(self, leftAttack_list, rightAttack_list):
+
+        enemyGetHit1_list = pygame.sprite.spritecollide(self, leftAttack_list, False)#If get hit
+        for attack in enemyGetHit1_list:
+            if self.hurt == False and not self.death and not self.freeze:
+                self.hurt = True
+                self.reduceHealth = True
+            #endif
+        #endfor
+
+        enemyGetHit2_list = pygame.sprite.spritecollide(self, rightAttack_list, False)#If get hit
+        for attack in enemyGetHit2_list:
+            if self.hurt == False and not self.death and not self.freeze:
+                self.hurt = True
+                self.reduceHealth = True
+            #endif
+        #endfor
+
+    #endprocedure
+
+    def Hurt(self):
+        
+        if self.hurt == True and not self.freeze:
+
+            self.horiSpeed = 0
+
+            if self.hurtCounter == 3:
+                self.hurt = False
+                self.hurtCounter = 0
+            #endif
+
+        #endif
+
+    #endprocedure
+
+    def Jump(self):
+
+        if self.freeze == False and self.attacked == False and self.death == False and not self.skill:
+
+            if self.jumped == False: #If player has not jumped yet
+
+                self.jumpTime += 1
+                self.vertSpeed = 19
+                self.jumped = True
+                self.jumpCounter = 0
+                self.fallCounter = 0
+
+            #endif
+
+        #endif
+
+    #endprocedure
+
+    #endprocedure
+
+    def MoveVert(self, block_list):
+
+        if self.freeze == False:
+
+            if self.vertSpeed == 0: #Keep testing if player hits something
+                self.vertSpeed = -0.4
+            else: #Gravity
+                self.vertSpeed -= 0.6
+            #endif
+
             if self.rect.y >= 700 and self.vertSpeed <= 0: #If sinks into the ground
 
                 self.rect.y = 700 #Stands on the ground
@@ -7558,6 +8947,131 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             self.knightHurt.append(pygame.transform.scale(pygame.image.load("Game_Images/DarkKnight/Hurt/DarkKnight_Hurt_" + add_str + ".png"), (250, 188)))
         #endfor
 
+        #Skeleton Warrior
+        self.skeletonIdle = [] #Idle
+        for x in range(7):
+            add_str = str(x)
+            self.skeletonIdle.append(pygame.transform.scale(pygame.image.load("Game_Images/SkeletonWarrior/Idle/Skeleton_Idle_" + add_str + ".png"), (350, 160)))
+        #endfor
+        self.skeletonRun = [] #Walk
+        for x in range(10):
+            add_str = str(x)
+            self.skeletonRun.append(pygame.transform.scale(pygame.image.load("Game_Images/SkeletonWarrior/Walk/Skeleton_Walk_" + add_str + ".png"), (350, 160)))
+        #endfor
+        self.skeletonHurt = [] #Hurt
+        for x in range(3):
+            add_str = str(x)
+            self.skeletonHurt.append(pygame.transform.scale(pygame.image.load("Game_Images/SkeletonWarrior/Hurt/Skeleton_Hurt_" + add_str + ".png"), (350, 160)))
+        #endfor
+        self.skeletonDeath = [] #Death
+        for x in range(13):
+            add_str = str(x)
+            if x < 10:
+                add_str = "0"+str(x)
+            #endif
+            self.skeletonDeath.append(pygame.transform.scale(pygame.image.load("Game_Images/SkeletonWarrior/Death/Skeleton_Death_" + add_str + ".png"), (350, 160)))
+        #endfor
+        self.skeletonAttack = [] #Attack
+        for x in range(17):
+            add_str = str(x)
+            if x < 10:
+                add_str = "0"+str(x)
+            #endif
+            self.skeletonAttack.append(pygame.transform.scale(pygame.image.load("Game_Images/SkeletonWarrior/Attack/Skeleton_Attack_" + add_str + ".png"), (350, 160)))
+        #endfor
+        self.skeletonRecover = [] #Recover
+        for x in range(12):
+            add_str = str(x)
+            if x < 10:
+                add_str = "0"+str(x)
+            #endif
+            self.skeletonRecover.append(pygame.transform.scale(pygame.image.load("Game_Images/SkeletonWarrior/Recover/Skeleton_Death_0" + add_str + ".png"), (350, 160)))
+        #endfor
+
+        #Abomination
+        self.abominationIdle = [] #Idle
+        for x in range(6):
+            add_str = str(x)
+            self.abominationIdle.append(pygame.transform.scale(pygame.image.load("Game_Images/Abomination/Idle/Abomination_Idle_" + add_str + ".png"), (450, 450)))
+        #endfor
+        self.abominationHurt = [] #Hurt
+        for x in range(4):
+            add_str = str(x)
+            self.abominationHurt.append(pygame.transform.scale(pygame.image.load("Game_Images/Abomination/Hurt/Abomination_Hurt_" + add_str + ".png"), (450, 450)))
+        #endfor
+        self.abominationRun = [] #Run
+        for x in range(8):
+            add_str = str(x)
+            self.abominationRun.append(pygame.transform.scale(pygame.image.load("Game_Images/Abomination/Walk/Abomination_Walk_" + add_str + ".png"), (450, 450)))
+        #endfor
+        self.abominationAttack = [] #Attack
+        for x in range(14):
+            add_str = str(x)
+            if x < 10:
+                add_str = "0"+str(x)
+            #endif
+            self.abominationAttack.append(pygame.transform.scale(pygame.image.load("Game_Images/Abomination/Attack/Abomination_Attack_" + add_str + ".png"), (450, 450)))
+        #endfor
+        self.abominationDeath = [] #Death
+        for x in range(10):
+            add_str = str(x)
+            self.abominationDeath.append(pygame.transform.scale(pygame.image.load("Game_Images/Abomination/Death/Abomination_Death_" + add_str + ".png"), (450, 450)))
+        #endfor
+
+        #Necromancer
+        self.necromancerIdle = [] #Idle
+        for x in range(11):
+            add_str = str(x)
+            if x < 10:
+                add_str = "0"+str(x)
+            #endif
+            self.necromancerIdle.append(pygame.transform.scale(pygame.image.load("Game_Images/Necromancer/Idle/Necromancer_Idle_" + add_str + ".png"), (250, 160)))
+        #endfor
+        self.necromancerAttack = [] #Attack
+        for x in range(15):
+            add_str = str(x)
+            if x < 10:
+                add_str = "0"+str(x)
+            #endif
+            self.necromancerAttack.append(pygame.transform.scale(pygame.image.load("Game_Images/Necromancer/Attack/Necromancer_Attack_" + add_str + ".png"), (250, 200)))
+        #endfor
+        self.necromancerDeath = [] #Death
+        for x in range(14):
+            add_str = str(x)
+            if x < 10:
+                add_str = "0"+str(x)
+            #endif
+            self.necromancerDeath.append(pygame.transform.scale(pygame.image.load("Game_Images/Necromancer/Death/Necromancer_Death_" + add_str + ".png"), (250, 160)))
+        #endfor
+        self.necromancerSpell = [] #Spell
+        for x in range(13):
+            add_str = str(x)
+            if x < 10:
+                add_str = "0"+str(x)
+            #endif
+            self.necromancerSpell.append(pygame.transform.scale(pygame.image.load("Game_Images/Necromancer/Spellcast/Necromancer_Spellcast_" + add_str + ".png"), (250, 160)))
+        #endfor
+        self.necromancerRun = [] #Run
+        for x in range(8):
+            add_str = str(x)
+            self.necromancerRun.append(pygame.transform.scale(pygame.image.load("Game_Images/Necromancer/Run/Necromancer_Run_" + add_str + ".png"), (250, 160)))
+        #endfor
+        self.necromancerJump = [] #Jump
+        for x in range(3):
+            add_str = str(x)
+            self.necromancerJump.append(pygame.transform.scale(pygame.image.load("Game_Images/Necromancer/Jump/Necromancer_Jump_" + add_str + ".png"), (250, 160)))
+        #endfor
+        self.necromancerFall = [] #Fall
+        for x in range(3):
+            add_str = str(x)
+            self.necromancerFall.append(pygame.transform.scale(pygame.image.load("Game_Images/Necromancer/Fall/Necromancer_Fall_" + add_str + ".png"), (250, 160)))
+        #endfor
+        self.necromancerHurt = [] #Hurt
+        for x in range(4):
+            add_str = str(x)
+            self.necromancerHurt.append(pygame.transform.scale(pygame.image.load("Game_Images/Necromancer/Hurt/Necromancer_Hurt_" + add_str + ".png"), (250, 160)))
+        #endfor
+
         if self.enemy == 0:
             self.image = pygame.transform.flip(self.banditIdle2[0],1,0)
         elif self.enemy == 1: #Set
@@ -7576,6 +9090,12 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             self.image = pygame.transform.flip(self.mushroomRun3[0],1,0)
         elif self.enemy == 8:
             self.image = pygame.transform.flip(self.knightIdle[0],1,0)
+        elif self.enemy == 9:
+            self.image = pygame.transform.flip(self.skeletonRecover[0],1,0)
+        elif self.enemy == 11:
+            self.image = pygame.transform.flip(self.abominationIdle[0],1,0)
+        elif self.enemy == 12:
+            self.image = pygame.transform.flip(self.necromancerIdle[0],1,0)
         #endif
         
     #endprocedure
@@ -7635,6 +9155,24 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
                 self.image = self.knightIdle[i] #Right
             else:
                 self.image = pygame.transform.flip(self.knightIdle[i],1,0) #Left
+            #endif
+        elif self.enemy == 9:
+            if speed > 0:
+                self.image = self.skeletonIdle[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.skeletonIdle[i],1,0) #Left
+            #endif
+        elif self.enemy == 11:
+            if speed > 0:
+                self.image = self.abominationIdle[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.abominationIdle[i],1,0) #Left
+            #endif
+        elif self.enemy == 12:
+            if speed > 0:
+                self.image = self.necromancerIdle[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.necromancerIdle[i],1,0) #Left
             #endif
         #endif
 
@@ -7714,6 +9252,24 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             else:
                 self.image = pygame.transform.flip(self.knightRun[i],1,0) #Left
             #endif
+        elif self.enemy == 9:
+            if speed > 0:
+                self.image = self.skeletonRun[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.skeletonRun[i],1,0) #Left
+            #endif
+        elif self.enemy == 11:
+            if speed > 0:
+                self.image = self.abominationRun[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.abominationRun[i],1,0) #Left
+            #endif
+        elif self.enemy == 12:
+            if speed > 0:
+                self.image = self.necromancerRun[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.necromancerRun[i],1,0) #Left
+            #endif
         #endif
 
     #endprocedure
@@ -7738,6 +9294,12 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             else:
                 self.image = pygame.transform.flip(self.arunJump[i],1,0) #Left
             #endif
+        elif self.enemy == 12:
+            if speed > 0:
+                self.image = self.necromancerJump[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.necromancerJump[i],1,0) #Left
+            #endif
         #endif
 
     #endprocedure
@@ -7749,6 +9311,12 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
                 self.image = self.arunFall[i]
             else:
                 self.image = pygame.transform.flip(self.arunFall[i],1,0)
+            #endif
+        elif self.enemy == 12:
+            if speed > 0:
+                self.image = self.necromancerFall[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.necromancerFall[i],1,0) #Left
             #endif
         #endif
 
@@ -7803,6 +9371,24 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
                 self.image = self.knightAttack[i] #Right
             else:
                 self.image = pygame.transform.flip(self.knightAttack[i],1,0) #Left
+            #endif
+        elif self.enemy == 9:
+            if speed > 0:
+                self.image = self.skeletonAttack[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.skeletonAttack[i],1,0) #Left
+            #endif
+        elif self.enemy == 11:
+            if speed > 0:
+                self.image = self.abominationAttack[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.abominationAttack[i],1,0) #Left
+            #endif
+        elif self.enemy == 12:
+            if speed > 0:
+                self.image = self.necromancerAttack[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.necromancerAttack[i],1,0) #Left
             #endif
         #endif
 
@@ -7864,6 +9450,24 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             else:
                 self.image = pygame.transform.flip(self.knightHurt[i],1,0) #Left
             #endif
+        elif self.enemy == 9:
+            if speed > 0:
+                self.image = self.skeletonHurt[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.skeletonHurt[i],1,0) #Left
+            #endif
+        elif self.enemy == 11:
+            if speed > 0:
+                self.image = self.abominationHurt[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.abominationHurt[i],1,0) #Left
+            #endif
+        elif self.enemy == 12:
+            if speed > 0:
+                self.image = self.necromancerHurt[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.necromancerHurt[i],1,0) #Left
+            #endif
         #endif
 
     #endprocedure
@@ -7881,6 +9485,12 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
                 self.image = self.banditRecover2[i] #Right
             else:
                 self.image = pygame.transform.flip(self.banditRecover2[i],1,0) #Left
+            #endif
+        elif self.enemy == 9:
+            if speed > 0:
+                self.image = self.skeletonRecover[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.skeletonRecover[i],1,0) #Left
             #endif
         #endif
 
@@ -7942,6 +9552,24 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             else:
                 self.image = pygame.transform.flip(self.knightDeath[i],1,0) #Left
             #endif
+        elif self.enemy == 9:
+            if speed > 0:
+                self.image = self.skeletonDeath[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.skeletonDeath[i],1,0) #Left
+            #endif
+        elif self.enemy == 11:
+            if speed > 0:
+                self.image = self.abominationDeath[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.abominationDeath[i],1,0) #Left
+            #endif
+        elif self.enemy == 12:
+            if speed > 0:
+                self.image = self.necromancerDeath[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.necromancerDeath[i],1,0) #Left
+            #endif
         #endif
 
     #endprocedure
@@ -7953,6 +9581,12 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
                 self.image = self.rogueSpell[i] #Right
             else:
                 self.image = pygame.transform.flip(self.rogueSpell[i],1,0) #Left
+            #endif
+        elif self.enemy == 12:
+            if speed > 0:
+                self.image = self.necromancerSpell[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.necromancerSpell[i],1,0) #Left
             #endif
         #endif
 
@@ -8022,6 +9656,162 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
     #endprocedure
 
 #endclass
+
+#Special Effect Class
+class EffectClass(pygame.sprite.Sprite): #Class of effect's
+ 
+    def __init__(self, effectType, x, y, playerX, playerY, level_list):
+        
+        super().__init__()
+
+        if effectType == 1:
+            width = 38
+            height = 38
+        elif effectType == 2:
+            width = 92
+            height = 32
+        #endif
+        self.image = pygame.Surface([width, height])
+        self.rect = self.image.get_rect()
+
+        self.rect.x = x #Set pos
+        self.rect.y = y
+
+        self.scaleX = x*10
+        self.scaleY = y*10
+
+        self.effect = effectType
+        if self.effect == 1:
+            if self.rect.x + 19 > playerX + 25: 
+                self.angle = -1*180*math.atan((self.rect.x-playerX-6)/(playerY-self.rect.y+31))/math.pi
+                self.xMove = -21+int(self.angle)*3
+                self.yMove = 22+int(self.angle/5)
+            elif self.rect.x + 19 < playerX + 25:
+                self.angle = 180*math.atan((playerX-self.rect.x+6)/(playerY-self.rect.y+31))/math.pi
+                self.xMove = -21+int(self.angle/1.5)
+                self.yMove = 22-int(self.angle/5)
+            #endif
+            self.effectAnimation = EffectAnimation(1, 80, 160, x-21, y+61, self.angle)
+            self.counterMax = 3
+            self.speedX = int(float("{:.1f}".format((playerX - self.rect.x + 6)/50))*10)
+            self.speedY = int(float("{:.1f}".format((playerY - self.rect.y + 31)/50))*10)
+        elif self.effect == 2:
+            self.effectAnimation = EffectAnimation(2, 160, 40, x-34, y+4, 0)
+            self.xMove = -34
+            self.yMove = 4
+            self.counterMax = 3
+            self.speed = 20
+        #endif
+        level_list.add(self.effectAnimation)
+        #Timers
+        self.startAnimation = 0
+        self.endAnimation = 0
+
+        #Counters
+        self.counter = 0
+        
+    #endprocedure
+
+    def EffectUpdate(self, level_list):
+
+        if self.startAnimation == 0: #If start timer has not started yet
+            self.startAnimation = pygame.time.get_ticks() #Record current time
+        #endif
+        self.endAnimation = pygame.time.get_ticks() #Record current time
+        self.scaleX += self.speedX #Move x
+        self.rect.x = self.scaleX/10
+        self.scaleY += self.speedY #Move y
+        self.rect.y = self.scaleY/10
+        self.effectAnimation.rect.x = self.rect.x + self.xMove
+        self.effectAnimation.rect.y = self.rect.y + self.yMove
+        if self.endAnimation - self.startAnimation >= 40:
+            self.endAnimation = 0
+            self.startAnimation = 0
+            if self.counter < self.counterMax:
+                self.counter += 1
+            else:
+                self.counter = 0
+            #endif
+            self.effectAnimation.Animate(self.speedX, self.counter)
+        #endif
+        if self.effect == 1:
+            self.rect.x += self.speedX
+            self.rect.y += self.speedY
+            if self.rect.y >= 1060:
+                level_list.remove(self.effectAnimation)
+            #endif
+        elif self.effect == 2:
+            self.rect.x += self.speed
+            if self.rect.x <= -160:
+                level_list.remove(self.effectAnimation)
+            elif self.rect.x >= 1660:
+                level_list.remove(self.effectAnimation)
+            #endif
+        #endif
+
+    #endprocedure
+
+    def DeleteSelf(self, levelThree_list, shadowBolt_list):
+
+        levelThree_list.remove(self.effectAnimation)
+        shadowBolt_list.remove(self)
+
+    #endprocedure
+
+#endclass
+
+#Special Effect Animation Class
+class EffectAnimation(pygame.sprite.Sprite): #Class of effect's animation
+ 
+    def __init__(self, effectType, width, height, x, y, angle):
+        
+        super().__init__()
+ 
+        self.image = pygame.Surface([width, height])
+        self.rect = self.image.get_rect()
+
+        self.rect.x = x #Set pos
+        self.rect.y = y
+
+        self.effect = effectType
+        self.angle = angle
+
+        #Animation
+        #Shadow Bolts - 1
+        self.shadowBolt = [] #38, 60
+        for x in range(4):
+            add_str = str(x)
+            self.shadowBolt.append(pygame.transform.scale(pygame.image.load("Game_Images/Effects1/Sprites/ShadowBolt/ShadowBolt_" + add_str + ".png"), (80, 160)))
+        #endfor
+        #Fireball - 2
+        self.fireball = [] #92, 32
+        for x in range(4):
+            add_str = str(x)
+            self.fireball.append(pygame.transform.scale(pygame.image.load("Game_Images/Effects1/Sprites/Fireball/Fireball_" + add_str + ".png"), (160, 40)))
+        #endfor
+
+    #endprocedure
+
+    def Animate(self, speed, i):
+
+        if self.effect == 1:
+            if speed > 0:
+                self.image = self.shadowBolt[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.shadowBolt[i],1,0) #Left
+            #endif
+            self.image = pygame.transform.rotate(self.image, self.angle)
+        elif self.effect == 2:
+            if speed > 0:
+                self.image = self.fireball[i] #Right
+            else:
+                self.image = pygame.transform.flip(self.fireball[i],1,0) #Left
+            #endif
+        #endif
+
+    #endprocedure        
+
+#endclass
         
 #Gameplay
 def Game():
@@ -8083,6 +9873,9 @@ def Game():
     levelToGo = 0
     tutorialLevel = False
 
+    startT = 0
+    endT = 0
+
     block1_list = pygame.sprite.Group() #Blocks list 1
 
     block2_list = pygame.sprite.Group() #Blocks list 2
@@ -8109,7 +9902,13 @@ def Game():
 
     arun_list = pygame.sprite.Group() #Arun
 
+    abomination_list = pygame.sprite.Group() #Abomination
+
+    necromancer_list = pygame.sprite.Group() #Necromancer
+
     rogueAttack_list = pygame.sprite.Group() #Rogue Attack
+
+    abominationAttack_list = pygame.sprite.Group() #Abomination Attack
 
     leftJavelin_list = pygame.sprite.Group() #Javelins
 
@@ -8117,7 +9916,7 @@ def Game():
 
     tutorialEnemy_list = pygame.sprite.Group() #Enemy's tutorial list
 
-    banditGroup1_list = pygame.sprite.Group()
+    banditGroup1_list = pygame.sprite.Group() #Bandits
 
     banditGroup2_list = pygame.sprite.Group()
 
@@ -8125,11 +9924,17 @@ def Game():
 
     banditGroup4_list = pygame.sprite.Group()
 
-    mushroomGroup1_list = pygame.sprite.Group()
+    mushroomGroup1_list = pygame.sprite.Group() #Mushrooms
 
     mushroomGroup2_list = pygame.sprite.Group()
 
     mushroomGroup3_list = pygame.sprite.Group()
+
+    skeleton1_list = pygame.sprite.Group() #Skeletons
+
+    skeleton2_list = pygame.sprite.Group()
+
+    darkKnight_list = pygame.sprite.Group()
 
     startEnd_list = pygame.sprite.Group() #The area determines the start and end of a level
 
@@ -8154,6 +9959,8 @@ def Game():
     enemyAttack_list = pygame.sprite.Group() #Enemy's attack
 
     mushroomAttack_list = pygame.sprite.Group() #Mushroom's attack
+
+    shadowBolt_list = pygame.sprite.Group() #Shadow Bolts
 
     button_list = pygame.sprite.Group() #Buttons
 
@@ -8999,6 +10806,7 @@ def Game():
                     CreateCharacters0(player_list, leftPlayerAttack_list, rightPlayerAttack_list, tutorialEnemy_list, tutorial_list, levelOne_list, levelTwo_list, levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list, character1_list)
                     CreateCharacters1(levelOne_list, enemy_list, warlock_list, wordBox_list, nextButton_list, rogue_list, leftEnemyAttack_list, rightEnemyAttack_list, rogueAttack_list, banditGroup1_list, banditGroup2_list, character1_list)
                     CreateCharacters2(levelTwo_list, enemyAttack_list, leftEnemyAttack_list, rightEnemyAttack_list, banditGroup3_list, banditGroup4_list, mushroomGroup1_list, mushroomGroup2_list, mushroomGroup3_list, character2_list, arun_list, mushroomAttack_list)
+                    CreateCharacters3(levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list, character3_list, skeleton1_list, abomination_list, abominationAttack_list, necromancer_list)
                     CreateMoney(tutorial_list, levelOne_list, levelTwo_list, levelThree_list, thousand_list, hundred_list, ten_list, one_list)
                     for player in player_list:
                         player.DrawOnCanvas(tutorial_list, levelOne_list, levelTwo_list, levelThree_list)
@@ -10562,11 +12370,39 @@ def Game():
 
                 elif gameLevel == 3:
 
+                    for button in button_list: #Button Change
+
+                        button.Change(pos, level)
+
+                    #endfor
+
+                    for coin in coin_list:
+
+                        coin.Change()
+                        coin.CoinUpdate(player_list, block2_list, tutorialBlock_list, tutorial_list, levelTwo_list, coin_list, currency)
+
+                    #endfor
+
+                    for thousand in thousand_list:
+                        thousand.Update(currency[0])
+                    #endfor
+                    for hundred in hundred_list:
+                        hundred.Update(currency[1])
+                    #endfor
+                    for ten in ten_list:
+                        ten.Update(currency[2])
+                    #endfor
+                    for one in one_list:
+                        one.Update(currency[3])
+                    #endfor
+
                     #Player Movement
                     for player in player_list:
-
+                        player.FreezeTrigger(0)
                         #Detection
                         player.EnemyAttackDetection(leftEnemyAttack_list, rightEnemyAttack_list)
+                        #Detection Shadow Bolt
+                        player.ShadowBoltDetection(shadowBolt_list, levelThree_list)
                         #Blocked
                         player.Blocked(live, shieldNum)
                         #Hurt
@@ -10589,6 +12425,41 @@ def Game():
                         player.Health(live)
                         #Animation
                         player.Animation()
+
+                    #endfor
+
+                    for skeleton in skeleton1_list:
+
+                        skeleton.Control(player.rect.x, player.rect.y - 20)
+                        skeleton.Attack()
+                        skeleton.MoveHori(block3_list)
+                        skeleton.MoveVert(block3_list)
+                        skeleton.Hurt()
+                        skeleton.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
+                        skeleton.Health()
+                        skeleton.Animation()
+                        skeleton.Recover(levelThree_list)
+
+                    #endfor
+
+                    for necro in necromancer_list:
+
+                        necro.Control(player.rect.x, player.rect.y)
+                        necro.Attack()
+                        necro.MoveHori(block3_list)
+                        necro.AttackChecker()
+                        necro.MoveVert(block3_list)
+                        necro.Hurt()
+                        necro.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
+                        necro.Health(levelThree_list, coin_list, enemyCount)
+                        necro.Spell(player.rect.x, player.rect.y, levelThree_list, shadowBolt_list)
+                        necro.Animation()
+
+                    #endfor
+
+                    for stuff in shadowBolt_list:
+
+                        stuff.EffectUpdate(levelThree_list)
 
                     #endfor
                         
