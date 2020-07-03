@@ -171,7 +171,7 @@ def CreateCharacters2(levelTwo_list, enemyAttack_list, leftEnemyAttack_list, rig
 
 def CreateCharacters3(levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list, character3_list, skeleton1_list, abomination_list, abominationAttack_list, necromancer_list):
 
-    for i in range(0):
+    for i in range(2):
         skeleton1 = SkeletonClass(randint(200, 1000), 680, levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list)
         skeleton1_list.add(skeleton1)
         character3_list.add(skeleton1)
@@ -179,6 +179,7 @@ def CreateCharacters3(levelThree_list, leftEnemyAttack_list, rightEnemyAttack_li
 
     necromancer = NecromancerClass(1390, 700, levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list)
     necromancer_list.add(necromancer)
+    character3_list.add(necromancer)
 
 #endprocedure
 
@@ -10261,6 +10262,14 @@ def Game():
                         DrawOrRemove(1, levelTwo_list, optionBlock_list)
                         DrawOrRemove(1, levelTwo_list, panelButton_list)
                         DrawOrRemove(0, levelTwo_list, pauseButton_list)
+                    elif gameLevel == 3:
+                        for character in character3_list:
+                            character.Freeze(1)
+                        #endfor
+                        player.FreezeTrigger(1)
+                        DrawOrRemove(1, levelThree_list, optionBlock_list)
+                        DrawOrRemove(1, levelThree_list, panelButton_list)
+                        DrawOrRemove(0, levelThree_list, pauseButton_list)
                     #endif
                 elif level == 4 and pos[0] >= 1068 and pos[1] >= 234 and pos[0] <= 1128 and pos[1] <= 294 and gamePause and not gameOver and not advanceLevel: #Continue
                     gamePause = False
@@ -10280,6 +10289,14 @@ def Game():
                         DrawOrRemove(0, levelTwo_list, optionBlock_list)
                         DrawOrRemove(0, levelTwo_list, panelButton_list)
                         DrawOrRemove(1, levelTwo_list, pauseButton_list)
+                    elif gameLevel == 3:
+                        for character in character3_list:
+                            character.Freeze(0)
+                        #endfor
+                        player.FreezeTrigger(0)
+                        DrawOrRemove(0, levelThree_list, optionBlock_list)
+                        DrawOrRemove(0, levelThree_list, panelButton_list)
+                        DrawOrRemove(1, levelThree_list, pauseButton_list)
                     #endif
                 elif level == 4 and pos[0] >= 654.5 and pos[1] >= 573 and pos[0] <= 845.5 and pos[1] <= 613 and gamePause and not gameOver and not advanceLevel: #Game Pause Restart
                     enemyCount = [-1]
@@ -12479,6 +12496,8 @@ def Game():
                     levelOne_list.draw(screen) #Display all visible objects
                 elif gameLevel == 2:
                     levelTwo_list.draw(screen)
+                elif gameLevel == 3:
+                    levelThree_list.draw(screen)
                 #endif
 
             elif gameOver:
@@ -12495,6 +12514,12 @@ def Game():
                         DrawOrRemove(1, levelTwo_list, restartLevel_list)
                         DrawOrRemove(0, levelTwo_list, pauseButton_list)
                         for character in character2_list:
+                            character.ChangeSpeed(2)
+                        #endfor
+                    elif gameLevel == 3:
+                        DrawOrRemove(1, levelThree_list, restartLevel_list)
+                        DrawOrRemove(0, levelThree_list, pauseButton_list)
+                        for character in character3_list:
                             character.ChangeSpeed(2)
                         #endfor
                     #endif
