@@ -6415,7 +6415,7 @@ class SkeletonClass(pygame.sprite.Sprite): #Class of the skeleton
         self.skeletonAttackRight = AttackClass(250, 120, -1000, 0)
         leftEnemyAttack_list.add(self.skeletonAttackLeft)
         rightEnemyAttack_list.add(self.skeletonAttackRight)
-        levelThree_list.add(self.skeletonAnimation)
+        levelThree_list.add(self.skeletonAnimation, self.skeletonHealth)
 
         #Attributes
         self.hp = 0
@@ -6495,7 +6495,7 @@ class SkeletonClass(pygame.sprite.Sprite): #Class of the skeleton
         self.deathCounter = 0
         self.recoverCounter = 0
         
-        self.skeletonHealth.Update(5)
+        self.skeletonHealth.Update(0)
         self.skeletonHealth.rect.x = self.rect.x - 10
         self.skeletonAttackLeft.rect.x = -1000
         self.skeletonAttackRight.rect.x = -1000
@@ -6722,10 +6722,10 @@ class SkeletonClass(pygame.sprite.Sprite): #Class of the skeleton
 
     #endprocedure
 
-    def Recover(self, levelThree_list):
+    def Recover(self, levelThree_list, enemyCount):
 
         if not self.freeze:
-            if self.death and not self.recover:
+            if self.death and not self.recover and enemyCount[0] != 0:
 
                 if self.startDeath == 0:
                     self.startDeath = pygame.time.get_ticks() #Get current time for start time
@@ -6738,18 +6738,27 @@ class SkeletonClass(pygame.sprite.Sprite): #Class of the skeleton
                     self.recoverCounter = 0
                 #endif
 
-            elif self.recover:
-                if self.recoverCounter == 0:
-                    levelThree_list.remove(self.skeletonHealth)
-                elif self.recoverCounter == 11:
+            elif self.recover and enemyCount[0] != 0:
+                if self.recoverCounter == 11:
                     self.recover = False
                     self.death = False
                     self.hp = 5
                     self.skeletonHealth.Update(5)
-                    levelThree_list.add(self.skeletonHealth)
                     self.deathCounter = 0
                     self.recoverCounter = 0
                 #endif
+            #endif
+            if enemyCount[0] == 0 and not self.death:
+                self.death = True
+                self.hurt = False
+                self.horiSpeed = 0
+                self.attacked = False
+                self.attackCounter = 0
+                self.hurtCounter = 0
+                self.deathCounter = 0
+                self.recoverCounter = 0
+                self.hp = 0
+                self.skeletonHealth.Update(self.hp)
             #endif
         #endif
 
@@ -7789,7 +7798,6 @@ class NecromancerClass(pygame.sprite.Sprite): #Class of the Dark Knight
         self.necroHealth3 = HealthClass(1, 5, 250, 50, 985, 65)
         self.necroHealth4 = HealthClass(1, 5, 250, 50, 1235, 65)
         levelThree_list.add(self.necroAnimation, self.necroAttackAnimation)
-        self.HealthDisplay(1, levelThree_list)
 
         #Attributes
         self.hp = 20
@@ -8069,6 +8077,10 @@ class NecromancerClass(pygame.sprite.Sprite): #Class of the Dark Knight
 
             elif self.death and not self.freeze:
 
+                self.necroAnimation.rect.y = self.rect.y - 60
+                self.necroAnimation.rect.x = self.rect.x - 95
+                self.necroAttackAnimation.rect.x = -1000
+
                 if self.endAnimation - self.startAnimation >= 70:
 
                     self.startAnimation = self.endAnimation 
@@ -8082,7 +8094,7 @@ class NecromancerClass(pygame.sprite.Sprite): #Class of the Dark Knight
                         
             #endif
 
-        elif self.attacked == True and not self.hurt:
+        elif self.attacked == True and not self.hurt and not self.death:
 
             if self.endAnimation - self.startAnimation >= 50:
 
@@ -8107,7 +8119,7 @@ class NecromancerClass(pygame.sprite.Sprite): #Class of the Dark Knight
 
         self.endAttackRest = pygame.time.get_ticks() #Get current time for end time
         
-        if not self.freeze and self.attacked == False and self.jumped == False and self.death == False and self.endAttackRest - self.startAttackRest >= 850:
+        if not self.freeze and self.attacked == False and self.jumped == False and self.death == False and self.endAttackRest - self.startAttackRest >= 500:
 
             self.attacked = True
             self.endAttackRest = 0
@@ -8168,7 +8180,7 @@ class NecromancerClass(pygame.sprite.Sprite): #Class of the Dark Knight
 
     def Control(self, x, y):
 
-        if not self.freeze:
+        if not self.freeze and not self.death:
 
             if not self.random and not self.random2 and not self.skill and not self.freeze and not self.attacked and not self.rest and not self.spell:
 
@@ -8224,7 +8236,7 @@ class NecromancerClass(pygame.sprite.Sprite): #Class of the Dark Knight
                     self.endTimer = 0
                 #endif
 
-            elif self.random and not self.random2 and not self.skill and not self.freeze and not self.rest:
+            elif self.random and not self.random2 and not self.skill and not self.freeze and not self.rest and not self.death:
 
                 if self.startRandom == 0: #If start timer has not started yet
 
@@ -8242,7 +8254,7 @@ class NecromancerClass(pygame.sprite.Sprite): #Class of the Dark Knight
                     self.random2 = False
                 #endif
 
-            elif self.random2 and not self.freeze and not self.rest:
+            elif self.random2 and not self.freeze and not self.rest and not self.death:
 
                 if self.startRandom2 == 0: #If start timer has not started yet
 
@@ -8260,7 +8272,7 @@ class NecromancerClass(pygame.sprite.Sprite): #Class of the Dark Knight
                     self.random = False
                 #endif
 
-            elif self.rest and not self.freeze and not self.random and not self.random2:
+            elif self.rest and not self.freeze and not self.random and not self.random2 and not self.death:
 
                 if self.startRest == 0: #If start timer has not started yet
                     self.startRest = pygame.time.get_ticks() #Record current time
@@ -8277,7 +8289,7 @@ class NecromancerClass(pygame.sprite.Sprite): #Class of the Dark Knight
 
             #endif
 
-            if self.skill and not self.freeze and not self.rest:
+            if self.skill and not self.freeze and not self.rest and not self.death:
 
                 self.ChangeSpeed(2)
                 self.SpellTrigger()
@@ -8352,7 +8364,7 @@ class NecromancerClass(pygame.sprite.Sprite): #Class of the Dark Knight
 
             self.reduceHealth = False
             if self.hp > 0:
-                self.hp -= 1
+                self.hp -= 5
                 if self.hp >= 15:
                     hpNum = self.hp - 15
                     self.necroHealth4.Update(hpNum)
@@ -10144,7 +10156,7 @@ def Game():
                             character.Reset()
                         #endfor
                         for button in pauseButton_list:
-                            levelOne_list.add(button)
+                            levelTwo_list.add(button)
                         #endfor
                         for ground in ground_list:
                             ground.Update(0)
@@ -10152,7 +10164,7 @@ def Game():
                         for background in background_list:
                             background.Reset()
                         #endfor
-                        for arun in rogue_list:
+                        for arun in arun_list:
                             arun.HealthDisplay(0, levelTwo_list)
                         #endfor
                         DrawOrRemove(0, levelTwo_list, nextButton_list)
@@ -10162,6 +10174,32 @@ def Game():
                         DrawOrRemove(0, leftJavelin_list, leftJavelin_list)
                         DrawOrRemove(0, levelTwo_list, rightJavelin_list)
                         DrawOrRemove(0, rightJavelin_list, rightJavelin_list)
+                    elif gameLevel == 3:
+                        DrawOrRemove(0, levelThree_list, nextLevelBlock_list)
+                        for block in block3_list:
+                            block.Reset()
+                        #endfpr
+                        for character in character3_list:
+                            character.Reset()
+                        #endfor
+                        for button in pauseButton_list:
+                            levelThree_list.add(button)
+                        #endfor
+                        for ground in ground_list:
+                            ground.Update(0)
+                        #endfor
+                        for background in background_list:
+                            background.Reset()
+                        #endfor
+                        for necro in necromancer_list:
+                            necro.HealthDisplay(0, levelThree_list)
+                        #endfor
+                        DrawOrRemove(0, levelThree_list, shadowBolt_list)
+                        DrawOrRemove(0, shadowBolt_list, shadowBolt_list)
+                        DrawOrRemove(0, levelThree_list, nextButton_list)
+                        DrawOrRemove(0, levelThree_list, currentLine_list)
+                        DrawOrRemove(0, levelThree_list, wordBox_list)
+                        DrawOrRemove(0, levelThree_list, coin_list)
                     #endif
                     if gameLevel < 3:
                         gameLevel += 1
@@ -10211,13 +10249,16 @@ def Game():
                             character.Reset()
                         #endfor
                         for button in pauseButton_list:
-                            levelOne_list.add(button)
+                            levelTwo_list.add(button)
                         #endfor
                         for ground in ground_list:
                             ground.Update(0)
                         #endfor
                         for background in background_list:
                             background.Reset()
+                        #endfor
+                        for arun in arun_list:
+                            arun.HealthDisplay(0, levelTwo_list)
                         #endfor
                         DrawOrRemove(0, levelTwo_list, nextButton_list)
                         DrawOrRemove(0, levelTwo_list, currentLine_list)
@@ -10226,6 +10267,32 @@ def Game():
                         DrawOrRemove(0, leftJavelin_list, leftJavelin_list)
                         DrawOrRemove(0, levelTwo_list, rightJavelin_list)
                         DrawOrRemove(0, rightJavelin_list, rightJavelin_list)
+                    elif gameLevel == 3:
+                        DrawOrRemove(0, levelThree_list, nextLevelBlock_list)
+                        for block in block3_list:
+                            block.Reset()
+                        #endfpr
+                        for character in character3_list:
+                            character.Reset()
+                        #endfor
+                        for button in pauseButton_list:
+                            levelThree_list.add(button)
+                        #endfor
+                        for ground in ground_list:
+                            ground.Update(0)
+                        #endfor
+                        for background in background_list:
+                            background.Reset()
+                        #endfor
+                        for necro in necromancer_list:
+                            necro.HealthDisplay(0, levelThree_list)
+                        #endfor
+                        DrawOrRemove(0, levelThree_list, shadowBolt_list)
+                        DrawOrRemove(0, shadowBolt_list, shadowBolt_list)
+                        DrawOrRemove(0, levelThree_list, nextButton_list)
+                        DrawOrRemove(0, levelThree_list, currentLine_list)
+                        DrawOrRemove(0, levelThree_list, wordBox_list)
+                        DrawOrRemove(0, levelThree_list, coin_list)                        
                     #endif
                     if gameLevel < 3:
                         gameLevel += 1
@@ -10366,6 +10433,9 @@ def Game():
                         for background in background_list:
                             background.Reset()
                         #endfor
+                        for arun in arun_list:
+                            arun.HealthDisplay(0, levelTwo_list)
+                        #endfor
                         DrawOrRemove(0, levelTwo_list, nextButton_list)
                         DrawOrRemove(0, levelTwo_list, currentLine_list)
                         DrawOrRemove(0, levelTwo_list, wordBox_list)
@@ -10396,6 +10466,11 @@ def Game():
                         for background in background_list:
                             background.Reset()
                         #endfor
+                        for necro in necromancer_list:
+                            necro.HealthDisplay(0, levelThree_list)
+                        #endfor
+                        DrawOrRemove(0, levelThree_list, shadowBolt_list)
+                        DrawOrRemove(0, shadowBolt_list, shadowBolt_list)
                         DrawOrRemove(0, levelThree_list, nextButton_list)
                         DrawOrRemove(0, levelThree_list, currentLine_list)
                         DrawOrRemove(0, levelThree_list, wordBox_list)
@@ -10469,6 +10544,9 @@ def Game():
                         for background in background_list:
                             background.Reset()
                         #endfor
+                        for arun in arun_list:
+                            arun.HealthDisplay(0, levelTwo_list)
+                        #endfor
                         DrawOrRemove(0, levelTwo_list, nextButton_list)
                         DrawOrRemove(0, levelTwo_list, currentLine_list)
                         DrawOrRemove(0, levelTwo_list, wordBox_list)
@@ -10499,6 +10577,11 @@ def Game():
                         for background in background_list:
                             background.Reset()
                         #endfor
+                        for necro in necromancer_list:
+                            necro.HealthDisplay(0, levelThree_list)
+                        #endfor
+                        DrawOrRemove(0, levelThree_list, shadowBolt_list)
+                        DrawOrRemove(0, shadowBolt_list, shadowBolt_list)
                         DrawOrRemove(0, levelThree_list, nextButton_list)
                         DrawOrRemove(0, levelThree_list, currentLine_list)
                         DrawOrRemove(0, levelThree_list, wordBox_list)
@@ -10590,6 +10673,11 @@ def Game():
                         for background in background_list:
                             background.Reset()
                         #endfor
+                        for necro in necromancer_list:
+                            necro.HealthDisplay(0, levelThree_list)
+                        #endfor
+                        DrawOrRemove(0, levelThree_list, shadowBolt_list)
+                        DrawOrRemove(0, shadowBolt_list, shadowBolt_list)
                         DrawOrRemove(0, levelThree_list, nextButton_list)
                         DrawOrRemove(0, levelThree_list, currentLine_list)
                         DrawOrRemove(0, levelThree_list, wordBox_list)
@@ -10687,6 +10775,8 @@ def Game():
                         for background in background_list:
                             background.Reset()
                         #endfor
+                        DrawOrRemove(0, levelThree_list, shadowBolt_list)
+                        DrawOrRemove(0, shadowBolt_list, shadowBolt_list)
                         DrawOrRemove(0, levelThree_list, nextButton_list)
                         DrawOrRemove(0, levelThree_list, currentLine_list)
                         DrawOrRemove(0, levelThree_list, wordBox_list)
@@ -11923,7 +12013,6 @@ def Game():
                     #endif
                             
                     if gamePhase == 1:
-                        #Warlock
                         if gameChat == 1:
                             for player in player_list:
                                 player.FreezeTrigger(0)
@@ -12396,7 +12485,7 @@ def Game():
                     for coin in coin_list:
 
                         coin.Change()
-                        coin.CoinUpdate(player_list, block2_list, tutorialBlock_list, tutorial_list, levelTwo_list, coin_list, currency)
+                        coin.CoinUpdate(player_list, block3_list, tutorialBlock_list, tutorial_list, levelThree_list, coin_list, currency)
 
                     #endfor
 
@@ -12415,7 +12504,6 @@ def Game():
 
                     #Player Movement
                     for player in player_list:
-                        player.FreezeTrigger(0)
                         #Detection
                         player.EnemyAttackDetection(leftEnemyAttack_list, rightEnemyAttack_list)
                         #Detection Shadow Bolt
@@ -12445,40 +12533,133 @@ def Game():
 
                     #endfor
 
-                    for skeleton in skeleton1_list:
+                    if gamePhase >= 1:
 
-                        skeleton.Control(player.rect.x, player.rect.y - 20)
-                        skeleton.Attack()
-                        skeleton.MoveHori(block3_list)
-                        skeleton.MoveVert(block3_list)
-                        skeleton.Hurt()
-                        skeleton.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
-                        skeleton.Health()
-                        skeleton.Animation()
-                        skeleton.Recover(levelThree_list)
+                        for necro in necromancer_list:
 
-                    #endfor
+                            if gamePhase == 2:
+                                necro.Control(player.rect.x, player.rect.y)
+                            #endif
+                            necro.Attack()
+                            necro.MoveHori(block3_list)
+                            necro.AttackChecker()
+                            necro.MoveVert(block3_list)
+                            necro.Hurt()
+                            necro.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
+                            necro.Health(levelThree_list, coin_list, enemyCount)
+                            necro.Spell(player.rect.x, player.rect.y, levelThree_list, shadowBolt_list)
+                            necro.Animation()
 
-                    for necro in necromancer_list:
+                        #endfor
 
-                        necro.Control(player.rect.x, player.rect.y)
-                        necro.Attack()
-                        necro.MoveHori(block3_list)
-                        necro.AttackChecker()
-                        necro.MoveVert(block3_list)
-                        necro.Hurt()
-                        necro.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
-                        necro.Health(levelThree_list, coin_list, enemyCount)
-                        necro.Spell(player.rect.x, player.rect.y, levelThree_list, shadowBolt_list)
-                        necro.Animation()
+                        for skeleton in skeleton1_list:
 
-                    #endfor
+                            if gamePhase == 2:
+                                skeleton.Control(player.rect.x, player.rect.y - 20)
+                            #endif
+                            skeleton.Recover(levelThree_list, enemyCount)
+                            skeleton.Attack()
+                            skeleton.MoveHori(block3_list)
+                            skeleton.MoveVert(block3_list)
+                            skeleton.Hurt()
+                            skeleton.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
+                            skeleton.Health()
+                            skeleton.Animation()
 
-                    for stuff in shadowBolt_list:
+                        #endfor
 
-                        stuff.EffectUpdate(levelThree_list)
+                        for stuff in shadowBolt_list:
 
-                    #endfor
+                            if gamePhase == 2:
+                                stuff.EffectUpdate(levelThree_list)
+                            #endif
+
+                        #endfor
+
+                    #endif
+
+                    if gamePhase == 1:
+                        if gameChat == 1:
+                            for player in player_list:
+                                player.FreezeTrigger(0)
+                                player.ChangeSpeed(2)
+                                player.FreezeTrigger(1)
+                            #endfor
+                            DrawOrRemove(1, levelThree_list, wordBox_list)
+                            WriteWords(1, script3[0], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 3, 0)
+                            gameChat = 2
+                        elif gameChat == 2:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelThree_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 3:
+                            DrawOrRemove(0, levelThree_list, nextButton_list)
+                            DrawOrRemove(0, levelThree_list, currentLine_list)
+                            WriteWords(1, script3[1], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 3, 0)
+                            gameChat = 4
+                        elif gameChat == 4:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelThree_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 5:
+                            DrawOrRemove(0, levelThree_list, nextButton_list)
+                            DrawOrRemove(0, levelThree_list, currentLine_list)
+                            WriteWords(1, script3[2], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 3, 0)
+                            gameChat = 6
+                        elif gameChat == 6:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelThree_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 7:
+                            DrawOrRemove(0, levelThree_list, nextButton_list)
+                            DrawOrRemove(0, levelThree_list, currentLine_list)
+                            DrawOrRemove(0, levelThree_list, wordBox_list)
+                            gamePhase = 2
+                            gameChat = 1
+                            player.FreezeTrigger(0)
+                            enemyCount[0] = 1
+                            for necro in necromancer_list:
+                                necro.HealthDisplay(1, levelThree_list)
+                            #endfor
+                        #endif
+                    elif gamePhase == 2:
+                        if enemyCount == [0] and live[0] > 0:
+                            if timeUp[0] == 0:
+                                for player in player_list:
+                                    player.FreezeTrigger(0)
+                                    player.ChangeSpeed(2)
+                                    player.FreezeTrigger(1)
+                                #endfor
+                                timer.Counter(1200, timeUp)
+                            elif timeUp[0] == 1:
+                                gamePhase = 3
+                            #endif
+                        #endif
+                        if live[0] == 0:
+                            gameOver = True
+                        #endif
+                    #endif
                         
                     levelThree_list.draw(screen) #Display all visible objects
 
@@ -12726,6 +12907,52 @@ def Game():
                         #endfor
                     #endif
                     levelTwo_list.draw(screen) #Display all visible objects
+                    
+                elif gameLevel == 3:
+                    #Player Movement
+                    for player in player_list:
+
+                        #Hurt
+                        player.Hurt()
+                        #Attack
+                        player.Attack()
+                        #Attack Checker
+                        player.AttackChecker()
+                        #Health
+                        player.Health(live)
+                        #Animation
+                        player.Animation()
+
+                    #endfor
+                        
+                    for skeleton in skeleton1_list:
+
+                        skeleton.Attack()
+                        skeleton.MoveVert(block3_list)
+                        skeleton.Hurt()
+                        skeleton.Health()
+                        skeleton.Animation()
+                        skeleton.Recover(levelThree_list, enemyCount)
+
+                    #endfor
+
+                    for necro in necromancer_list:
+
+                        necro.Attack()
+                        necro.AttackChecker()
+                        necro.MoveVert(block3_list)
+                        necro.Hurt()
+                        necro.Spell(player.rect.x, player.rect.y, levelThree_list, shadowBolt_list)
+                        necro.Animation()
+
+                    #endfor
+
+                    for stuff in shadowBolt_list:
+
+                        stuff.EffectUpdate(levelThree_list)
+
+                    #endfor
+                    levelThree_list.draw(screen) #Display all visible objects
                 #endif
 
             #endif
