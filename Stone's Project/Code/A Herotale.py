@@ -2039,6 +2039,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
         self.jumped = False
         self.doubleJumped = False
         self.attacked = False
+        self.spell = False
         self.attackStep = 1
         self.stopSelf = False
         self.resetAttack = False
@@ -2052,6 +2053,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
         self.keepMoving = False
         self.death = False
         self.getAttack = False
+        self.fired = False
 
         #Background
         self.backMove = 0
@@ -2087,6 +2089,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
         self.rollCounter = 0
         self.deathCounter = 0
         self.hurtCounter = 0
+        self.spellCounter = 0
         
     #endprocedure
 
@@ -2147,6 +2150,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
         self.horiSpeed = 0
         self.jumped = False
         self.attacked = False
+        self.spell = False
         self.attackStep = 1
         self.stopSelf = False
         self.resetAttack = False
@@ -2168,9 +2172,11 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
         self.rollCounter = 0
         self.deathCounter = 0
         self.hurtCounter = 0
+        self.spellCounter = 0
         self.rect.x = 50
         self.rect.y = 700
         self.getAttack = False
+        self.fired = False
 
         self.playerAttackLeft.rect.x = -1000
         self.playerAttackRight.rect.x = -1000
@@ -2231,7 +2237,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
 
         if self.death == False and not self.freezeAnimation:
         
-            if self.hurt == False and self.attacked == False and self.horiSpeed == 0 and self.jumped == False and self.block == False and self.blocked == False:
+            if self.hurt == False and self.attacked == False and not self.spell and self.horiSpeed == 0 and self.jumped == False and self.block == False and self.blocked == False:
 
                 if self.endAnimation - self.startAnimation >= 160: #If next image
                     
@@ -2246,7 +2252,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
 
                 #endif
 
-            elif not self.hurt and self.attacked == False and self.horiSpeed != 0 and self.jumped == False and self.roll == False:
+            elif not self.hurt and self.attacked == False and self.horiSpeed != 0 and self.jumped == False and self.roll == False and not self.spell:
 
                 if self.endAnimation - self.startAnimation >= 80:
                     
@@ -2261,7 +2267,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
 
                 #endif
 
-            elif self.jumped == True and self.vertSpeed >= 0:
+            elif self.jumped == True and self.vertSpeed >= 0 and not self.hurt and not self.spell:
 
                 if self.endAnimation - self.startAnimation >= 200:
 
@@ -2276,7 +2282,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
 
                 #endif
 
-            elif self.jumped == True and self.vertSpeed < 0:
+            elif self.jumped == True and self.vertSpeed < 0 and not self.hurt and not self.spell:
 
                 if self.endAnimation - self.startAnimation >= 200:
 
@@ -2291,7 +2297,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
 
                 #endif
 
-            elif self.attacked == True and self.attackStep == 1 and not self.hurt:
+            elif self.attacked == True and self.attackStep == 1 and not self.hurt and not self.spell:
 
                 if self.endAnimation - self.startAnimation >= 60:
 
@@ -2306,7 +2312,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
 
                 #endif
 
-            elif self.attacked == True and self.attackStep == 2 and not self.hurt:
+            elif self.attacked == True and self.attackStep == 2 and not self.hurt and not self.spell:
 
                 if self.endAnimation - self.startAnimation >= 60:
 
@@ -2321,7 +2327,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
 
                 #endif
 
-            elif self.attacked == True and self.attackStep == 3 and not self.hurt:
+            elif self.attacked == True and self.attackStep == 3 and not self.hurt and not self.spell:
 
                 if self.endAnimation - self.startAnimation >= 60:
 
@@ -2336,7 +2342,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
 
                 #endif
 
-            elif self.block == True and self.blocked == False and self.hurt == False:
+            elif self.block == True and self.blocked == False and self.hurt == False and not self.spell:
 
                 if self.endAnimation - self.startAnimation >= 80:
 
@@ -2394,6 +2400,21 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
                         self.hurtCounter += 1
                     else:
                         self.hurtCounter = 2 #Stay at the last frame
+                    #endif
+
+                #endif
+
+            elif self.spell and not self.attacked and not self.hurt:
+
+                if self.endAnimation - self.startAnimation >= 60:
+
+                    self.startAnimation = self.endAnimation #If player is hurt
+                    self.playerAnimation.PlayerSpell(self.lastHoriSpeed, self.spellCounter)
+
+                    if self.spellCounter != 4: #If reached the end
+                        self.spellCounter += 1
+                    else:
+                        self.spellCounter = 4 #Stay at the last frame
                     #endif
 
                 #endif
@@ -2639,7 +2660,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
 
     def Jump(self):
 
-        if not self.freeze and self.blocked == False and self.hurt == False and self.attacked == False and self.roll == False and not self.death:
+        if not self.freeze and self.blocked == False and self.hurt == False and self.attacked == False and self.roll == False and not self.death and not self.spell:
 
             if self.jumped == False: #If player has not jumped yet
 
@@ -2712,7 +2733,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
 
     def RollTrigger(self):
 
-        if self.attacked == False and self.jumped == False and self.blocked == False and self.hurt == False and not self.death and not self.freeze:
+        if self.attacked == False and self.jumped == False and self.blocked == False and self.hurt == False and not self.death and not self.freeze and not self.spell:
 
             self.block = False
             self.roll = True
@@ -2723,7 +2744,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
 
     def BlockTrigger(self,num):
 
-        if self.attacked == False and self.jumped == False and num == 1 and self.hurt == False and not self.death and not self.freeze:
+        if self.attacked == False and self.jumped == False and num == 1 and self.hurt == False and not self.death and not self.freeze and not self.spell:
 
             self.horiSpeed = 0
             self.block = True
@@ -2866,7 +2887,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
 
     def AttackTrigger(self):
 
-        if self.attacked == False and self.jumped == False and self.roll == False and self.hurt == False and self.blocked == False and self.death == False and not self.freeze:
+        if self.attacked == False and self.jumped == False and self.roll == False and self.hurt == False and self.blocked == False and self.death == False and not self.freeze and not self.spell:
 
             self.endRest = pygame.time.get_ticks()
             if self.endRest - self.startRest >= 100 and self.resetAttack:
@@ -2879,6 +2900,50 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
                 self.attacked = True
                 self.endRest = 0
                 self.startRest = 0
+            #endif
+
+        #endif
+
+    #endprocedure#
+
+    def SpellTrigger(self):
+
+        if not self.spell and not self.hurt and not self.blocked and not self.death and not self.freeze:
+
+            self.spell = True
+            self.block = False
+            self.jumpCounter = 0
+            self.fallCounter = 0
+
+        #endif
+
+    #endprocedure
+
+    def Spell(self, fireBall_list, levelThree_list):
+
+        if self.spell and not self.freezeAnimation:
+
+            if self.spellCounter == 3 and not self.fired:
+                self.fired = True
+                if self.lastHoriSpeed > 0:
+                    fireball = EffectClass(2, self.rect.x, self.rect.y+8, 1, 0, levelThree_list)
+                elif self.lastHoriSpeed < 0:
+                    fireball = EffectClass(2, self.rect.x-50, self.rect.y+8, -1, 0, levelThree_list)
+                #endif
+                fireBall_list.add(fireball)
+            elif self.spellCounter == 4:
+                self.fired = False
+                self.spell = False
+                self.spellCounter = 0
+                if not self.keepMoving: #If keep going
+                    self.horiSpeed = 0
+                else:
+                    if self.lastHoriSpeed < 0:
+                        self.horiSpeed = -self.speedX
+                    elif self.lastHoriSpeed > 0:
+                        self.horiSpeed = self.speedX
+                    #endif
+                #endif
             #endif
 
         #endif
@@ -3065,7 +3130,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
 
     def ChangeSpeed(self,num):
 
-        if self.freeze == False and self.attacked == False and self.roll == False and self.hurt == False and self.blocked == False and not self.death:
+        if self.freeze == False and self.attacked == False and self.roll == False and self.hurt == False and self.blocked == False and not self.death and not self.spell:
 
             if num == 0:
 
@@ -3176,6 +3241,11 @@ class PlayerAnimation(pygame.sprite.Sprite): #Class of player's animation
             add_str = str(x+1)
             self.playerAttack3.append(pygame.transform.scale(pygame.image.load("Game_Images/Player/HeroAttack3-" + add_str + ".png"), (250, 138)))
         #endfor
+        self.playerSpell = [] #Spell
+        for x in range(5):
+            add_str = str(x+1)
+            self.playerSpell.append(pygame.transform.scale(pygame.image.load("Game_Images/Player/HeroSpell" + add_str + ".png"), (250, 138)))
+        #endfor
         self.playerBlock = [] #Block
         for x in range(8):
             add_str = str(x+1)
@@ -3283,6 +3353,16 @@ class PlayerAnimation(pygame.sprite.Sprite): #Class of player's animation
             self.image = self.playerBlock[i]
         else:
             self.image = pygame.transform.flip(self.playerBlock[i],1,0)
+        #endif
+
+    #endprocedure
+
+    def PlayerSpell(self, speed, i):
+
+        if speed > 0:
+            self.image = self.playerSpell[i]
+        else:
+            self.image = pygame.transform.flip(self.playerSpell[i],1,0)
         #endif
 
     #endprocedure
@@ -9713,7 +9793,8 @@ class EffectClass(pygame.sprite.Sprite): #Class of effect's
             self.xMove = -34
             self.yMove = 4
             self.counterMax = 3
-            self.speed = 20
+            self.speedX = 150*playerX
+            self.speedY = 0
         #endif
         level_list.add(self.effectAnimation)
         #Timers
@@ -9748,13 +9829,10 @@ class EffectClass(pygame.sprite.Sprite): #Class of effect's
             self.effectAnimation.Animate(self.speedX, self.counter)
         #endif
         if self.effect == 1:
-            self.rect.x += self.speedX
-            self.rect.y += self.speedY
             if self.rect.y >= 1060:
                 level_list.remove(self.effectAnimation)
             #endif
         elif self.effect == 2:
-            self.rect.x += self.speed
             if self.rect.x <= -160:
                 level_list.remove(self.effectAnimation)
             elif self.rect.x >= 1660:
@@ -9764,10 +9842,10 @@ class EffectClass(pygame.sprite.Sprite): #Class of effect's
 
     #endprocedure
 
-    def DeleteSelf(self, levelThree_list, shadowBolt_list):
+    def DeleteSelf(self, level_list, effect_list):
 
-        levelThree_list.remove(self.effectAnimation)
-        shadowBolt_list.remove(self)
+        level_list.remove(self.effectAnimation)
+        effect_list.remove(self)
 
     #endprocedure
 
@@ -9974,6 +10052,8 @@ def Game():
     mushroomAttack_list = pygame.sprite.Group() #Mushroom's attack
 
     shadowBolt_list = pygame.sprite.Group() #Shadow Bolts
+
+    fireBall_list = pygame.sprite.Group() #Fire Balls
 
     button_list = pygame.sprite.Group() #Buttons
 
@@ -10825,6 +10905,10 @@ def Game():
                     for player in player_list:
                         player.RollTrigger()
                     #endfor
+                if event.key == pygame.K_e:
+                    for player in player_list:
+                        player.SpellTrigger()
+                    #endfor
                 #endif
             elif level >= 2 and event.type == pygame.KEYUP: #Release Key
                 if event.key == pygame.K_a and currentSpeed < 0:
@@ -11108,6 +11192,15 @@ def Game():
 
             #endfor
 
+            for fireball in fireBall_list:
+
+                fireball.EffectUpdate(tutorial_list)
+                if fireball.rect.x > 1500 or fireball.rect.x < -160:
+                    fireball.DeleteSelf(tutorial_list, fireBall_list)
+                #endif
+
+            #endfor
+
             #Enemy Movement
             for enemy in tutorialEnemy_list:
 
@@ -11142,6 +11235,8 @@ def Game():
                 player.Hurt()
                 #Attack
                 player.Attack()
+                #Spell
+                player.Spell(fireBall_list, tutorial_list)
                 #Roll
                 player.Roll()
                 #Horizontal Movement
@@ -12659,8 +12754,36 @@ def Game():
                         if live[0] == 0:
                             gameOver = True
                         #endif
+                    elif gamePhase == 3:
+                        if gameChat == 1:
+                            for player in player_list:
+                                player.FreezeTrigger(0)
+                                player.ChangeSpeed(2)
+                                player.FreezeTrigger(1)
+                            #endfor
+                            DrawOrRemove(1, levelThree_list, wordBox_list)
+                            WriteWords(1, script3[3], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 3, 0)
+                            gameChat = 2
+                        elif gameChat == 2:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelThree_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 3:
+                            DrawOrRemove(0, levelThree_list, nextButton_list)
+                            DrawOrRemove(0, levelThree_list, currentLine_list)
+                            DrawOrRemove(0, levelThree_list, wordBox_list)
+                            gamePhase = 4
+                            gameChat = 1
+                            enemyCount[0] = -1
+                        #endif
                     #endif
-                        
                     levelThree_list.draw(screen) #Display all visible objects
 
                 #endif
