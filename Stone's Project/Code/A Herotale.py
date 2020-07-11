@@ -1797,7 +1797,7 @@ class InstructionClass(pygame.sprite.Sprite): #Instruction is a sprite, because 
         self.quit = [pygame.transform.scale(pygame.image.load('Game_Images/Text/QuitInstruction.png'), (698, 77))]
         self.saved = [pygame.transform.scale(pygame.image.load('Game_Images/Text/SavedInstruction.png'), (495, 60))]
         self.restart = [pygame.transform.scale(pygame.image.load('Game_Images/Text/DiedInstruction.png'), (585, 82))]
-        self.levelUp = [pygame.transform.scale(pygame.image.load('Game_Images/Text/Level1Instruction.png'), (583, 77)), pygame.transform.scale(pygame.image.load('Game_Images/Text/Level2Instruction.png'), (583, 77)), pygame.transform.scale(pygame.image.load('Game_Images/Text/Level1Instruction.png'), (583, 77))]
+        self.levelUp = [pygame.transform.scale(pygame.image.load('Game_Images/Text/Level1Instruction.png'), (583, 77)), pygame.transform.scale(pygame.image.load('Game_Images/Text/Level2Instruction.png'), (583, 77)), pygame.transform.scale(pygame.image.load('Game_Images/Text/Level3Instruction.png'), (583, 77))]
         self.upgradeCost = [pygame.transform.scale(pygame.image.load('Game_Images/Text/CostInstruction.png'), (700, 84))]
 
         if typeNum == 1:
@@ -2199,6 +2199,8 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
         self.playerLevel = ItemClass(6, 30, 30, self.rect.x, self.rect.y - 30, 4)
         self.playerLevelNumber = ItemClass(7, 14, 20, self.rect.x + 36, self.rect.y - 25, 4)
         self.playerStar = ItemClass(9, 150, 50, 15, 175, 4)
+
+        self.playerStar.StarUpdate(0)
         
         #Attributes
         self.hp = 5
@@ -2277,7 +2279,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
 
         self.lvl = playerLevel[0]
         self.playerLevelNumber.UpdateLevel(self.lvl)
-        if self.lvl == 3:
+        if self.lvl == 2:
             self.speedX = 13
         #endif
 
@@ -2299,9 +2301,6 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
 
         self.lvl = playerLevel[0]
         self.playerLevelNumber.UpdateLevel(self.lvl)
-        if self.lvl == 3:
-            self.speedX = 13
-        #endif
 
         self.shield = shieldNum[0]
         self.playerShield8.ShieldUpdate(1)
@@ -2342,7 +2341,11 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
 
     def Reset(self):
 
-        self.speedX = 10
+        if self.lvl >= 2:
+            self.speedX = 13
+        else:
+            self.speedX = 10
+        #endif
         self.lastHoriSpeed = 1
         self.horiSpeed = 0
         self.jumped = False
@@ -2385,7 +2388,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
             self.playerStar.StarUpdate(self.star)
         else:
             self.star = 0
-            self.playerStar.StarUpdate(self.star)
+            self.playerStar.StarUpdate(0)
         #endif
 
         self.playerAttackLeft.rect.x = -1000
@@ -3009,6 +3012,46 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
 
         #endif
 
+        if not self.freezeAnimation:
+
+            if self.lvl == 3:
+
+                if self.startAddShield == 0: #If start timer has not started yet
+
+                    self.startAddShield = pygame.time.get_ticks() #Record current time
+
+                #endif
+
+                self.endAddShield = pygame.time.get_ticks() #Get current time for end time
+                if self.endAddShield - self.startAddShield >= 5000:
+                    self.startAddShield = self.endAddShield
+                    if self.shield < 8:
+                        self.shield += 1
+                        shieldNum[0] = self.shield
+                        if self.shield == 8:
+                            self.playerShield8.ShieldUpdate(1)
+                        elif self.shield == 7:
+                            self.playerShield7.ShieldUpdate(1)
+                        elif self.shield == 6:
+                            self.playerShield6.ShieldUpdate(1)
+                        elif self.shield == 5:
+                            self.playerShield5.ShieldUpdate(1)
+                        elif self.shield == 4:
+                            self.playerShield4.ShieldUpdate(1)
+                        elif self.shield == 3:
+                            self.playerShield3.ShieldUpdate(1)
+                        elif self.shield == 2:
+                            self.playerShield2.ShieldUpdate(1)
+                        elif self.shield == 1:
+                            self.playerShield1.ShieldUpdate(1)
+                        #endif
+                    #endif
+                #endif
+
+            #endif
+
+        #endif
+
     #endprocedure
 
     def Health(self, live):
@@ -3031,42 +3074,6 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
                     self.playerStar.StarUpdate(self.star)
                 #endif
 
-            #endif
-
-        #endif
-                    
-
-        if self.lvl == 3:
-
-            if self.startAddShield == 0: #If start timer has not started yet
-
-                self.startAddShield = pygame.time.get_ticks() #Record current time
-
-            #endif
-
-            self.endAddShield = pygame.time.get_ticks() #Get current time for end time
-            if self.endAddShield - self.startAddShield >= 5000:
-                self.startAddShield = self.endAddShield
-                if self.shield < 8:
-                    self.shield += 1
-                    if self.shield == 8:
-                        self.playerShield8.ShieldUpdate(1)
-                    elif self.shield == 7:
-                        self.playerShield7.ShieldUpdate(1)
-                    elif self.shield == 6:
-                        self.playerShield6.ShieldUpdate(1)
-                    elif self.shield == 5:
-                        self.playerShield5.ShieldUpdate(1)
-                    elif self.shield == 4:
-                        self.playerShield4.ShieldUpdate(1)
-                    elif self.shield == 3:
-                        self.playerShield3.ShieldUpdate(1)
-                    elif self.shield == 2:
-                        self.playerShield2.ShieldUpdate(1)
-                    elif self.shield == 1:
-                        self.playerShield1.ShieldUpdate(1)
-                    #endif
-                #endif
             #endif
 
         #endif
@@ -5334,7 +5341,7 @@ class RogueClass(pygame.sprite.Sprite): #Class of the rogue
                 enemyCount[0] = num - 1
                 if not self.dropCoin:
                     self.dropCoin = True
-                    for i in range(8):
+                    for i in range(10):
                         coin = ItemClass(1, 20, 20, self.rect.x + 30, self.rect.y + 70, 4)
                         sprite_list.add(coin)
                         coin_list.add(coin)
@@ -6599,7 +6606,7 @@ class ArunClass(pygame.sprite.Sprite): #Class of the Arun Swordsmith
                 self.death = True
                 if not self.dropCoin:
                     self.dropCoin = True
-                    for i in range(8):
+                    for i in range(12):
                         coin = ItemClass(1, 20, 20, self.rect.x + 30, self.rect.y + 70, 4)
                         sprite_list.add(coin)
                         coin_list.add(coin)
@@ -7031,6 +7038,7 @@ class SkeletonClass(pygame.sprite.Sprite): #Class of the skeleton
 
                     if self.deathCounter != 12:
                         self.deathCounter += 1
+                    
                     #endif
 
                 #endif
@@ -10604,8 +10612,8 @@ def Game():
                     tutorialLevel = True
                     fileLoaded = False
                     level = -1
-                    player.Reset()
                     player.ResetLive([5], shieldNum, playerLevel)
+                    player.Reset()
                     currency[0] = 0
                     currency[1] = 0
                     currency[2] = 0
@@ -10797,8 +10805,8 @@ def Game():
                     ReadyToClick = False
                     startReadScript = 0
                     endReadScript = 0
-                    player.Reset()
                     player.ResetLive([5], [8], [0])
+                    player.Reset()
                     player.SetLevel([0])
                     live[0] = 5
                 elif level == 4 and pos[0] >= 1360 and pos[1] >= 820 and pos[0] <= 1420 and pos[1] <= 880 and not gameUpgrade and not gamePause and not gameOver and not advanceLevel and readyToUpgrade: #Upgrade panel
@@ -10983,8 +10991,8 @@ def Game():
                     advanceLevel = False
                     startReadScript = 0
                     endReadScript = 0
-                    player.Reset()
                     player.ResetLive(loadedLive, loadedShield, loadedPlayerLevel)
+                    player.Reset()
                     live[0] = loadedLive[0]
                     DrawOrRemove(0, coin_list, coin_list)
                     if gameLevel == 1:
@@ -11094,8 +11102,8 @@ def Game():
                     ReadyToClick = False
                     startReadScript = 0
                     endReadScript = 0
-                    player.Reset()
                     player.ResetLive([5], [8], [0])
+                    player.Reset()
                     live[0] = 5
                     DrawOrRemove(0, coin_list, coin_list)
                     if gameLevel == 1:
@@ -11206,8 +11214,8 @@ def Game():
                     ReadyToClick = False
                     startReadScript = 0
                     endReadScript = 0
-                    player.Reset()
                     player.ResetLive([5], [8], [0])
+                    player.Reset()
                     live[0] = 5
                     if gameLevel == 1:
                         for block in block1_list:
@@ -11305,8 +11313,8 @@ def Game():
                     advanceLevel = False
                     startReadScript = 0
                     endReadScript = 0
-                    player.Reset()
                     player.ResetLive(loadedLive, loadedShield, loadedPlayerLevel)
+                    player.Reset()
                     live[0] = loadedLive[0]
                     if gameLevel == 1:
                         for block in block1_list:
@@ -13310,7 +13318,7 @@ def Game():
                             skeleton.MoveVert(block3_list)
                             skeleton.Hurt()
                             skeleton.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
-                            skeleton.necro.FireBallDetection(levelThree_list, fireBall_list)
+                            skeleton.FireBallDetection(levelThree_list, fireBall_list)
                             skeleton.Health()
                             skeleton.Animation()
 
