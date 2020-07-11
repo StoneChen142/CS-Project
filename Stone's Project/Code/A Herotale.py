@@ -34,7 +34,11 @@ def CreateLoad(loading_list):
 #endprocedure
 
 #Pause Panel Creation
-def CreatePanel(button_list, optionBlock_list, pauseButton_list, panelButton_list, levelOne_list, levelTwo_list, levelThree_list, nextLevelBlock_list, restartLevel_list):
+def CreatePanel(button_list, optionBlock_list, pauseButton_list, panelButton_list, levelOne_list, levelTwo_list, levelThree_list, nextLevelBlock_list, restartLevel_list, directionArrow_list, levelUp_list, upgradeButton_list, upgradeInstruction_list, upgradeTextButton_list, upgradeBox_list, okButton_list):
+
+    upgradeButton = Button(15, 60, 60, 0, 1360, 820) #Upgrade
+    button_list.add(upgradeButton)
+    upgradeButton_list.add(upgradeButton)
 
     pauseButton = Button(8, 60, 60, 0, 1430, 820) #Pause
     pauseButton_list.add(pauseButton)
@@ -42,10 +46,6 @@ def CreatePanel(button_list, optionBlock_list, pauseButton_list, panelButton_lis
     levelOne_list.add(pauseButton)
     levelTwo_list.add(pauseButton)
     levelThree_list.add(pauseButton)
-
-    closeButton = Button(10, 60, 60, 0, 1068, 234) #Pause
-    button_list.add(closeButton)
-    panelButton_list.add(closeButton)
 
     quitButton = Button(11, 100, 40, 1, 700, 503)
     button_list.add(quitButton)
@@ -59,6 +59,15 @@ def CreatePanel(button_list, optionBlock_list, pauseButton_list, panelButton_lis
     optionBlock_list.add(optionBox)
     nextLevelBlock_list.add(optionBox)
     restartLevel_list.add(optionBox)
+    levelUp_list.add(optionBox)
+
+    upgradeTextButton = Button(16, 160, 40, 0, 670, 503) #Upgrade
+    button_list.add(upgradeTextButton)
+    levelUp_list.add(upgradeTextButton)
+    upgradeTextButton_list.add(upgradeTextButton)
+
+    upgradeInstruction = InstructionClass(14, 700, 84, 400, 362)
+    levelUp_list.add(upgradeInstruction)
 
     quitInstruction = InstructionClass(10, 698, 77, 401, 362) #Instruction
     optionBlock_list.add(quitInstruction)
@@ -68,6 +77,11 @@ def CreatePanel(button_list, optionBlock_list, pauseButton_list, panelButton_lis
 
     restartInstruction = InstructionClass(12, 585, 82, 457.5, 357) #Instruction
     restartLevel_list.add(restartInstruction)
+
+    closeButton = Button(10, 60, 60, 0, 1068, 234) #Pause
+    button_list.add(closeButton)
+    panelButton_list.add(closeButton)
+    levelUp_list.add(closeButton)
 
     nextButton = Button(12, 268, 40, 0, 616, 503)
     button_list.add(nextButton)
@@ -84,6 +98,20 @@ def CreatePanel(button_list, optionBlock_list, pauseButton_list, panelButton_lis
     restartButton = Button(13, 191, 40, 1, 654.5, 503)
     button_list.add(restartButton)
     restartLevel_list.add(restartButton)
+
+    arrow = ItemClass(8, 0, 0, 1180, 400, 4)
+    directionArrow_list.add(arrow)
+
+    optionBox2 = BlockClass(6, 800, 475, 350, 212) #Option box
+    upgradeBox_list.add(optionBox2)
+
+    levelUpInstruction = InstructionClass(13, 583, 77, 458.5, 362) #Instruction
+    upgradeInstruction_list.add(levelUpInstruction)
+    upgradeBox_list.add(levelUpInstruction)
+
+    OkButton = Button(17, 54, 30, 0, 723, 503) #Upgrade
+    upgradeBox_list.add(OkButton)
+    okButton_list.add(OkButton)
 
 #endprocedure
 
@@ -281,35 +309,38 @@ def ResetFile(file_list, currentFileData_list):
     lines = f.readlines() #All data
     f.close() #Close
 
-    WriteWords(0, lines[0], 293.5, 210, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Coin1 number
-    WriteWords(0, lines[1], 293.5, 310, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Live1 number
-    WriteWords(0, lines[3], 293.5, 410, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Shield1 number
-    WriteWords(0, lines[2], 293.5, 510, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Level1 number
+    WriteWords(0, lines[0], 293.5, 310, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Coin1 number
+    WriteWords(0, lines[1], 293.5, 410, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Live1 number
+    WriteWords(0, lines[3], 293.5, 510, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Shield1 number
+    WriteWords(0, lines[2], 293.5, 610, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Level1 number
+    WriteWords(0, lines[4], 293.5, 210, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Lvl1 number
 
     #Open File 2
     f = open("Game_Files/File2.txt","r+") #Open file 2
     lines = f.readlines() #All data
     f.close() #Close
 
-    WriteWords(0, lines[0], 713.5, 210, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Coin2 number
-    WriteWords(0, lines[1], 713.5, 310, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Live2 number
-    WriteWords(0, lines[3], 713.5, 410, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Shield2 number
-    WriteWords(0, lines[2], 713.5, 510, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Level2 number
+    WriteWords(0, lines[0], 713.5, 310, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Coin2 number
+    WriteWords(0, lines[1], 713.5, 410, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Live2 number
+    WriteWords(0, lines[3], 713.5, 510, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Shield2 number
+    WriteWords(0, lines[2], 713.5, 610, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Level2 number
+    WriteWords(0, lines[4], 713.5, 210, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Lvl2 number
 
     #Open File 3
     f = open("Game_Files/File3.txt","r+") #Open file 3
     lines = f.readlines() #All data
     f.close() #Close
 
-    WriteWords(0, lines[0], 1133.5, 210, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Coin3 number
-    WriteWords(0, lines[1], 1133.5, 310, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Live3 number
-    WriteWords(0, lines[3], 1133.5, 410, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Shield2 number
-    WriteWords(0, lines[2], 1133.5, 510, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Level3 number
+    WriteWords(0, lines[0], 1133.5, 310, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Coin3 number
+    WriteWords(0, lines[1], 1133.5, 410, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Live3 number
+    WriteWords(0, lines[3], 1133.5, 510, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Shield2 number
+    WriteWords(0, lines[2], 1133.5, 610, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Level3 number
+    WriteWords(0, lines[4], 1133.5, 210, file_list, file_list, file_list, file_list, currentFileData_list, 3, 0, 0) #Lvl3 number
 
 #endprocedure
 
 #Save Progress of the Game
-def SaveProgress(currentFile, currency, live, gameLevel, shieldNum):
+def SaveProgress(currentFile, currency, live, gameLevel, shieldNum, playerLive):
 
     if currentFile == 1:
         #Open File 1
@@ -325,7 +356,8 @@ def SaveProgress(currentFile, currency, live, gameLevel, shieldNum):
     data = str(currency[0]) + str(currency[1]) + str(currency[2]) + str(currency[3]) + "\n" #Coins
     data += str(live[0]) + "\n" #Live
     data += str(gameLevel) + "\n" #Level
-    data += str(shieldNum[0]) #Shield
+    data += str(shieldNum[0]) + "\n" #Shield
+    data += str(playerLive[0])
     
     f.write(data)
     f.close()
@@ -363,17 +395,20 @@ def CreateFile(file_list, button_list, item_list, crown_list, currentFileData_li
     button_list.add(select1)
     file_list.add(select1)
 
-    coin1 = ItemClass(1, 50, 50, 213.5, 200.5, 3) #Coin etc 1
+    lvl1 = ItemClass(6, 50, 50, 213.5, 200.5, 3) #Level
+    file_list.add(lvl1)
+
+    coin1 = ItemClass(1, 50, 50, 213.5, 300.5, 3) #Coin etc 1
     file_list.add(coin1)
     item_list.add(coin1)
 
-    shield1 = ItemClass(5, 50, 50, 213.5, 400.5, 3)
-    file_list.add(shield1)
-
-    heart1 = ItemClass(2, 50, 50, 213.5, 300.5, 3)
+    heart1 = ItemClass(2, 50, 50, 213.5, 400.5, 3)
     file_list.add(heart1)
 
-    flag1 = ItemClass(3, 50, 50, 213.5, 500.5, 3)
+    shield1 = ItemClass(5, 50, 50, 213.5, 500.5, 3)
+    file_list.add(shield1)
+
+    flag1 = ItemClass(3, 50, 50, 213.5, 600.5, 3)
     file_list.add(flag1)
 
     #Open File 1
@@ -381,10 +416,11 @@ def CreateFile(file_list, button_list, item_list, crown_list, currentFileData_li
     lines = f.readlines() #All data
     f.close() #Close
 
-    WriteWords(0, lines[0], 293.5, 210, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Coin1 number
-    WriteWords(0, lines[1], 293.5, 310, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Live1 number
-    WriteWords(0, lines[3], 293.5, 410, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Shield1 number
-    WriteWords(0, lines[2], 293.5, 510, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Level1 number
+    WriteWords(0, lines[0], 293.5, 310, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Coin1 number
+    WriteWords(0, lines[1], 293.5, 410, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Live1 number
+    WriteWords(0, lines[3], 293.5, 510, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Shield1 number
+    WriteWords(0, lines[2], 293.5, 610, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Level1 number
+    WriteWords(0, lines[4], 293.5, 210, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Lvl1 number
     
     #File 2
     fileBox2 = BlockClass(2, 333, 639, 583.5, 130.5) #File box 2
@@ -394,17 +430,20 @@ def CreateFile(file_list, button_list, item_list, crown_list, currentFileData_li
     button_list.add(select2)
     file_list.add(select2)
 
-    coin2 = ItemClass(1, 50, 50, 633.5, 200.5, 3) #Coin etc 2
+    lvl2 = ItemClass(6, 50, 50, 633.5, 200.5, 3) #Level
+    file_list.add(lvl2)
+
+    coin2 = ItemClass(1, 50, 50, 633.5, 300.5, 3) #Coin etc 2
     file_list.add(coin2)
     item_list.add(coin2)
 
-    shield2 = ItemClass(5, 50, 50, 633.5, 400.5, 3)
+    shield2 = ItemClass(5, 50, 50, 633.5, 500.5, 3)
     file_list.add(shield2)
 
-    heart2 = ItemClass(2, 50, 50, 633.5, 300.5, 3)
+    heart2 = ItemClass(2, 50, 50, 633.5, 400.5, 3)
     file_list.add(heart2)
 
-    flag2 = ItemClass(3, 50, 50, 633.5, 500.5, 3)
+    flag2 = ItemClass(3, 50, 50, 633.5, 600.5, 3)
     file_list.add(flag2)
 
     #Open File 2
@@ -412,10 +451,11 @@ def CreateFile(file_list, button_list, item_list, crown_list, currentFileData_li
     lines = f.readlines() #All data
     f.close() #Close
 
-    WriteWords(0, lines[0], 713.5, 210, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Coin2 number
-    WriteWords(0, lines[1], 713.5, 310, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Live2 number
-    WriteWords(0, lines[3], 713.5, 410, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Shield2 number
-    WriteWords(0, lines[2], 713.5, 510, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Level2 number
+    WriteWords(0, lines[0], 713.5, 310, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Coin2 number
+    WriteWords(0, lines[1], 713.5, 410, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Live2 number
+    WriteWords(0, lines[3], 713.5, 510, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Shield2 number
+    WriteWords(0, lines[2], 713.5, 610, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Level2 number
+    WriteWords(0, lines[4], 713.5, 210, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Lvl2 number
     
     #File 3
     fileBox3 = BlockClass(2, 333, 639, 1003.5, 130.5) #File box 3
@@ -425,17 +465,20 @@ def CreateFile(file_list, button_list, item_list, crown_list, currentFileData_li
     button_list.add(select3)
     file_list.add(select3)
 
-    coin3 = ItemClass(1, 50, 50, 1053.5, 200.5, 3) #Coin etc 3
+    lvl3 = ItemClass(6, 50, 50, 1053.5, 200.5, 3) #Level
+    file_list.add(lvl3)
+
+    coin3 = ItemClass(1, 50, 50, 1053.5, 300.5, 3) #Coin etc 3
     file_list.add(coin3)
     item_list.add(coin3)
 
-    shield3 = ItemClass(5, 50, 50, 1053.5, 400.5, 3)
+    shield3 = ItemClass(5, 50, 50, 1053.5, 500.5, 3)
     file_list.add(shield3)
 
-    heart3 = ItemClass(2, 50, 50, 1053.5, 300.5, 3)
+    heart3 = ItemClass(2, 50, 50, 1053.5, 400.5, 3)
     file_list.add(heart3)
 
-    flag3 = ItemClass(3, 50, 50, 1053.5, 500.5, 3)
+    flag3 = ItemClass(3, 50, 50, 1053.5, 600.5, 3)
     file_list.add(flag3)
 
     #Open File 3
@@ -443,10 +486,11 @@ def CreateFile(file_list, button_list, item_list, crown_list, currentFileData_li
     lines = f.readlines() #All data
     f.close() #Close
 
-    WriteWords(0, lines[0], 1133.5, 210, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Coin3 number
-    WriteWords(0, lines[1], 1133.5, 310, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Live3 number
-    WriteWords(0, lines[3], 1133.5, 410, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Shield3 number
-    WriteWords(0, lines[2], 1133.5, 510, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Level3 number
+    WriteWords(0, lines[0], 1133.5, 310, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Coin3 number
+    WriteWords(0, lines[1], 1133.5, 410, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Live3 number
+    WriteWords(0, lines[3], 1133.5, 510, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Shield3 number
+    WriteWords(0, lines[2], 1133.5, 610, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Level3 number
+    WriteWords(0, lines[4], 1133.5, 210, file_list, crown_list, crown_list, crown_list, currentFileData_list, 3, 0, 0) #Lvl3 number
 
     #Back
     back = Button(5, 106, 31 ,0, 50, 820) #Back Button
@@ -747,7 +791,7 @@ class Title(pygame.sprite.Sprite):
 
 #endclass
 
-#Button
+#ButtonClass
 class Button(pygame.sprite.Sprite):
 
     def __init__(self, imageNumber, width, height, number, x, y):
@@ -774,6 +818,9 @@ class Button(pygame.sprite.Sprite):
         self.nextLevel = [pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/NextLevel1.png'), (width, height)), pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/NextLevel2.png'), (width, height))]
         self.restart = [pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Restart1.png'), (width, height)), pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Restart2.png'), (width, height))]
         self.reset = [pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Reset1.png'), (width, height)), pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Reset2.png'), (width, height))]
+        self.upgrade = [pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Upgrade1.png'), (60, 60)), pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Upgrade2.png'), (60, 60))]
+        self.upgradeText = [pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/UpgradeText1.png'), (160, 40)), pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/UpgradeText2.png'), (160, 40))]
+        self.ok = [pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Ok1.png'), (54, 30)), pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Ok2.png'), (54, 30))]
 
         if self.imageNum == 1:
 
@@ -830,6 +877,18 @@ class Button(pygame.sprite.Sprite):
         elif self.imageNum == 14:
 
             self.image = self.reset[0]
+
+        elif self.imageNum == 15:
+
+            self.image = self.upgrade[0]
+
+        elif self.imageNum == 16:
+
+            self.image = self.upgradeText[0]
+
+        elif self.imageNum == 17:
+
+            self.image = self.ok[0]
 
         #endif
         
@@ -928,6 +987,18 @@ class Button(pygame.sprite.Sprite):
         elif level == 3 and pos[0] >= 1124 and pos[1] >= 778 and pos[0] <= 1216 and pos[1] <= 798 and self.imageNum == 14 and self.num == 3:
             
             self.image = self.reset[1] #Hover on reset file 3
+
+        elif level == 4 and pos[0] >= 1360 and pos[1] >= 820 and pos[0] <= 1420 and pos[1] <= 880 and self.imageNum == 15:
+            
+            self.image = self.upgrade[1] #Hover on close
+
+        elif level == 4 and pos[0] >= 670 and pos[1] >= 503 and pos[0] <= 830 and pos[1] <= 543 and self.imageNum == 16:
+
+            self.image = self.upgradeText[1]
+
+        elif level == 4 and pos[0] >= 723 and pos[1] >= 503 and pos[0] <= 777 and pos[1] <= 533 and self.imageNum == 17:
+
+            self.image = self.ok[1]
             
         else:
 
@@ -986,6 +1057,18 @@ class Button(pygame.sprite.Sprite):
             elif self.imageNum == 14:
 
                 self.image = self.reset[0]
+
+            elif self.imageNum == 15:
+
+                self.image = self.upgrade[0]
+
+            elif self.imageNum == 16:
+
+                self.image = self.upgradeText[0]
+
+            elif self.imageNum == 17:
+
+                self.image = self.ok[0]
 
             #endif
 
@@ -1049,10 +1132,18 @@ class ItemClass(pygame.sprite.Sprite):
             add_str = str(x)
             self.javelin.append(pygame.transform.scale(pygame.image.load("Game_Images/Arun/Javelin/Javelin_" + add_str + ".png"), (160, 40)))
         #endfor
+        self.stars = []
+        for x in range(4):
+            add_str = str(x)
+            self.stars.append(pygame.transform.scale(pygame.image.load("Game_Images/Object/Stars/Star" + add_str + ".png"), (150, 50)))
+        #endfor
 
         self.hearts = [pygame.transform.scale(pygame.image.load("Game_Images/Object/Hearts/Heart.png"), (50, 50))] #Hearts
         self.flags = [pygame.transform.scale(pygame.image.load("Game_Images/Object/Flags/Flag.png"), (50, 50))] #Flags
         self.shields = [pygame.transform.scale(pygame.image.load("Game_Images/Object/Shields/Shield1.png"), (50, 50)), pygame.transform.scale(pygame.image.load("Game_Images/Object/Shields/Shield2.png"), (50, 50))] #Shields
+        self.levels = [pygame.transform.scale(pygame.image.load("Game_Images/Object/Levels/LevelIcon.png"), (width, height))] #Level
+        self.levelNumbers = [pygame.transform.scale(pygame.image.load("Game_Images/Text/Level0.png"), (14, 20)), pygame.transform.scale(pygame.image.load("Game_Images/Text/Level1.png"), (14, 20)), pygame.transform.scale(pygame.image.load("Game_Images/Text/Level2.png"), (14, 20)), pygame.transform.scale(pygame.image.load("Game_Images/Text/Level3.png"), (14, 20))]
+        self.arrows = [pygame.transform.scale(pygame.image.load("Game_Images/Object/Arrows/Arrow.png"), (140, 121))] #Arrow
 
         if self.item == 1: #Set image
 
@@ -1075,7 +1166,71 @@ class ItemClass(pygame.sprite.Sprite):
 
             self.image = self.shields[0]
 
+        elif self.item == 6:
+
+            self.image = self.levels[0]
+
+        elif self.item == 7:
+
+            self.image = self.levelNumbers[0]
+
+        elif self.item == 8:
+
+            self.image = self.arrows[0]
+            self.visible = True
+            self.firstTime = True
+
+        elif self.item == 9:
+
+            self.image = self.stars[0]
+
         #endif
+
+    #endprocedure
+
+    def ArrowUpdate(self, level_list):
+
+        if self.firstTime:
+            level_list.add(self)
+            self.firstTime = False
+        #endif
+
+        if self.startAnimation == 0: #If start timer has not started yet
+            self.startAnimation = pygame.time.get_ticks() #Record current time
+        #endif
+        self.endAnimation = pygame.time.get_ticks() #Record current time
+        if self.endAnimation - self.startAnimation >= 500:
+            self.startAnimation = self.endAnimation
+            if self.visible:
+                self.visible = False
+                level_list.remove(self)
+            else:
+                self.visible = True
+                level_list.add(self)
+            #endif
+        #endif
+
+    #endprocedure
+
+    def ArrowReset(self, level_list):
+
+        self.firstTime = True
+        self.visible = True
+        level_list.remove(self)
+        self.startAnimation = 0
+        self.endAnimation = 0
+
+    #endprocedure
+
+    def UpdateLevel(self, num):
+
+        self.image = self.levelNumbers[num]
+
+    #endif
+
+    def StarUpdate(self, num):
+
+        self.image = self.stars[num]
 
     #endprocedure
 
@@ -1642,6 +1797,8 @@ class InstructionClass(pygame.sprite.Sprite): #Instruction is a sprite, because 
         self.quit = [pygame.transform.scale(pygame.image.load('Game_Images/Text/QuitInstruction.png'), (698, 77))]
         self.saved = [pygame.transform.scale(pygame.image.load('Game_Images/Text/SavedInstruction.png'), (495, 60))]
         self.restart = [pygame.transform.scale(pygame.image.load('Game_Images/Text/DiedInstruction.png'), (585, 82))]
+        self.levelUp = [pygame.transform.scale(pygame.image.load('Game_Images/Text/Level1Instruction.png'), (583, 77)), pygame.transform.scale(pygame.image.load('Game_Images/Text/Level2Instruction.png'), (583, 77)), pygame.transform.scale(pygame.image.load('Game_Images/Text/Level1Instruction.png'), (583, 77))]
+        self.upgradeCost = [pygame.transform.scale(pygame.image.load('Game_Images/Text/CostInstruction.png'), (700, 84))]
 
         if typeNum == 1:
 
@@ -1691,7 +1848,21 @@ class InstructionClass(pygame.sprite.Sprite): #Instruction is a sprite, because 
 
             self.image = self.restart[0]
 
+        elif typeNum == 13:
+
+            self.image = self.levelUp[0]
+
+        elif typeNum == 14:
+
+            self.image = self.upgradeCost[0]
+
         #endif
+
+    #endprocedure
+
+    def LevelUpdate(self, num):
+
+        self.image = self.levelUp[num-1]
 
     #endprocedure
 
@@ -2025,11 +2196,15 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
         self.playerShield6 = ItemClass(5, 50, 50, 265, 65, 4)
         self.playerShield7 = ItemClass(5, 50, 50, 315, 65, 4)
         self.playerShield8 = ItemClass(5, 50, 50, 365, 65, 4)
+        self.playerLevel = ItemClass(6, 30, 30, self.rect.x, self.rect.y - 30, 4)
+        self.playerLevelNumber = ItemClass(7, 14, 20, self.rect.x + 36, self.rect.y - 25, 4)
+        self.playerStar = ItemClass(9, 150, 50, 15, 175, 4)
         
         #Attributes
         self.hp = 5
         self.shield = 8
         self.hp2 = 0
+        self.lvl = 0
         self.reduceHealth = False
         self.speedX = 10
         self.horiSpeed = 0
@@ -2054,6 +2229,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
         self.death = False
         self.getAttack = False
         self.fired = False
+        self.star = 0
 
         #Background
         self.backMove = 0
@@ -2075,6 +2251,10 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
         self.endHurt = 0
         self.startRest = 0
         self.endRest = 0
+        self.startAddShield = 0
+        self.endAddShield = 0
+        self.startStar = 0
+        self.endStar = 0
 
         #Counter
         self.idleCounter = 0
@@ -2093,19 +2273,35 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
         
     #endprocedure
 
-    def DrawOnCanvas(self, tutorial_list, levelOne_list, levelTwo_list, levelThree_list):
+    def LevelSet(self, playerLevel):
 
-        tutorial_list.add(self.playerAnimation)
-        levelOne_list.add(self.playerHealth, self.playerAnimation, self.playerShield1, self.playerShield2, self.playerShield3, self.playerShield4, self.playerShield5, self.playerShield6, self.playerShield7, self.playerShield8)
-        levelTwo_list.add(self.playerHealth, self.playerAnimation, self.playerShield1, self.playerShield2, self.playerShield3, self.playerShield4, self.playerShield5, self.playerShield6, self.playerShield7, self.playerShield8)
-        levelThree_list.add(self.playerHealth, self.playerAnimation, self.playerShield1, self.playerShield2, self.playerShield3, self.playerShield4, self.playerShield5, self.playerShield6, self.playerShield7, self.playerShield8)
+        self.lvl = playerLevel[0]
+        self.playerLevelNumber.UpdateLevel(self.lvl)
+        if self.lvl == 3:
+            self.speedX = 13
+        #endif
 
     #endprocedure
 
-    def ResetLive(self, live, shieldNum):
+    def DrawOnCanvas(self, tutorial_list, levelOne_list, levelTwo_list, levelThree_list):
+
+        tutorial_list.add(self.playerAnimation)
+        levelOne_list.add(self.playerStar, self.playerHealth, self.playerAnimation, self.playerShield1, self.playerShield2, self.playerShield3, self.playerShield4, self.playerShield5, self.playerShield6, self.playerShield7, self.playerShield8, self.playerLevel, self.playerLevelNumber)
+        levelTwo_list.add(self.playerStar, self.playerHealth, self.playerAnimation, self.playerShield1, self.playerShield2, self.playerShield3, self.playerShield4, self.playerShield5, self.playerShield6, self.playerShield7, self.playerShield8, self.playerLevel, self.playerLevelNumber)
+        levelThree_list.add(self.playerStar, self.playerHealth, self.playerAnimation, self.playerShield1, self.playerShield2, self.playerShield3, self.playerShield4, self.playerShield5, self.playerShield6, self.playerShield7, self.playerShield8, self.playerLevel, self.playerLevelNumber)
+
+    #endprocedure
+
+    def ResetLive(self, live, shieldNum, playerLevel):
 
         self.hp = live[0]
         self.playerHealth.Update(self.hp)
+
+        self.lvl = playerLevel[0]
+        self.playerLevelNumber.UpdateLevel(self.lvl)
+        if self.lvl == 3:
+            self.speedX = 13
+        #endif
 
         self.shield = shieldNum[0]
         self.playerShield8.ShieldUpdate(1)
@@ -2146,6 +2342,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
 
     def Reset(self):
 
+        self.speedX = 10
         self.lastHoriSpeed = 1
         self.horiSpeed = 0
         self.jumped = False
@@ -2177,6 +2374,19 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
         self.rect.y = 700
         self.getAttack = False
         self.fired = False
+
+        self.startAddShield = 0
+        self.endAddShield = 0
+        self.startStar = 0
+        self.endStar = 0
+
+        if self.lvl >= 1:
+            self.star = 3
+            self.playerStar.StarUpdate(self.star)
+        else:
+            self.star = 0
+            self.playerStar.StarUpdate(self.star)
+        #endif
 
         self.playerAttackLeft.rect.x = -1000
         self.playerAttackRight.rect.x = -1000
@@ -2223,6 +2433,11 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
         elif self.shield == 0:
             self.playerShield1.ShieldUpdate(0)
         #endif
+
+        self.playerLevel.rect.x = self.rect.x
+        self.playerLevelNumber.rect.x = self.rect.x + 36
+        self.playerLevel.rect.y = self.rect.y - 30
+        self.playerLevelNumber.rect.y = self.rect.y - 25
 
         if self.startAnimation == 0: #If start timer has not started yet
 
@@ -2798,6 +3013,64 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
 
     def Health(self, live):
 
+        if self.lvl >= 1:
+
+            if self.star < 3:
+
+                if self.startStar == 0: #If start timer has not started yet
+
+                    self.startStar = pygame.time.get_ticks() #Record current time
+
+                #endif
+
+                self.endStar = pygame.time.get_ticks() #Get current time for end time
+                if self.endStar - self.startStar >= 8000:
+                    self.startStar = 0
+                    self.endStar = 0
+                    self.star += 1
+                    self.playerStar.StarUpdate(self.star)
+                #endif
+
+            #endif
+
+        #endif
+                    
+
+        if self.lvl == 3:
+
+            if self.startAddShield == 0: #If start timer has not started yet
+
+                self.startAddShield = pygame.time.get_ticks() #Record current time
+
+            #endif
+
+            self.endAddShield = pygame.time.get_ticks() #Get current time for end time
+            if self.endAddShield - self.startAddShield >= 5000:
+                self.startAddShield = self.endAddShield
+                if self.shield < 8:
+                    self.shield += 1
+                    if self.shield == 8:
+                        self.playerShield8.ShieldUpdate(1)
+                    elif self.shield == 7:
+                        self.playerShield7.ShieldUpdate(1)
+                    elif self.shield == 6:
+                        self.playerShield6.ShieldUpdate(1)
+                    elif self.shield == 5:
+                        self.playerShield5.ShieldUpdate(1)
+                    elif self.shield == 4:
+                        self.playerShield4.ShieldUpdate(1)
+                    elif self.shield == 3:
+                        self.playerShield3.ShieldUpdate(1)
+                    elif self.shield == 2:
+                        self.playerShield2.ShieldUpdate(1)
+                    elif self.shield == 1:
+                        self.playerShield1.ShieldUpdate(1)
+                    #endif
+                #endif
+            #endif
+
+        #endif
+
         if self.reduceHealth == True and not self.freezeAnimation:
 
             self.reduceHealth = False
@@ -2908,12 +3181,15 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
 
     def SpellTrigger(self):
 
-        if not self.spell and not self.hurt and not self.blocked and not self.death and not self.freeze:
+        if not self.spell and not self.hurt and not self.blocked and not self.death and not self.freeze and not self.attacked and self.star > 0:
 
+            self.star -= 1
+            self.playerStar.StarUpdate(self.star)
             self.spell = True
             self.block = False
             self.jumpCounter = 0
             self.fallCounter = 0
+            self.horiSpeed = 0
 
         #endif
 
@@ -2928,7 +3204,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
                 if self.lastHoriSpeed > 0:
                     fireball = EffectClass(2, self.rect.x, self.rect.y+8, 1, 0, levelThree_list)
                 elif self.lastHoriSpeed < 0:
-                    fireball = EffectClass(2, self.rect.x-50, self.rect.y+8, -1, 0, levelThree_list)
+                    fireball = EffectClass(2, self.rect.x-45, self.rect.y+8, -1, 0, levelThree_list)
                 #endif
                 fireBall_list.add(fireball)
             elif self.spellCounter == 4:
@@ -3154,9 +3430,31 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
 
     #endprocedure
 
-    def MoveHori2(self):
+    def MoveHori2(self, block_list):
 
-        self.rect.x += self.horiSpeed
+        if self.freezeAnimation == False:
+            
+            self.rect.x += self.horiSpeed
+                
+            for block in block_list:
+                        
+                if self.rect.colliderect(block.rect): #If player hit block
+                    if self.horiSpeed > 0:
+                        self.rect.right = block.rect.left
+                    else:
+                        self.rect.left = block.rect.right
+                    #endif
+                #endif
+
+            #endfor
+
+            if self.rect.x <= 0: #If player reach the end of screen
+
+                self.rect.x = 0
+
+            #endif
+
+        #endif
 
     #endprocedure
 
@@ -3187,6 +3485,8 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
                 self.rect.x = 1450
 
             #endif
+
+        #endif
 
     #endprocedure
 
@@ -3884,6 +4184,21 @@ class BanditClass(pygame.sprite.Sprite): #Class of the bandit
                 self.reduceHealth = True
                 self.banditAttackLeft.rect.x = -1000
                 self.banditAttackRight.rect.x = -1000
+            #endif
+        #endfor
+
+    #endprocedure
+
+    def FireBallDetection(self, level_list, fireBall_list):
+        
+        enemyGetHit_list = pygame.sprite.spritecollide(self, fireBall_list, False)#If get hit
+        for attack in enemyGetHit_list:
+            if self.hurt == False and not self.death and not self.freeze:
+                self.hurt = True
+                self.reduceHealth = True
+                self.banditAttackLeft.rect.x = -1000
+                self.banditAttackRight.rect.x = -1000
+                attack.DeleteSelf(level_list, fireBall_list)
             #endif
         #endfor
 
@@ -5079,6 +5394,21 @@ class RogueClass(pygame.sprite.Sprite): #Class of the rogue
 
     #endprocedure
 
+    def FireBallDetection(self, level_list, fireBall_list):
+        
+        enemyGetHit_list = pygame.sprite.spritecollide(self, fireBall_list, False)#If get hit
+        for attack in enemyGetHit_list:
+            if self.hurt == False and not self.death and not self.freeze:
+                self.hurt = True
+                self.reduceHealth = True
+                self.rogueAttackLeft.rect.x = -1000
+                self.rogueAttackRight.rect.x = -1000
+                attack.DeleteSelf(level_list, fireBall_list)
+            #endif
+        #endfor
+
+    #endprocedure
+
     def Hurt(self):
         
         if self.hurt == True and not self.freeze:
@@ -5541,6 +5871,19 @@ class MushroomClass(pygame.sprite.Sprite): #Class of the mushroom
             if self.hurt == False and not self.death and not self.freeze:
                 self.hurt = True
                 self.reduceHealth = True
+            #endif
+        #endfor
+
+    #endprocedure
+
+    def FireBallDetection(self, level_list, fireBall_list):
+        
+        enemyGetHit_list = pygame.sprite.spritecollide(self, fireBall_list, False)#If get hit
+        for attack in enemyGetHit_list:
+            if self.hurt == False and not self.death and not self.freeze:
+                self.hurt = True
+                self.reduceHealth = True
+                attack.DeleteSelf(level_list, fireBall_list)
             #endif
         #endfor
 
@@ -6343,6 +6686,19 @@ class ArunClass(pygame.sprite.Sprite): #Class of the Arun Swordsmith
 
     #endprocedure
 
+    def FireBallDetection(self, level_list, fireBall_list):
+        
+        enemyGetHit_list = pygame.sprite.spritecollide(self, fireBall_list, False)#If get hit
+        for attack in enemyGetHit_list:
+            if self.hurt == False and not self.death and not self.freeze:
+                self.hurt = True
+                self.reduceHealth = True
+                attack.DeleteSelf(level_list, fireBall_list)
+            #endif
+        #endfor
+
+    #endprocedure
+
     def Hurt(self):
         
         if self.hurt == True and not self.freeze:
@@ -6884,6 +7240,8 @@ class SkeletonClass(pygame.sprite.Sprite): #Class of the skeleton
             if self.hurt == False and not self.death and not self.freeze and not self.recover:
                 self.hurt = True
                 self.reduceHealth = True
+                self.skeletonAttackLeft.rect.x = -1000
+                self.skeletonAttackRight.rect.x = -1000
             #endif
         #endfor
 
@@ -6892,6 +7250,23 @@ class SkeletonClass(pygame.sprite.Sprite): #Class of the skeleton
             if self.hurt == False and not self.death and not self.freeze and not self.recover:
                 self.hurt = True
                 self.reduceHealth = True
+                self.skeletonAttackLeft.rect.x = -1000
+                self.skeletonAttackRight.rect.x = -1000
+            #endif
+        #endfor
+
+    #endprocedure
+
+    def FireBallDetection(self, level_list, fireBall_list):
+        
+        enemyGetHit_list = pygame.sprite.spritecollide(self, fireBall_list, False)#If get hit
+        for attack in enemyGetHit_list:
+            if self.hurt == False and not self.death and not self.freeze:
+                self.hurt = True
+                self.reduceHealth = True
+                self.skeletonAttackLeft.rect.x = -1000
+                self.skeletonAttackRight.rect.x = -1000
+                attack.DeleteSelf(level_list, fireBall_list)
             #endif
         #endfor
 
@@ -8461,14 +8836,14 @@ class NecromancerClass(pygame.sprite.Sprite): #Class of the Dark Knight
                 num = enemyCount[0]
                 enemyCount[0] = num - 1
                 self.death = True
-                if not self.dropCoin:
-                    self.dropCoin = True
-                    for i in range(10):
-                        coin = ItemClass(1, 20, 20, self.rect.x + 20, self.rect.y + 80, 4)
-                        sprite_list.add(coin)
-                        coin_list.add(coin)
-                    #endfor
-                #endif
+##                if not self.dropCoin:
+##                    self.dropCoin = True
+##                    for i in range(10):
+##                        coin = ItemClass(1, 20, 20, self.rect.x + 20, self.rect.y + 80, 4)
+##                        sprite_list.add(coin)
+##                        coin_list.add(coin)
+##                    #endfor
+##                #endif
             #endif
             if self.hp == 11:
                 self.runSpeed = 10
@@ -8544,6 +8919,19 @@ class NecromancerClass(pygame.sprite.Sprite): #Class of the Dark Knight
             if self.hurt == False and not self.death and not self.freeze:
                 self.hurt = True
                 self.reduceHealth = True
+            #endif
+        #endfor
+
+    #endprocedure
+
+    def FireBallDetection(self, level_list, fireBall_list):
+        
+        enemyGetHit_list = pygame.sprite.spritecollide(self, fireBall_list, False)#If get hit
+        for attack in enemyGetHit_list:
+            if self.hurt == False and not self.death and not self.freeze:
+                self.hurt = True
+                self.reduceHealth = True
+                attack.DeleteSelf(level_list, fireBall_list)
             #endif
         #endfor
 
@@ -9803,6 +10191,7 @@ class EffectClass(pygame.sprite.Sprite): #Class of effect's
 
         #Counters
         self.counter = 0
+        self.effectAnimation.Animate(self.speedX, self.counter)
         
     #endprocedure
 
@@ -9921,8 +10310,10 @@ def Game():
     currency = [0,0,0,0] #Money
     live = [5] #Player's live
     shieldNum = [8] #Player's shield
+    playerLevel = [0] 
     loadedLive = [0] #Backup Live
     loadedShield = [0]
+    loadedPlayerLevel = [0]
     timeUp = [0]
     enemyCount = [-1]
     gameMode = 1
@@ -9933,11 +10324,15 @@ def Game():
     gameOver = False
     gamePause = False
     advanceLevel = False
+    gameUpgrade = False
+    upgraded = False
+    readyToUpgrade = False
     ReadyToClick = False
     startReadScript = 0
     endReadScript = 0
     timer = TimerClass()
     gameOverDisplay = False
+    conversation = False
 
     #Setting Variables
     difficulty = 0
@@ -10065,6 +10460,16 @@ def Game():
 
     nextButton_list = pygame.sprite.Group() #Next Button
 
+    upgradeButton_list = pygame.sprite.Group() #Upgrade Button
+
+    upgradeTextButton_list = pygame.sprite.Group() #Upgrade Text Button
+
+    okButton_list = pygame.sprite.Group() #Ok Button
+
+    levelUp_list = pygame.sprite.Group()
+
+    upgradeInstruction_list = pygame.sprite.Group()
+
     item_list = pygame.sprite.Group() #Group of items
 
     crown_list = pygame.sprite.Group() #Crown
@@ -10105,7 +10510,11 @@ def Game():
 
     currentFileData_list = pygame.sprite.Group() #Current file data
 
+    directionArrow_list = pygame.sprite.Group() #Arrow
+
     restartLevel_list = pygame.sprite.Group() #Restart level panel
+
+    upgradeBox_list = pygame.sprite.Group()
 
     allBackgrounds_list = pygame.sprite.Group() #All backgrounds
 
@@ -10196,12 +10605,12 @@ def Game():
                     fileLoaded = False
                     level = -1
                     player.Reset()
-                    player.ResetLive([5], shieldNum)
+                    player.ResetLive([5], shieldNum, playerLevel)
                     currency[0] = 0
                     currency[1] = 0
                     currency[2] = 0
                     currency[3] = 0
-                elif level == 4 and pos[0] >= 616 and pos[1] >= 503 and pos[0] <= 884 and pos[1] <= 543 and not gamePause and not gameOver and advanceLevel: #Advance Game Level
+                elif level == 4 and pos[0] >= 616 and pos[1] >= 503 and pos[0] <= 884 and pos[1] <= 543 and not gameUpgrade and not gamePause and not gameOver and advanceLevel: #Advance Game Level
                     advanceLevel = False
                     enemyCount = [0]
                     if gameLevel == 1:
@@ -10294,7 +10703,7 @@ def Game():
                     player.Reset()
                     levelToGo = 4
                     level = -1
-                elif level == 4 and pos[0] >= 700 and pos[1] >= 573 and pos[0] <= 800 and pos[1] <= 613 and not gamePause and not gameOver and advanceLevel: #Quit game level during completion
+                elif level == 4 and pos[0] >= 700 and pos[1] >= 573 and pos[0] <= 800 and pos[1] <= 613 and not gameUpgrade and not gamePause and not gameOver and advanceLevel: #Quit game level during completion
                     advanceLevel = False
                     enemyCount = [-1]
                     if gameLevel == 1:
@@ -10389,9 +10798,68 @@ def Game():
                     startReadScript = 0
                     endReadScript = 0
                     player.Reset()
-                    player.ResetLive([5], [8])
+                    player.ResetLive([5], [8], [0])
+                    player.SetLevel([0])
                     live[0] = 5
-                elif level == 4 and pos[0] >= 1430 and pos[1] >= 820 and pos[0] <= 1490 and pos[1] <= 880 and not gamePause and not gameOver and not advanceLevel: #Pause game
+                elif level == 4 and pos[0] >= 1360 and pos[1] >= 820 and pos[0] <= 1420 and pos[1] <= 880 and not gameUpgrade and not gamePause and not gameOver and not advanceLevel and readyToUpgrade: #Upgrade panel
+                    gameUpgrade = True
+                    if gameLevel == 1:
+                        for character in character1_list:
+                            character.Freeze(1)
+                        #endfor
+                        player.FreezeTrigger(1)
+                        DrawOrRemove(1, levelOne_list, levelUp_list)
+                        DrawOrRemove(0, levelOne_list, upgradeButton_list)
+                        DrawOrRemove(0, levelOne_list, pauseButton_list)
+                    elif gameLevel == 2:
+                        for character in character2_list:
+                            character.Freeze(1)
+                        #endfor
+                        player.FreezeTrigger(1)
+                        DrawOrRemove(1, levelTwo_list, levelUp_list)
+                        DrawOrRemove(0, levelTwo_list, upgradeButton_list)
+                        DrawOrRemove(0, levelTwo_list, pauseButton_list)
+                    elif gameLevel == 3:
+                        for character in character3_list:
+                            character.Freeze(1)
+                        #endfor
+                        player.FreezeTrigger(1)
+                        DrawOrRemove(1, levelThree_list, levelUp_list)
+                        DrawOrRemove(0, levelThree_list, upgradeButton_list)
+                        DrawOrRemove(0, levelThree_list, pauseButton_list)
+                    #endif
+                elif level == 4 and pos[0] >= 670 and pos[1] >= 503 and pos[0] <= 830 and pos[1] <= 543 and gameUpgrade and not gamePause and not gameOver and not advanceLevel and not upgraded: #Upgrade
+                    if currency[2] >= 2:
+                        currency[2] -= 2
+                        playerLevel[0] = playerLevel[0] + 1
+                        for ten in ten_list:
+                            ten.Update(currency[2])
+                        #endfor
+                        for player in player_list:
+                            player.LevelSet(playerLevel)
+                        #endfor
+                        upgraded = True
+                        if gameLevel == 1:
+                            DrawOrRemove(1, levelOne_list, upgradeBox_list)
+                        elif gameLevel == 2:
+                            DrawOrRemove(1, levelTwo_list, upgradeBox_list)
+                        elif gameLevel == 3:
+                            DrawOrRemove(1, levelThree_list, upgradeBox_list)
+                        #endif
+                        for instruction in upgradeInstruction_list:
+                            instruction.LevelUpdate(playerLevel[0])
+                        #endfor
+                    #endif
+                elif level == 4 and pos[0] >= 723 and pos[1] >= 503 and pos[0] <= 777 and pos[1] <= 533 and gameUpgrade and upgraded: #Exit Instruction of Upgrade
+                    upgraded = False
+                    if gameLevel == 1:
+                        DrawOrRemove(0, levelOne_list, upgradeBox_list)
+                    elif gameLevel == 2:
+                        DrawOrRemove(0, levelTwo_list, upgradeBox_list)
+                    elif gameLevel == 3:
+                        DrawOrRemove(0, levelThree_list, upgradeBox_list)
+                    #endif
+                elif level == 4 and pos[0] >= 1430 and pos[1] >= 820 and pos[0] <= 1490 and pos[1] <= 880 and not gameUpgrade and not gamePause and not gameOver and not advanceLevel: #Pause game
                     gamePause = True
                     if gameLevel == 1:
                         for character in character1_list:
@@ -10401,6 +10869,7 @@ def Game():
                         DrawOrRemove(1, levelOne_list, optionBlock_list)
                         DrawOrRemove(1, levelOne_list, panelButton_list)
                         DrawOrRemove(0, levelOne_list, pauseButton_list)
+                        DrawOrRemove(0, levelOne_list, upgradeButton_list)
                     elif gameLevel == 2:
                         for character in character2_list:
                             character.Freeze(1)
@@ -10409,6 +10878,7 @@ def Game():
                         DrawOrRemove(1, levelTwo_list, optionBlock_list)
                         DrawOrRemove(1, levelTwo_list, panelButton_list)
                         DrawOrRemove(0, levelTwo_list, pauseButton_list)
+                        DrawOrRemove(0, levelTwo_list, upgradeButton_list)
                     elif gameLevel == 3:
                         for character in character3_list:
                             character.Freeze(1)
@@ -10417,35 +10887,90 @@ def Game():
                         DrawOrRemove(1, levelThree_list, optionBlock_list)
                         DrawOrRemove(1, levelThree_list, panelButton_list)
                         DrawOrRemove(0, levelThree_list, pauseButton_list)
+                        DrawOrRemove(0, levelThree_list, upgradeButton_list)
                     #endif
-                elif level == 4 and pos[0] >= 1068 and pos[1] >= 234 and pos[0] <= 1128 and pos[1] <= 294 and gamePause and not gameOver and not advanceLevel: #Continue
+                elif level == 4 and pos[0] >= 1068 and pos[1] >= 234 and pos[0] <= 1128 and pos[1] <= 294 and not gameUpgrade and gamePause and not gameOver and not advanceLevel: #Continue during pause
                     gamePause = False
                     if gameLevel == 1:
                         for character in character1_list:
                             character.Freeze(0)
                         #endfor
-                        player.FreezeTrigger(0)
+                        if not conversation:
+                            player.FreezeTrigger(0)
+                        #endif
                         DrawOrRemove(0, levelOne_list, optionBlock_list)
                         DrawOrRemove(0, levelOne_list, panelButton_list)
+                        DrawOrRemove(1, levelOne_list, pauseButton_list)
+                        if readyToUpgrade:
+                            DrawOrRemove(1, levelOne_list, upgradeButton_list)
+                        #endif
+                    elif gameLevel == 2:
+                        for character in character2_list:
+                            character.Freeze(0)
+                        #endfor
+                        if not conversation:
+                            player.FreezeTrigger(0)
+                        #endif
+                        DrawOrRemove(0, levelTwo_list, optionBlock_list)
+                        DrawOrRemove(0, levelTwo_list, panelButton_list)
+                        DrawOrRemove(1, levelTwo_list, pauseButton_list)
+                        if readyToUpgrade:
+                            DrawOrRemove(1, levelTwo_list, upgradeButton_list)
+                        #endif
+                    elif gameLevel == 3:
+                        for character in character3_list:
+                            character.Freeze(0)
+                        #endfor
+                        if not conversation:
+                            player.FreezeTrigger(0)
+                        #endif
+                        DrawOrRemove(0, levelThree_list, optionBlock_list)
+                        DrawOrRemove(0, levelThree_list, panelButton_list)
+                        DrawOrRemove(1, levelThree_list, pauseButton_list)
+                        if readyToUpgrade:
+                            DrawOrRemove(1, levelThree_list, upgradeButton_list)
+                        #endif
+                    #endif
+                elif level == 4 and pos[0] >= 1068 and pos[1] >= 234 and pos[0] <= 1128 and pos[1] <= 294 and gameUpgrade and not gamePause and not gameOver and not advanceLevel and not upgraded: #Continue during upgrade
+                    gameUpgrade = False
+                    if gameLevel == 1:
+                        for character in character1_list:
+                            character.Freeze(0)
+                        #endfor
+                        if not conversation:
+                            player.FreezeTrigger(0)
+                        #endif
+                        DrawOrRemove(0, levelOne_list, levelUp_list)
+                        if readyToUpgrade:
+                            DrawOrRemove(1, levelOne_list, upgradeButton_list)
+                        #endif
                         DrawOrRemove(1, levelOne_list, pauseButton_list)
                     elif gameLevel == 2:
                         for character in character2_list:
                             character.Freeze(0)
                         #endfor
-                        player.FreezeTrigger(0)
-                        DrawOrRemove(0, levelTwo_list, optionBlock_list)
-                        DrawOrRemove(0, levelTwo_list, panelButton_list)
+                        if not conversation:
+                            player.FreezeTrigger(0)
+                        #endif
+                        DrawOrRemove(0, levelTwo_list, levelUp_list)
+                        if readyToUpgrade:
+                            DrawOrRemove(1, levelTwo_list, upgradeButton_list)
+                        #endif
                         DrawOrRemove(1, levelTwo_list, pauseButton_list)
                     elif gameLevel == 3:
                         for character in character3_list:
                             character.Freeze(0)
                         #endfor
-                        player.FreezeTrigger(0)
-                        DrawOrRemove(0, levelThree_list, optionBlock_list)
-                        DrawOrRemove(0, levelThree_list, panelButton_list)
+                        if not conversation:
+                            player.FreezeTrigger(0)
+                        #endif
+                        DrawOrRemove(0, levelThree_list, levelUp_list)
+                        if readyToUpgrade:
+                            DrawOrRemove(1, levelThree_list, upgradeButton_list)
+                        #endif
                         DrawOrRemove(1, levelThree_list, pauseButton_list)
                     #endif
-                elif level == 4 and pos[0] >= 654.5 and pos[1] >= 573 and pos[0] <= 845.5 and pos[1] <= 613 and gamePause and not gameOver and not advanceLevel: #Game Pause Restart
+                elif level == 4 and pos[0] >= 654.5 and pos[1] >= 573 and pos[0] <= 845.5 and pos[1] <= 613 and not gameUpgrade and gamePause and not gameOver and not advanceLevel: #Game Pause Restart
                     enemyCount = [-1]
                     levelToGo = 4
                     level = -1
@@ -10459,7 +10984,7 @@ def Game():
                     startReadScript = 0
                     endReadScript = 0
                     player.Reset()
-                    player.ResetLive(loadedLive, loadedShield)
+                    player.ResetLive(loadedLive, loadedShield, loadedPlayerLevel)
                     live[0] = loadedLive[0]
                     DrawOrRemove(0, coin_list, coin_list)
                     if gameLevel == 1:
@@ -10556,7 +11081,7 @@ def Game():
                         DrawOrRemove(0, levelThree_list, wordBox_list)
                         DrawOrRemove(0, levelThree_list, coin_list)
                     #endif
-                elif level == 4 and pos[0] >= 700 and pos[1] >= 503 and pos[0] <= 800 and pos[1] <= 543 and gamePause and not gameOver and not advanceLevel: #Quit game
+                elif level == 4 and pos[0] >= 700 and pos[1] >= 503 and pos[0] <= 800 and pos[1] <= 543 and not gameUpgrade and gamePause and not gameOver and not advanceLevel: #Quit game
                     enemyCount = [-1]
                     levelToGo = 0
                     level = -1
@@ -10570,7 +11095,7 @@ def Game():
                     startReadScript = 0
                     endReadScript = 0
                     player.Reset()
-                    player.ResetLive([5], [8])
+                    player.ResetLive([5], [8], [0])
                     live[0] = 5
                     DrawOrRemove(0, coin_list, coin_list)
                     if gameLevel == 1:
@@ -10667,7 +11192,7 @@ def Game():
                         DrawOrRemove(0, levelThree_list, wordBox_list)
                         DrawOrRemove(0, levelThree_list, coin_list)
                     #endif
-                elif level == 4 and pos[0] >= 700 and pos[1] >= 573 and pos[0] <= 800 and pos[1] <= 613 and gameOver: #Game Over Quit
+                elif level == 4 and pos[0] >= 700 and pos[1] >= 573 and pos[0] <= 800 and pos[1] <= 613 and gameOver and not gameUpgrade: #Game Over Quit
                     enemyCount = [-1]
                     gameOverDisplay = False
                     levelToGo = 0
@@ -10682,7 +11207,7 @@ def Game():
                     startReadScript = 0
                     endReadScript = 0
                     player.Reset()
-                    player.ResetLive([5], [8])
+                    player.ResetLive([5], [8], [0])
                     live[0] = 5
                     if gameLevel == 1:
                         for block in block1_list:
@@ -10766,7 +11291,7 @@ def Game():
                         DrawOrRemove(0, levelThree_list, coin_list)
                         DrawOrRemove(0, coin_list, coin_list)
                     #endif
-                elif level == 4 and pos[0] >= 654.5 and pos[1] >= 503 and pos[0] <= 845.5 and pos[1] <= 543 and gameOver and not gamePause: #Game Over Restart
+                elif level == 4 and pos[0] >= 654.5 and pos[1] >= 503 and pos[0] <= 845.5 and pos[1] <= 543 and gameOver and not gameUpgrade and not gamePause: #Game Over Restart
                     enemyCount = [-1]
                     gameOverDisplay = False
                     levelToGo = 4
@@ -10781,7 +11306,7 @@ def Game():
                     startReadScript = 0
                     endReadScript = 0
                     player.Reset()
-                    player.ResetLive(loadedLive, loadedShield)
+                    player.ResetLive(loadedLive, loadedShield, loadedPlayerLevel)
                     live[0] = loadedLive[0]
                     if gameLevel == 1:
                         for block in block1_list:
@@ -10868,7 +11393,7 @@ def Game():
                     for background in background_list:
                         background.Reset()
                     #endfor
-                elif level == 4 and pos[0] >= 1195 and pos[1] >= 850 and pos[0] <= 1255 and pos[1] <= 870 and not gamePause:
+                elif level == 4 and pos[0] >= 1195 and pos[1] >= 850 and pos[0] <= 1255 and pos[1] <= 870 and not gamePause and not gameUpgrade:
                     if ReadyToClick:
                         gameChat += 1
                         ReadyToClick = False
@@ -10992,7 +11517,7 @@ def Game():
                     CreateBackgrounds(levelOne_list, levelTwo_list, levelThree_list, background1_list, background2_list, background3_list, cloud_list, ground_list, allBackgrounds_list, background_list)#Backgrounds and ground
                     CreateLevelOnePlatform(block1_list, levelOne_list) #Level One Platforms
                     CreateLevelTwoPlatform(block2_list, levelTwo_list) #Level Two Platforms
-                    CreatePanel(button_list, optionBlock_list, pauseButton_list, panelButton_list, levelOne_list, levelTwo_list, levelThree_list, nextLevelBlock_list, restartLevel_list)
+                    CreatePanel(button_list, optionBlock_list, pauseButton_list, panelButton_list, levelOne_list, levelTwo_list, levelThree_list, nextLevelBlock_list, restartLevel_list, directionArrow_list, levelUp_list, upgradeButton_list, upgradeInstruction_list, upgradeTextButton_list, upgradeBox_list, okButton_list)
                     CreateTutorialPlatform(tutorialBlock_list, tutorial_list, button_list)
                     CreateCharacters0(player_list, leftPlayerAttack_list, rightPlayerAttack_list, tutorialEnemy_list, tutorial_list, levelOne_list, levelTwo_list, levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list, character1_list)
                     CreateCharacters1(levelOne_list, enemy_list, warlock_list, wordBox_list, nextButton_list, rogue_list, leftEnemyAttack_list, rightEnemyAttack_list, rogueAttack_list, banditGroup1_list, banditGroup2_list, character1_list)
@@ -11096,8 +11621,12 @@ def Game():
                     shieldNum[0] = int(lines[3].rstrip("\n"))
                     loadedShield[0] = int(lines[3].rstrip("\n"))
 
+                    playerLevel[0] = int(lines[4].rstrip("\n"))
+                    loadedPlayerLevel[0] = int(lines[4].rstrip("\n"))
+
                     for player in player_list:
-                        player.ResetLive(live, shieldNum)
+                        player.ResetLive(live, shieldNum, playerLevel)
+                        player.LevelSet(playerLevel)
                         player.FreezeTrigger(1)
                     #endfor
 
@@ -11219,6 +11748,7 @@ def Game():
                 enemy.Revive()
                 enemy.Hurt()
                 enemy.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
+                enemy.FireBallDetection(tutorial_list, fireBall_list)
                 enemy.Health(coin_list, tutorial_list, level, gameLevel, enemyCount)
                 enemy.Animation()
 
@@ -11276,7 +11806,7 @@ def Game():
 
         elif level == 4: #Gameplay
 
-            if not gamePause and not gameOver:
+            if not gamePause and not gameOver and not gameUpgrade:
 
                 if gameLevel == 1: #Level 1------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -11299,6 +11829,16 @@ def Game():
                         coin.CoinUpdate(player_list, block1_list, tutorialBlock_list, tutorial_list, levelOne_list, coin_list, currency)
 
                     #endfor
+
+                    for fireball in fireBall_list:
+
+                        fireball.EffectUpdate(levelOne_list)
+                        if fireball.rect.x > 1500 or fireball.rect.x < -160:
+                            fireball.DeleteSelf(levelOne_list, fireBall_list)
+                        #endif
+
+                    #endfor
+
 
                     for thousand in thousand_list:
                         thousand.Update(currency[0])
@@ -11335,6 +11875,7 @@ def Game():
                             rogue.MoveVert(block1_list)
                             rogue.Hurt()
                             rogue.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
+                            rogue.FireBallDetection(levelOne_list, fireBall_list)
                             rogue.Attack()
                             rogue.Health(levelOne_list, coin_list, enemyCount)
                             rogue.SA()
@@ -11356,6 +11897,7 @@ def Game():
                             #endif
                             enemy.Hurt()
                             enemy.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
+                            enemy.FireBallDetection(levelOne_list, fireBall_list)
                             enemy.Health(coin_list, levelOne_list, level, gameLevel, enemyCount)
                             enemy.Animation()
 
@@ -11377,6 +11919,7 @@ def Game():
                             #endif
                             enemy.Hurt()
                             enemy.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
+                            enemy.FireBallDetection(levelOne_list, fireBall_list)
                             enemy.Health(coin_list, levelOne_list, level, gameLevel, enemyCount)
                             enemy.Animation()
 
@@ -11404,8 +11947,10 @@ def Game():
                         if gamePhase != 9 and gamePhase != 10 and gamePhase != 16 and gamePhase != 17 and gamePhase != 20 and gamePhase != 21 and gamePhase != 22 and gamePhase != 23:
                             player.MoveHori(block1_list) #Player move horizontally
                         else:
-                            player.MoveHori2()
+                            player.MoveHori2(block1_list)
                         #endif
+                        #Spell
+                        player.Spell(fireBall_list, levelOne_list)
                         #Attack Checker
                         player.AttackChecker()
                         #Vertical Movement
@@ -11418,6 +11963,7 @@ def Game():
                     #endfor
 
                     if gamePhase == 1:
+                        conversation = True
                         if gameChat == 1:
                             DrawOrRemove(1, levelOne_list, wordBox_list)
                             WriteWords(1, script1[0], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 1, 0)
@@ -11567,6 +12113,7 @@ def Game():
                             enemyCount = [3]
                             for player in player_list:
                                 player.FreezeTrigger(0)
+                                conversation = False
                             #endfor
                         #endif
                     elif gamePhase == 8:
@@ -11578,24 +12125,36 @@ def Game():
                                     player.FreezeTrigger(1)
                                 #endfor
                                 timer.Counter(1200, timeUp)
+                                conversation = True
                             elif timeUp[0] == 1:
                                 gamePhase = 9
                                 for player in player_list:
                                     player.FreezeTrigger(0)
-                                    player.ChangeSpeed(1)
-                                    player.FreezeTrigger(1)
+                                    conversation = False
                                 #endfor
+                                readyToUpgrade = True
+                                DrawOrRemove(1, levelOne_list, upgradeButton_list)
                             #endif
                         #endif
                         if live[0] == 0:
                             gameOver = True
                         #endif
                     elif gamePhase == 9:
-                        if player.rect.x >= 1550:
+                        if player.rect.x < 1550:
+                            for arrow in directionArrow_list:
+                                arrow.ArrowUpdate(levelOne_list)
+                            #endfor
+                        elif player.rect.x >= 1550:
+                            for arrow in directionArrow_list:
+                                arrow.ArrowReset(levelOne_list)
+                            #endfor
+                            readyToUpgrade = False
+                            DrawOrRemove(0, levelOne_list, upgradeButton_list)
                             player.FreezeTrigger(0)
                             player.ChangeSpeed(2)
                             player.FreezeTrigger(1)
                             player.rect.x = 1550
+                            conversation = True
                             gamePhase = 10
                             for coin in coin_list:
                                 levelOne_list.remove(coin)
@@ -11702,6 +12261,7 @@ def Game():
                             enemyCount = [6]
                             for player in player_list:
                                 player.FreezeTrigger(0)
+                                conversation = False
                             #endfor
                         #endif
                     elif gamePhase == 15:
@@ -11713,23 +12273,35 @@ def Game():
                                     player.FreezeTrigger(1)
                                 #endfor
                                 timer.Counter(1200, timeUp)
+                                conversation = True
                             elif timeUp[0] == 1:
                                 gamePhase = 16
                                 for player in player_list:
                                     player.FreezeTrigger(0)
-                                    player.ChangeSpeed(1)
-                                    player.FreezeTrigger(1)
+                                    conversation = False
                                 #endfor
+                                readyToUpgrade = True
+                                DrawOrRemove(1, levelOne_list, upgradeButton_list)
                             #endif
                         #endif
                         if live[0] == 0:
                             gameOver = True
                         #endif
                     elif gamePhase == 16:
-                        if player.rect.x >= 1550:
+                        if player.rect.x < 1550:
+                            for arrow in directionArrow_list:
+                                arrow.ArrowUpdate(levelOne_list)
+                            #endfor
+                        elif player.rect.x >= 1550:
+                            for arrow in directionArrow_list:
+                                arrow.ArrowReset(levelOne_list)
+                            #endfor
+                            readyToUpgrade = False
+                            DrawOrRemove(0, levelOne_list, upgradeButton_list)
                             player.FreezeTrigger(0)
                             player.ChangeSpeed(2)
                             player.FreezeTrigger(1)
+                            conversation = True
                             player.rect.x = 1550
                             for rogue in rogue_list:
                                 rogue.ChangeSpeed(0)
@@ -11829,6 +12401,7 @@ def Game():
                             gameChat = 1
                             enemyCount = [1]
                             player.FreezeTrigger(0)
+                            conversation = False
                             for rogue in rogue_list:
                                 rogue.HealthDisplay(1, levelOne_list)
                             #endfor
@@ -11842,28 +12415,40 @@ def Game():
                                     player.FreezeTrigger(1)
                                 #endfor
                                 timer.Counter(1200, timeUp)
+                                conversation = True
                             elif timeUp[0] == 1:
                                 gamePhase = 20
                                 for player in player_list:
                                     player.FreezeTrigger(0)
-                                    player.ChangeSpeed(1)
-                                    player.FreezeTrigger(1)
+                                    conversation = False
                                 #endfor
+                                readyToUpgrade = True
+                                DrawOrRemove(1, levelOne_list, upgradeButton_list)
                             #endif
                         #endif
                         if live[0] <= 0:
                             gameOver = True
                         #endif
                     elif gamePhase == 20:
-                        if player.rect.x >= 1600:
+                        if player.rect.x < 1550:
+                            for arrow in directionArrow_list:
+                                arrow.ArrowUpdate(levelOne_list)
+                            #endfor
+                        elif player.rect.x >= 1550:
+                            for arrow in directionArrow_list:
+                                arrow.ArrowReset(levelOne_list)
+                            #endfor
                             player.FreezeTrigger(0)
                             player.ChangeSpeed(2)
                             player.FreezeTrigger(1)
+                            conversation = True
                             player.rect.x = 1600
                             for rogue in rogue_list:
                                 rogue.HealthDisplay(0, levelOne_list)
                             #endfor
                             gamePhase = 21
+                            readyToUpgrade = False
+                            DrawOrRemove(0, levelOne_list, upgradeButton_list)
                             for coin in coin_list:
                                 levelOne_list.remove(coin)
                                 coin_list.remove(coin)
@@ -11915,7 +12500,7 @@ def Game():
                     elif gamePhase == 22:
                         DrawOrRemove(1, levelOne_list, nextLevelBlock_list)
                         gamePhase = 23
-                        SaveProgress(currentFile, currency,live,gameLevel+1, shieldNum)
+                        SaveProgress(currentFile, currency,live,gameLevel+1, shieldNum, playerLevel)
                         advanceLevel = True
                     #endif
                     levelOne_list.draw(screen) #Display all visible objects
@@ -11932,6 +12517,15 @@ def Game():
 
                         coin.Change()
                         coin.CoinUpdate(player_list, block2_list, tutorialBlock_list, tutorial_list, levelTwo_list, coin_list, currency)
+
+                    #endfor
+
+                    for fireball in fireBall_list:
+
+                        fireball.EffectUpdate(levelTwo_list)
+                        if fireball.rect.x > 1500 or fireball.rect.x < -160:
+                            fireball.DeleteSelf(levelTwo_list, fireBall_list)
+                        #endif
 
                     #endfor
 
@@ -11961,6 +12555,8 @@ def Game():
                         player.Blocked(live, shieldNum)
                         #Hurt
                         player.Hurt()
+                        #Spell
+                        player.Spell(fireBall_list, levelTwo_list)
                         #Attack
                         player.Attack()
                         #Roll
@@ -11969,7 +12565,7 @@ def Game():
                         if gamePhase != 6 and gamePhase != 7 and gamePhase != 13 and gamePhase != 14 and gamePhase != 17 and gamePhase != 18 and gamePhase != 19 and gamePhase != 20 and gamePhase != 21:
                             player.MoveHori(block2_list) #Player move horizontally
                         else:
-                            player.MoveHori2()
+                            player.MoveHori2(block2_list)
                         #endif
                         #Attack Checker
                         player.AttackChecker()
@@ -11995,6 +12591,7 @@ def Game():
                             arun.Hurt()
                             arun.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
                             arun.Health(levelTwo_list, coin_list, enemyCount)
+                            arun.FireBallDetection(levelTwo_list, fireBall_list)
                             arun.Throw(leftJavelin_list, rightJavelin_list, levelTwo_list)
                             arun.Animation()
 
@@ -12013,6 +12610,7 @@ def Game():
                             mushroom.Hurt()
                             mushroom.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
                             mushroom.Health(enemyCount)
+                            mushroom.FireBallDetection(levelTwo_list, fireBall_list)
                             mushroom.Animation()
 
                         #endfor
@@ -12029,6 +12627,7 @@ def Game():
                             mushroom.MoveVert(block2_list)
                             mushroom.Hurt()
                             mushroom.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
+                            mushroom.FireBallDetection(levelTwo_list, fireBall_list)
                             mushroom.Health(enemyCount)
                             mushroom.Animation()
 
@@ -12046,6 +12645,7 @@ def Game():
                             mushroom.MoveVert(block2_list)
                             mushroom.Hurt()
                             mushroom.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
+                            mushroom.FireBallDetection(levelTwo_list, fireBall_list)
                             mushroom.Health(enemyCount)
                             mushroom.Animation()
 
@@ -12066,6 +12666,7 @@ def Game():
                             #endif
                             enemy.Hurt()
                             enemy.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
+                            enemy.FireBallDetection(levelTwo_list, fireBall_list)
                             enemy.Health(coin_list, levelTwo_list, level, gameLevel, enemyCount)
                             enemy.Animation()
 
@@ -12087,6 +12688,7 @@ def Game():
                             #endif
                             enemy.Hurt()
                             enemy.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
+                            enemy.FireBallDetection(levelTwo_list, fireBall_list)
                             enemy.Health(coin_list, levelTwo_list, level, gameLevel, enemyCount)
                             enemy.Animation()
 
@@ -12108,6 +12710,7 @@ def Game():
                     #endif
                             
                     if gamePhase == 1:
+                        conversation = True
                         if gameChat == 1:
                             for player in player_list:
                                 player.FreezeTrigger(0)
@@ -12186,6 +12789,7 @@ def Game():
                             enemyCount[0] = 4
                             for player in player_list:
                                 player.FreezeTrigger(0)
+                                conversation = False
                             #endfor
                         #endif
                     elif gamePhase == 5:
@@ -12197,23 +12801,35 @@ def Game():
                                     player.FreezeTrigger(1)
                                 #endfor
                                 timer.Counter(1200, timeUp)
+                                conversation = True
                             elif timeUp[0] == 1:
                                 gamePhase = 6
                                 for player in player_list:
                                     player.FreezeTrigger(0)
-                                    player.ChangeSpeed(1)
-                                    player.FreezeTrigger(1)
                                 #endfor
+                                conversation = False
+                                readyToUpgrade = True
+                                DrawOrRemove(1, levelTwo_list, upgradeButton_list)
                             #endif
                         #endif
                         if live[0] == 0:
                             gameOver = True
                         #endif
                     elif gamePhase == 6:
-                        if player.rect.x >= 1550:
+                        if player.rect.x < 1550:
+                            for arrow in directionArrow_list:
+                                arrow.ArrowUpdate(levelTwo_list)
+                            #endfor
+                        elif player.rect.x >= 1550:
+                            for arrow in directionArrow_list:
+                                arrow.ArrowReset(levelTwo_list)
+                            #endfor
+                            readyToUpgrade = False
+                            DrawOrRemove(0, levelTwo_list, upgradeButton_list)
                             player.FreezeTrigger(0)
                             player.ChangeSpeed(2)
                             player.FreezeTrigger(1)
+                            conversation = True
                             player.rect.x = 1550
                             gamePhase = 7
                             for coin in coin_list:
@@ -12352,6 +12968,7 @@ def Game():
                             enemyCount[0] = 6
                             for player in player_list:
                                 player.FreezeTrigger(0)
+                                conversation = False
                             #endfor
                         #endif
                     elif gamePhase == 12:
@@ -12363,23 +12980,35 @@ def Game():
                                     player.FreezeTrigger(1)
                                 #endfor
                                 timer.Counter(1200, timeUp)
+                                conversation = True
                             elif timeUp[0] == 1:
                                 gamePhase = 13
                                 for player in player_list:
                                     player.FreezeTrigger(0)
-                                    player.ChangeSpeed(1)
-                                    player.FreezeTrigger(1)
                                 #endfor
+                                conversation = False
+                                readyToUpgrade = True
+                                DrawOrRemove(1, levelTwo_list, upgradeButton_list)
                             #endif
                         #endif
                         if live[0] == 0:
                             gameOver = True
                         #endif
                     elif gamePhase == 13:
-                        if player.rect.x >= 1550:
+                        if player.rect.x < 1550:
+                            for arrow in directionArrow_list:
+                                arrow.ArrowUpdate(levelTwo_list)
+                            #endfor
+                        elif player.rect.x >= 1550:
+                            for arrow in directionArrow_list:
+                                arrow.ArrowReset(levelTwo_list)
+                            #endfor
+                            readyToUpgrade = False
+                            DrawOrRemove(0, levelTwo_list, upgradeButton_list)
                             player.FreezeTrigger(0)
                             player.ChangeSpeed(2)
                             player.FreezeTrigger(1)
+                            conversation = True
                             player.rect.x = 1550
                             gamePhase = 14
                             for mushroom in mushroomGroup3_list:
@@ -12480,6 +13109,7 @@ def Game():
                             #endfor
                             for player in player_list:
                                 player.FreezeTrigger(0)
+                                conversation = False
                             #endfor
                         #endif
                     elif gamePhase == 17:
@@ -12489,25 +13119,37 @@ def Game():
                                     player.FreezeTrigger(0)
                                     player.ChangeSpeed(2)
                                     player.FreezeTrigger(1)
+                                    conversation = True
                                 #endfor
                                 timer.Counter(1200, timeUp)
                             elif timeUp[0] == 1:
                                 gamePhase = 18
                                 for player in player_list:
                                     player.FreezeTrigger(0)
-                                    player.ChangeSpeed(1)
-                                    player.FreezeTrigger(1)
                                 #endfor
+                                conversation = False
+                                readyToUpgrade = True
+                                DrawOrRemove(1, levelTwo_list, upgradeButton_list)
                             #endif
                         #endif
                         if live[0] == 0:
                             gameOver = True
                         #endif
                     elif gamePhase == 18:
-                        if player.rect.x >= 1600:
+                        if player.rect.x < 1550:
+                            for arrow in directionArrow_list:
+                                arrow.ArrowUpdate(levelTwo_list)
+                            #endfor
+                        if player.rect.x >= 1550:
+                            for arrow in directionArrow_list:
+                                arrow.ArrowReset(levelTwo_list)
+                            #endfor
+                            readyToUpgrade = False
+                            DrawOrRemove(0, levelTwo_list, upgradeButton_list)
                             player.FreezeTrigger(0)
                             player.ChangeSpeed(2)
                             player.FreezeTrigger(1)
+                            conversation = True
                             player.rect.x = 1600
                             for arun in arun_list:
                                 arun.HealthDisplay(0, levelTwo_list)
@@ -12564,7 +13206,7 @@ def Game():
                     elif gamePhase == 20:
                         DrawOrRemove(1, levelTwo_list, nextLevelBlock_list)
                         gamePhase = 21
-                        SaveProgress(currentFile, currency,live,gameLevel+1, shieldNum)
+                        SaveProgress(currentFile, currency,live,gameLevel+1, shieldNum, playerLevel)
                         advanceLevel = True
                     #endif
                     levelTwo_list.draw(screen) #Display all visible objects
@@ -12581,6 +13223,15 @@ def Game():
 
                         coin.Change()
                         coin.CoinUpdate(player_list, block3_list, tutorialBlock_list, tutorial_list, levelThree_list, coin_list, currency)
+
+                    #endfor
+
+                    for fireball in fireBall_list:
+
+                        fireball.EffectUpdate(levelThree_list)
+                        if fireball.rect.x > 1500 or fireball.rect.x < -160:
+                            fireball.DeleteSelf(levelThree_list, fireBall_list)
+                        #endif
 
                     #endfor
 
@@ -12615,7 +13266,7 @@ def Game():
                         if gamePhase != 6:
                             player.MoveHori(block3_list) #Player move horizontally
                         else:
-                            player.MoveHori2()
+                            player.MoveHori2(block3_list)
                         #endif
                         #Attack Checker
                         player.AttackChecker()
@@ -12641,6 +13292,7 @@ def Game():
                             necro.MoveVert(block3_list)
                             necro.Hurt()
                             necro.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
+                            necro.FireBallDetection(levelThree_list, fireBall_list)
                             necro.Health(levelThree_list, coin_list, enemyCount)
                             necro.Spell(player.rect.x, player.rect.y, levelThree_list, shadowBolt_list)
                             necro.Animation()
@@ -12658,6 +13310,7 @@ def Game():
                             skeleton.MoveVert(block3_list)
                             skeleton.Hurt()
                             skeleton.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
+                            skeleton.necro.FireBallDetection(levelThree_list, fireBall_list)
                             skeleton.Health()
                             skeleton.Animation()
 
@@ -12674,6 +13327,7 @@ def Game():
                     #endif
 
                     if gamePhase == 1:
+                        conversation = True
                         if gameChat == 1:
                             for player in player_list:
                                 player.FreezeTrigger(0)
@@ -12733,6 +13387,7 @@ def Game():
                             gamePhase = 2
                             gameChat = 1
                             player.FreezeTrigger(0)
+                            conversation = False
                             enemyCount[0] = 1
                             for necro in necromancer_list:
                                 necro.HealthDisplay(1, levelThree_list)
@@ -12747,6 +13402,7 @@ def Game():
                                     player.FreezeTrigger(1)
                                 #endfor
                                 timer.Counter(1200, timeUp)
+                                conversation = True
                             elif timeUp[0] == 1:
                                 gamePhase = 3
                             #endif
@@ -12760,6 +13416,7 @@ def Game():
                                 player.FreezeTrigger(0)
                                 player.ChangeSpeed(2)
                                 player.FreezeTrigger(1)
+                                conversation = True
                             #endfor
                             DrawOrRemove(1, levelThree_list, wordBox_list)
                             WriteWords(1, script3[3], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 3, 0)
@@ -12786,6 +13443,38 @@ def Game():
                     #endif
                     levelThree_list.draw(screen) #Display all visible objects
 
+                #endif
+
+            elif gameUpgrade:
+
+                for button in panelButton_list:
+
+                    button.Change(pos, level)
+
+                #endfor
+
+                for button in upgradeTextButton_list:
+
+                    button.Change(pos, level)
+
+                #endfor
+
+                if upgraded:
+
+                    for button in okButton_list:
+
+                        button.Change(pos, level)
+
+                    #endfor
+
+                #endif
+
+                if gameLevel == 1:
+                    levelOne_list.draw(screen) #Display all visible objects
+                elif gameLevel == 2:
+                    levelTwo_list.draw(screen)
+                elif gameLevel == 3:
+                    levelThree_list.draw(screen)
                 #endif
 
             elif gamePause:
