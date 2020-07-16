@@ -116,7 +116,7 @@ def CreatePanel(button_list, optionBlock_list, pauseButton_list, panelButton_lis
 #endprocedure
 
 #Characters
-def CreateCharacters0(player_list, leftPlayerAttack_list, rightPlayerAttack_list, tutorialEnemy_list, tutorial_list, levelOne_list, levelTwo_list, levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list, character1_list):
+def CreateCharacters0(yellowTriangle_list, player_list, leftPlayerAttack_list, rightPlayerAttack_list, tutorialEnemy_list, tutorial_list, levelOne_list, levelTwo_list, levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list, character1_list, talene_list, taleneAttack_list):
 
     player = PlayerClass(50, 700, leftPlayerAttack_list, rightPlayerAttack_list)
     player_list.add(player)
@@ -125,6 +125,15 @@ def CreateCharacters0(player_list, leftPlayerAttack_list, rightPlayerAttack_list
     dummy = BanditClass(1, 295, 250, tutorial_list, leftEnemyAttack_list, rightEnemyAttack_list)
     tutorialEnemy_list.add(dummy) #Specify Level
     character1_list.add(dummy)
+
+    talene = RogueClass(-1000, 710, levelTwo_list, leftPlayerAttack_list, rightPlayerAttack_list, taleneAttack_list)
+    talene_list.add(talene)
+
+    yellowTriangle = ItemClass(11, 0, 0, -1000, 670, 4)
+    yellowTriangle_list.add(yellowTriangle)
+    levelOne_list.add(yellowTriangle)
+    levelTwo_list.add(yellowTriangle)
+    levelThree_list.add(yellowTriangle)
 
 #endprocedure
 
@@ -340,7 +349,7 @@ def ResetFile(file_list, currentFileData_list):
 #endprocedure
 
 #Save Progress of the Game
-def SaveProgress(currentFile, currency, live, gameLevel, shieldNum, playerLive):
+def SaveProgress(currentFile, currency, live, gameLevel, shieldNum, playerLive, gameMode):
 
     if currentFile == 1:
         #Open File 1
@@ -357,7 +366,8 @@ def SaveProgress(currentFile, currency, live, gameLevel, shieldNum, playerLive):
     data += str(live[0]) + "\n" #Live
     data += str(gameLevel) + "\n" #Level
     data += str(shieldNum[0]) + "\n" #Shield
-    data += str(playerLive[0])
+    data += str(playerLive[0]) + "\n" #Player Level
+    data += str(gameMode[0])
     
     f.write(data)
     f.close()
@@ -599,7 +609,7 @@ def CreateTutorialPlatform(tutorialBlock_list, tutorial_list, button_list):
             
 #endprocedure
 
-def CreateBackgrounds(levelOne_list, levelTwo_list, levelThree_list, background1_list, background2_list, background3_list, cloud_list, ground_list, allBackgrounds_list, background_list):
+def CreateBackgrounds(levelOne_list, levelTwo_list, levelThree_list, background1_list, background2_list, background3_list, cloud_list, ground_list, allBackgrounds_list, background_list, whiteScreen_list):
 
     back1 = BackgroundClass(0, 2560, 800, 0, 0)
     back2 = BackgroundClass(1, 2560, 800, 0, 0)
@@ -621,6 +631,9 @@ def CreateBackgrounds(levelOne_list, levelTwo_list, levelThree_list, background1
     levelOne_list.add(ground) #Make it visible
     levelTwo_list.add(ground)
     levelThree_list.add(ground)
+
+    screen1 = ItemClass(10, 0, 0, 0, 0, 4)
+    whiteScreen_list.add(screen1)
 
 #endprocedure
 
@@ -1144,6 +1157,8 @@ class ItemClass(pygame.sprite.Sprite):
         self.levels = [pygame.transform.scale(pygame.image.load("Game_Images/Object/Levels/LevelIcon.png"), (width, height))] #Level
         self.levelNumbers = [pygame.transform.scale(pygame.image.load("Game_Images/Text/Level0.png"), (14, 20)), pygame.transform.scale(pygame.image.load("Game_Images/Text/Level1.png"), (14, 20)), pygame.transform.scale(pygame.image.load("Game_Images/Text/Level2.png"), (14, 20)), pygame.transform.scale(pygame.image.load("Game_Images/Text/Level3.png"), (14, 20))]
         self.arrows = [pygame.transform.scale(pygame.image.load("Game_Images/Object/Arrows/Arrow.png"), (140, 121))] #Arrow
+        self.whiteScreen = [pygame.transform.scale(pygame.image.load("Game_Images/Object/Screens/White.png"), (1500, 900))] #White Screen
+        self.yellowTriangle = [pygame.transform.scale(pygame.image.load("Game_Images/Object/Shapes/YellowTriangle.png"), (50, 30))] #Yellow Triangle
 
         if self.item == 1: #Set image
 
@@ -1183,6 +1198,14 @@ class ItemClass(pygame.sprite.Sprite):
         elif self.item == 9:
 
             self.image = self.stars[0]
+
+        elif self.item == 10:
+
+            self.image = self.whiteScreen[0]
+
+        elif self.item == 11:
+
+            self.image = self.yellowTriangle[0]
 
         #endif
 
@@ -2275,6 +2298,16 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
         
     #endprocedure
 
+    def TurnAround(self, posX):
+
+        if posX >= 670:
+            self.lastHoriSpeed = self.speedX
+        elif posX < 670:
+            self.lastHoriSpeed = -self.speedX
+        #endif
+
+    #endprocedure
+
     def LevelSet(self, playerLevel):
 
         self.lvl = playerLevel[0]
@@ -3082,7 +3115,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
 
             self.reduceHealth = False
             if self.hp > 0:
-                self.hp -= 1
+                #self.hp -= 1
                 self.hp += self.hp2
                 self.hp2 = 0
                 if self.hp < 0:
@@ -4599,6 +4632,7 @@ class WarlockClass(pygame.sprite.Sprite): #Class of the warlock
         self.hurt = False
         self.death = False
         self.reduceHealth = False
+        self.trigger = False
 
         #Timers
         self.endAnimation = 0
@@ -4619,6 +4653,48 @@ class WarlockClass(pygame.sprite.Sprite): #Class of the warlock
         
     #endprocedure
 
+    def Reappear(self, posX):
+
+        self.rect.y = 730
+        if posX >= 670:
+            self.rect.x = randint(50, 200)
+            self.lastHoriSpeed = 7
+        elif posX < 670:
+            self.rect.x = randint(1220, 1370)
+            self.lastHoriSpeed = -7
+        #endif
+
+        self.hp = 1
+        self.vertSpeed = -0.4
+        self.attacked = False
+        self.freeze = False
+        self.hurt = False
+        self.death = False
+        self.reduceHealth = False
+        self.trigger = False
+
+        #Timers
+        self.endAnimation = 0
+        self.startAnimation = 0
+        self.startAttack = 0
+        self.endAttack = 0
+        self.startDeath = 0
+        self.endDeath = 0
+        self.startHurt = 0
+        self.endHurt = 0
+
+        #Counter
+        self.attackCounter = 0
+        self.hurtCounter = 0
+        self.deathCounter = 0
+        
+        self.warlockHealth.Update(5)
+        self.warlockHealth.rect.x = self.rect.x - 10
+        self.warlockHealth.rect.y = self.rect.y - 35
+        self.Animation()
+
+    #endif
+
     def Reset(self):
 
         #Attributes
@@ -4633,6 +4709,7 @@ class WarlockClass(pygame.sprite.Sprite): #Class of the warlock
         self.hurt = False
         self.death = False
         self.reduceHealth = False
+        self.trigger = False
 
         #Timers
         self.endAnimation = 0
@@ -4793,6 +4870,18 @@ class WarlockClass(pygame.sprite.Sprite): #Class of the warlock
 
     #endprocedure
 
+    def Death(self, warlockDead):
+
+        if self.death and not self.trigger:
+
+            self.trigger = True
+            warlockDead[0] = 0
+
+        #endif
+
+    #endprocedure
+            
+
     def MoveVert(self, block_list):
 
         if self.freeze == False:
@@ -4933,6 +5022,10 @@ class RogueClass(pygame.sprite.Sprite): #Class of the rogue
         self.attackCount = 0
         self.skill = False
         self.dropCoin = False
+        self.stopAttack = False
+        self.trigger = False
+        self.immune = False
+        self.immuneFinish = False
 
         #Timers
         self.endAnimation = 0
@@ -4947,6 +5040,8 @@ class RogueClass(pygame.sprite.Sprite): #Class of the rogue
         self.endHurt = 0
         self.startRandom = 0
         self.endRandom = 0
+        self.startImmune = 0
+        self.endImmune = 0
 
         #Counter
         self.idleCounter = 0
@@ -4984,6 +5079,32 @@ class RogueClass(pygame.sprite.Sprite): #Class of the rogue
 
     #endprocedure
 
+    def TurnAround(self):
+
+        if self.rect.x > 750:
+            self.ChangeSpeed(0)
+        elif self.rect.x < 670:
+            self.ChangeSpeed(1)
+        #endif
+        self.ChangeSpeed(2)
+        self.hp = 1
+        self.death = False
+        self.reduceHealth = False
+        self.trigger = False
+
+    #endif
+
+    def Turn(self, num):
+
+        if num == 0:
+            self.ChangeSpeed(0)
+        elif num == 1:
+            self.ChangeSpeed(1)
+        #endif
+        self.ChangeSpeed(2)
+
+    #endprocedure
+
     def Reset(self):
 
         #Attributes
@@ -5004,8 +5125,12 @@ class RogueClass(pygame.sprite.Sprite): #Class of the rogue
         self.attackCount = 0
         self.skill = False
         self.dropCoin = False
+        self.stopAttack = False
+        self.trigger = False
         self.rect.x = self.originalX
         self.rect.y = self.originalY
+        self.immune = False
+        self.immuneFinish = False
 
         #Timers
         self.endAnimation = 0
@@ -5020,6 +5145,8 @@ class RogueClass(pygame.sprite.Sprite): #Class of the rogue
         self.endHurt = 0
         self.startRandom = 0
         self.endRandom = 0
+        self.startImmune = 0
+        self.endImmune = 0
 
         #Counter
         self.attackCounter = 0
@@ -5219,7 +5346,7 @@ class RogueClass(pygame.sprite.Sprite): #Class of the rogue
 
     def Control(self, x):
 
-        if not self.freeze:
+        if not self.freeze and not self.stopAttack:
 
             if not self.random and not self.skill:
 
@@ -5324,6 +5451,17 @@ class RogueClass(pygame.sprite.Sprite): #Class of the rogue
 
     def Health(self, sprite_list, coin_list, enemyCount):
 
+        if not self.immuneFinish and self.immune:
+            if self.startImmune == 0: #If start timer has not started yet
+                self.startImmune = pygame.time.get_ticks() #Record current time
+            #endif
+            self.endImmune = pygame.time.get_ticks() #Get current time for end time
+            if self.endImmune - self.startImmune >= 3000:
+                self.immune = False
+                self.immuneFinish = True
+            #endif
+        #endif
+
         if self.reduceHealth == True and not self.freeze:
 
             self.reduceHealth = False
@@ -5335,10 +5473,20 @@ class RogueClass(pygame.sprite.Sprite): #Class of the rogue
                 else:
                     self.rogueHealth1.Update(self.hp)
                 #endif
-            if self.hp == 0:
-                self.death = True
+            #endif
+            if self.hp == 1:
                 num = enemyCount[0]
                 enemyCount[0] = num - 1
+                self.stopAttack = True
+                self.attacked = False
+                self.sa = False
+                self.saMove = False
+                self.spell = False
+                self.ChangeSpeed(2)
+                self.immune = True
+            #endif
+            if self.hp == 0:
+                self.death = True
                 if not self.dropCoin:
                     self.dropCoin = True
                     for i in range(10):
@@ -5381,7 +5529,7 @@ class RogueClass(pygame.sprite.Sprite): #Class of the rogue
 
         enemyGetHit1_list = pygame.sprite.spritecollide(self, leftAttack_list, False)#If get hit
         for attack in enemyGetHit1_list:
-            if self.hurt == False and not self.death and not self.freeze:
+            if self.hurt == False and not self.death and not self.freeze and not self.immune:
                 self.hurt = True
                 self.reduceHealth = True
                 self.rogueAttackLeft.rect.x = -1000
@@ -5391,7 +5539,7 @@ class RogueClass(pygame.sprite.Sprite): #Class of the rogue
 
         enemyGetHit2_list = pygame.sprite.spritecollide(self, rightAttack_list, False)#If get hit
         for attack in enemyGetHit2_list:
-            if self.hurt == False and not self.death and not self.freeze:
+            if self.hurt == False and not self.death and not self.freeze and not self.immune:
                 self.hurt = True
                 self.reduceHealth = True
                 self.rogueAttackLeft.rect.x = -1000
@@ -5435,6 +5583,17 @@ class RogueClass(pygame.sprite.Sprite): #Class of the rogue
                 self.attackCount = 0
                 self.skill = True
             #endif
+
+        #endif
+
+    #endprocedure
+
+    def Death(self, rogueDead):
+
+        if self.death and not self.trigger:
+
+            self.trigger = True
+            rogueDead[0] = 0
 
         #endif
 
@@ -6581,7 +6740,7 @@ class ArunClass(pygame.sprite.Sprite): #Class of the Arun Swordsmith
 
     #endprocedure
 
-    def Health(self, sprite_list, coin_list, enemyCount):
+    def Health(self, sprite_list, coin_list, enemyCount, mehiraDefeat):
 
         if self.reduceHealth == True and not self.freeze:
 
@@ -6600,6 +6759,9 @@ class ArunClass(pygame.sprite.Sprite): #Class of the Arun Swordsmith
                 else:
                     self.arunHealth1.Update(self.hp)
                 #endif
+            if self.hp == 1:
+                mehiraDefeat[0] = 0
+            #endif
             if self.hp == 0:
                 num = enemyCount[0]
                 enemyCount[0] = num - 1
@@ -6898,6 +7060,8 @@ class SkeletonClass(pygame.sprite.Sprite): #Class of the skeleton
         self.hurtCounter = 0
         self.deathCounter = 0
         self.recoverCounter = 0
+
+        self.Reset()
         
     #endprocedure
 
@@ -10324,7 +10488,7 @@ def Game():
     loadedPlayerLevel = [0]
     timeUp = [0]
     enemyCount = [-1]
-    gameMode = 1
+    gameMode = [0]
     gameDifficulty = 1
     gameLevel = 1 #Game Level
     gamePhase = 1
@@ -10341,6 +10505,11 @@ def Game():
     timer = TimerClass()
     gameOverDisplay = False
     conversation = False
+    warlockDead = [1]
+    rogueDead = [1]
+    mehiraDefeat = [1]
+
+    posX = 0
 
     #Setting Variables
     difficulty = 0
@@ -10446,6 +10615,10 @@ def Game():
 
     rightPlayerAttack_list = pygame.sprite.Group() #Player's attack
 
+    talene_list = pygame.sprite.Group()
+
+    taleneAttack_list = pygame.sprite.Group()
+
     leftEnemyAttack_list = pygame.sprite.Group()
 
     rightEnemyAttack_list = pygame.sprite.Group()
@@ -10524,9 +10697,13 @@ def Game():
 
     upgradeBox_list = pygame.sprite.Group()
 
+    yellowTriangle_list = pygame.sprite.Group()
+
     allBackgrounds_list = pygame.sprite.Group() #All backgrounds
 
     background_list = pygame.sprite.Group() #Backgrounds
+
+    whiteScreen_list = pygame.sprite.Group() #White screen
 
     CreateLoad(loading_list)
 
@@ -10620,7 +10797,7 @@ def Game():
                     currency[3] = 0
                 elif level == 4 and pos[0] >= 616 and pos[1] >= 503 and pos[0] <= 884 and pos[1] <= 543 and not gameUpgrade and not gamePause and not gameOver and advanceLevel: #Advance Game Level
                     advanceLevel = False
-                    enemyCount = [0]
+                    enemyCount = [-1]
                     if gameLevel == 1:
                         DrawOrRemove(0, levelOne_list, nextLevelBlock_list)
                         for block in block1_list:
@@ -10644,6 +10821,7 @@ def Game():
                         DrawOrRemove(0, levelOne_list, nextButton_list)
                         DrawOrRemove(0, levelOne_list, currentLine_list)
                         DrawOrRemove(0, levelOne_list, wordBox_list)
+                        DrawOrRemove(0, levelOne_list, whiteScreen_list)
                     elif gameLevel == 2:
                         DrawOrRemove(0, levelTwo_list, nextLevelBlock_list)
                         for block in block2_list:
@@ -10737,6 +10915,7 @@ def Game():
                         DrawOrRemove(0, levelOne_list, nextButton_list)
                         DrawOrRemove(0, levelOne_list, currentLine_list)
                         DrawOrRemove(0, levelOne_list, wordBox_list)
+                        DrawOrRemove(0, levelOne_list, whiteScreen_list)
                     elif gameLevel == 2:
                         DrawOrRemove(0, levelTwo_list, nextLevelBlock_list)
                         for block in block2_list:
@@ -10807,7 +10986,7 @@ def Game():
                     endReadScript = 0
                     player.ResetLive([5], [8], [0])
                     player.Reset()
-                    player.SetLevel([0])
+                    player.LevelSet([0])
                     live[0] = 5
                 elif level == 4 and pos[0] >= 1360 and pos[1] >= 820 and pos[0] <= 1420 and pos[1] <= 880 and not gameUpgrade and not gamePause and not gameOver and not advanceLevel and readyToUpgrade: #Upgrade panel
                     gameUpgrade = True
@@ -11024,6 +11203,7 @@ def Game():
                         DrawOrRemove(0, levelOne_list, currentLine_list)
                         DrawOrRemove(0, levelOne_list, wordBox_list)
                         DrawOrRemove(0, levelOne_list, coin_list)
+                        DrawOrRemove(0, levelOne_list, whiteScreen_list)
                     elif gameLevel == 2:
                         for block in block2_list:
                             block.Reset()
@@ -11135,6 +11315,7 @@ def Game():
                         DrawOrRemove(0, levelOne_list, currentLine_list)
                         DrawOrRemove(0, levelOne_list, wordBox_list)
                         DrawOrRemove(0, levelOne_list, coin_list)
+                        DrawOrRemove(0, levelOne_list, whiteScreen_list)
                     elif gameLevel == 2:
                         for block in block2_list:
                             block.Reset()
@@ -11240,6 +11421,7 @@ def Game():
                         DrawOrRemove(1, levelOne_list, pauseButton_list)
                         DrawOrRemove(0, levelOne_list, coin_list)
                         DrawOrRemove(0, coin_list, coin_list)
+                        DrawOrRemove(0, levelOne_list, whiteScreen_list)
                     elif gameLevel == 2:
                         for block in block2_list:
                             block.Reset()
@@ -11342,6 +11524,7 @@ def Game():
                         DrawOrRemove(1, levelOne_list, pauseButton_list)
                         DrawOrRemove(0, levelOne_list, coin_list)
                         DrawOrRemove(0, coin_list, coin_list)
+                        DrawOrRemove(0, levelOne_list, whiteScreen_list)
                     elif gameLevel == 2:
                         for block in block2_list:
                             block.Reset()
@@ -11405,6 +11588,7 @@ def Game():
                     if ReadyToClick:
                         gameChat += 1
                         ReadyToClick = False
+                        timeUp[0] = 0
                     #endif
                 #endif
             elif level >= 2 and event.type == pygame.KEYDOWN: #Press Key Down
@@ -11522,12 +11706,12 @@ def Game():
                     CreateFile(file_list, button_list, item_list, crown_list, currentFileData_list)
                     CreateMenu(menu_list, button_list)
                     CreateSettings(setting_list, button_list, easy_list, hard_list)
-                    CreateBackgrounds(levelOne_list, levelTwo_list, levelThree_list, background1_list, background2_list, background3_list, cloud_list, ground_list, allBackgrounds_list, background_list)#Backgrounds and ground
+                    CreateBackgrounds(levelOne_list, levelTwo_list, levelThree_list, background1_list, background2_list, background3_list, cloud_list, ground_list, allBackgrounds_list, background_list, whiteScreen_list)#Backgrounds and ground
                     CreateLevelOnePlatform(block1_list, levelOne_list) #Level One Platforms
                     CreateLevelTwoPlatform(block2_list, levelTwo_list) #Level Two Platforms
                     CreatePanel(button_list, optionBlock_list, pauseButton_list, panelButton_list, levelOne_list, levelTwo_list, levelThree_list, nextLevelBlock_list, restartLevel_list, directionArrow_list, levelUp_list, upgradeButton_list, upgradeInstruction_list, upgradeTextButton_list, upgradeBox_list, okButton_list)
                     CreateTutorialPlatform(tutorialBlock_list, tutorial_list, button_list)
-                    CreateCharacters0(player_list, leftPlayerAttack_list, rightPlayerAttack_list, tutorialEnemy_list, tutorial_list, levelOne_list, levelTwo_list, levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list, character1_list)
+                    CreateCharacters0(yellowTriangle_list, player_list, leftPlayerAttack_list, rightPlayerAttack_list, tutorialEnemy_list, tutorial_list, levelOne_list, levelTwo_list, levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list, character1_list, talene_list, taleneAttack_list)
                     CreateCharacters1(levelOne_list, enemy_list, warlock_list, wordBox_list, nextButton_list, rogue_list, leftEnemyAttack_list, rightEnemyAttack_list, rogueAttack_list, banditGroup1_list, banditGroup2_list, character1_list)
                     CreateCharacters2(levelTwo_list, enemyAttack_list, leftEnemyAttack_list, rightEnemyAttack_list, banditGroup3_list, banditGroup4_list, mushroomGroup1_list, mushroomGroup2_list, mushroomGroup3_list, character2_list, arun_list, mushroomAttack_list)
                     CreateCharacters3(levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list, character3_list, skeleton1_list, abomination_list, abominationAttack_list, necromancer_list)
@@ -11640,6 +11824,8 @@ def Game():
 
                     #Set Level
                     gameLevel = int(lines[2][0])
+
+                    gameMode[0] = int(lines[5][0])
 
                 #endif
 
@@ -11847,7 +12033,6 @@ def Game():
 
                     #endfor
 
-
                     for thousand in thousand_list:
                         thousand.Update(currency[0])
                     #endfor
@@ -11862,7 +12047,7 @@ def Game():
                     #endfor
 
                     #Warlock
-                    if gamePhase <= 5:
+                    if gamePhase <= 5 or gamePhase >= 20:
                         for warlock in warlock_list:
                             warlock.MoveHori(block1_list)
                             warlock.MoveVert(block1_list)
@@ -11952,7 +12137,7 @@ def Game():
                         #Roll
                         player.Roll()
                         #Horizontal Movement
-                        if gamePhase != 9 and gamePhase != 10 and gamePhase != 16 and gamePhase != 17 and gamePhase != 20 and gamePhase != 21 and gamePhase != 22 and gamePhase != 23:
+                        if gamePhase != 9 and gamePhase != 10 and gamePhase != 16 and gamePhase != 17 and gamePhase != 25 and gamePhase != 26 and gamePhase != 27 and gamePhase != 28 and gamePhase != 34 and gamePhase != 35 and gamePhase != 36 and gamePhase != 37:
                             player.MoveHori(block1_list) #Player move horizontally
                         else:
                             player.MoveHori2(block1_list)
@@ -11973,6 +12158,9 @@ def Game():
                     if gamePhase == 1:
                         conversation = True
                         if gameChat == 1:
+                            for triangle in yellowTriangle_list:
+                                triangle.rect.x = 165
+                            #endfor
                             DrawOrRemove(1, levelOne_list, wordBox_list)
                             WriteWords(1, script1[0], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 1, 0)
                             gameChat = 2
@@ -12025,6 +12213,9 @@ def Game():
                             DrawOrRemove(0, levelOne_list, wordBox_list)
                             gamePhase = 2
                             gameChat = 1
+                            for triangle in yellowTriangle_list:
+                                triangle.rect.x = -1000
+                            #endfor
                             for warlock in warlock_list:
                                 warlock.ChangeSpeed(1)
                             #endfor
@@ -12055,6 +12246,11 @@ def Game():
                         #endif
                     elif gamePhase == 4:
                         if gameChat == 1:
+                            for triangle in yellowTriangle_list:
+                                for rogue in rogue_list:
+                                    triangle.rect.x = rogue.rect.x + 15
+                                #endfor
+                            #endfor
                             DrawOrRemove(1, levelOne_list, wordBox_list)
                             WriteWords(1, script1[3], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 1, 0)
                             gameChat = 2
@@ -12073,6 +12269,9 @@ def Game():
                             DrawOrRemove(0, levelOne_list, nextButton_list)
                             DrawOrRemove(0, levelOne_list, currentLine_list)
                             DrawOrRemove(0, levelOne_list, wordBox_list)
+                            for triangle in yellowTriangle_list:
+                                triangle.rect.x = -1000
+                            #endfor
                             gameChat = 0
                             gamePhase = 5
                             gameChat = 1
@@ -12135,6 +12334,7 @@ def Game():
                                 timer.Counter(1200, timeUp)
                                 conversation = True
                             elif timeUp[0] == 1:
+                                timeUp[0] = 0
                                 gamePhase = 9
                                 for player in player_list:
                                     player.FreezeTrigger(0)
@@ -12153,43 +12353,53 @@ def Game():
                                 arrow.ArrowUpdate(levelOne_list)
                             #endfor
                         elif player.rect.x >= 1550:
-                            for arrow in directionArrow_list:
-                                arrow.ArrowReset(levelOne_list)
-                            #endfor
-                            readyToUpgrade = False
-                            DrawOrRemove(0, levelOne_list, upgradeButton_list)
-                            player.FreezeTrigger(0)
-                            player.ChangeSpeed(2)
-                            player.FreezeTrigger(1)
-                            player.rect.x = 1550
-                            conversation = True
-                            gamePhase = 10
-                            for coin in coin_list:
-                                levelOne_list.remove(coin)
-                                coin_list.remove(coin)
-                                currency[3] += 1
-                                if currency[3] == 10:
-                                    currency[2] += 1
-                                    currency[3] = 0
-                                #endif
-                                if currency[2] == 10:
-                                    currency[1] += 1
-                                    currency[2] = 0
-                                #endif
-                                if currency[1] == 10:
-                                    currency[0] += 1
-                                    currency[1] = 0
-                                #endif
-                                if currency[0] == 10:
-                                    currency[0] = 0
-                                    currency[1] = 0
-                                    currency[2] = 0
-                                    currency[3] = 0
-                                #endif
-                            #endfor
+                            if timeUp[0] == 0:
+                                timer.Counter(1000, timeUp)
+                            elif timeUp[0] == 1:
+                                timeUp[0] = 0
+                                for arrow in directionArrow_list:
+                                    arrow.ArrowReset(levelOne_list)
+                                #endfor
+                                readyToUpgrade = False
+                                DrawOrRemove(0, levelOne_list, upgradeButton_list)
+                                for player in player_list:
+                                    player.FreezeTrigger(0)
+                                    player.ChangeSpeed(2)
+                                    player.FreezeTrigger(1)
+                                #endfor
+                                player.rect.x = 1550
+                                conversation = True
+                                gamePhase = 10
+                                for coin in coin_list:
+                                    levelOne_list.remove(coin)
+                                    coin_list.remove(coin)
+                                    currency[3] += 1
+                                    if currency[3] == 10:
+                                        currency[2] += 1
+                                        currency[3] = 0
+                                    #endif
+                                    if currency[2] == 10:
+                                        currency[1] += 1
+                                        currency[2] = 0
+                                    #endif
+                                    if currency[1] == 10:
+                                        currency[0] += 1
+                                        currency[1] = 0
+                                    #endif
+                                    if currency[0] == 10:
+                                        currency[0] = 0
+                                        currency[1] = 0
+                                        currency[2] = 0
+                                        currency[3] = 0
+                                    #endif
+                                #endfor
+                            #endif
                         #endif
                     elif gamePhase == 10:
                         if player.rect.x > 50:
+                            for player in player_list:
+                                player.FreezeTrigger(1)
+                            #endfor
                             player.rect.x -= 10
                             for block in block1_list:
                                 block.rect.x -= 10
@@ -12223,6 +12433,12 @@ def Game():
                         #endif
                     elif gamePhase == 11:
                         if gameChat == 1:
+                            for triangle in yellowTriangle_list:
+                                triangle.rect.x = 725
+                                for rogue in rogue_list:
+                                    triangle.rect.y = rogue.rect.y - 40
+                                #endfor
+                            #endfor
                             DrawOrRemove(1, levelOne_list, wordBox_list)
                             WriteWords(1, script1[4], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 1, 0)
                             gameChat = 2
@@ -12244,6 +12460,10 @@ def Game():
                             gameChat = 0
                             gamePhase = 12
                             gameChat = 1
+                            for triangle in yellowTriangle_list:
+                                triangle.rect.x = -1000
+                                triangle.rect.y = 670
+                            #endfor
                         #endif
                     elif gamePhase == 12:
                         for rogue in rogue_list:
@@ -12283,6 +12503,7 @@ def Game():
                                 timer.Counter(1200, timeUp)
                                 conversation = True
                             elif timeUp[0] == 1:
+                                timeUp[0] = 0
                                 gamePhase = 16
                                 for player in player_list:
                                     player.FreezeTrigger(0)
@@ -12301,47 +12522,52 @@ def Game():
                                 arrow.ArrowUpdate(levelOne_list)
                             #endfor
                         elif player.rect.x >= 1550:
-                            for arrow in directionArrow_list:
-                                arrow.ArrowReset(levelOne_list)
-                            #endfor
-                            readyToUpgrade = False
-                            DrawOrRemove(0, levelOne_list, upgradeButton_list)
-                            player.FreezeTrigger(0)
-                            player.ChangeSpeed(2)
-                            player.FreezeTrigger(1)
-                            conversation = True
-                            player.rect.x = 1550
-                            for rogue in rogue_list:
-                                rogue.ChangeSpeed(0)
-                                rogue.ChangeSpeed(2)
-                                rogue.Unrandom()
-                                rogue.rect.x = 2870
-                                rogue.rect.y = 710
-                            #endfor
-                            gamePhase = 17
-                            for coin in coin_list:
-                                levelOne_list.remove(coin)
-                                coin_list.remove(coin)
-                                currency[3] += 1
-                                if currency[3] == 10:
-                                    currency[2] += 1
-                                    currency[3] = 0
-                                #endif
-                                if currency[2] == 10:
-                                    currency[1] += 1
-                                    currency[2] = 0
-                                #endif
-                                if currency[1] == 10:
-                                    currency[0] += 1
-                                    currency[1] = 0
-                                #endif
-                                if currency[0] == 10:
-                                    currency[0] = 0
-                                    currency[1] = 0
-                                    currency[2] = 0
-                                    currency[3] = 0
-                                #endif
-                            #endfor
+                            if timeUp[0] == 0:
+                                timer.Counter(1000, timeUp)
+                            elif timeUp[0] == 1:
+                                timeUp[0] = 0
+                                for arrow in directionArrow_list:
+                                    arrow.ArrowReset(levelOne_list)
+                                #endfor
+                                readyToUpgrade = False
+                                DrawOrRemove(0, levelOne_list, upgradeButton_list)
+                                player.FreezeTrigger(0)
+                                player.ChangeSpeed(2)
+                                player.FreezeTrigger(1)
+                                conversation = True
+                                player.rect.x = 1550
+                                for rogue in rogue_list:
+                                    rogue.ChangeSpeed(0)
+                                    rogue.ChangeSpeed(2)
+                                    rogue.Unrandom()
+                                    rogue.rect.x = 2870
+                                    rogue.rect.y = 710
+                                #endfor
+                                gamePhase = 17
+                                for coin in coin_list:
+                                    levelOne_list.remove(coin)
+                                    coin_list.remove(coin)
+                                    currency[3] += 1
+                                    if currency[3] == 10:
+                                        currency[2] += 1
+                                        currency[3] = 0
+                                    #endif
+                                    if currency[2] == 10:
+                                        currency[1] += 1
+                                        currency[2] = 0
+                                    #endif
+                                    if currency[1] == 10:
+                                        currency[0] += 1
+                                        currency[1] = 0
+                                    #endif
+                                    if currency[0] == 10:
+                                        currency[0] = 0
+                                        currency[1] = 0
+                                        currency[2] = 0
+                                        currency[3] = 0
+                                    #endif    
+                                #endfor
+                            #endif
                         #endif
                     elif gamePhase == 17:
                         if player.rect.x > 50:
@@ -12371,6 +12597,11 @@ def Game():
                         #endif
                     elif gamePhase == 18:
                         if gameChat == 1:
+                            for triangle in yellowTriangle_list:
+                                for rogue in rogue_list:
+                                    triangle.rect.x = rogue.rect.x + 15
+                                #endfor
+                            #endfor
                             DrawOrRemove(1, levelOne_list, wordBox_list)
                             WriteWords(1, script1[5], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 1, 0)
                             gameChat = 2
@@ -12413,6 +12644,9 @@ def Game():
                             for rogue in rogue_list:
                                 rogue.HealthDisplay(1, levelOne_list)
                             #endfor
+                            for triangle in yellowTriangle_list:
+                                triangle.rect.x = -1000
+                            #endfor
                         #endif
                     elif gamePhase == 19:
                         if enemyCount == [0] and live[0] > 0:
@@ -12422,22 +12656,217 @@ def Game():
                                     player.ChangeSpeed(2)
                                     player.FreezeTrigger(1)
                                 #endfor
-                                timer.Counter(1200, timeUp)
                                 conversation = True
+                                timer.Counter(500, timeUp)
                             elif timeUp[0] == 1:
+                                timeUp[0] = 0
                                 gamePhase = 20
-                                for player in player_list:
-                                    player.FreezeTrigger(0)
-                                    conversation = False
-                                #endfor
-                                readyToUpgrade = True
-                                DrawOrRemove(1, levelOne_list, upgradeButton_list)
+                                enemyCount[0] = -1
                             #endif
                         #endif
                         if live[0] <= 0:
                             gameOver = True
                         #endif
                     elif gamePhase == 20:
+                        for rogue in rogue_list:
+                            posX = rogue.rect.x
+                        #endfor
+                        for warlock in warlock_list:
+                            warlock.Reappear(posX)
+                        #endfor
+                        gamePhase = 21
+                    elif gamePhase == 21:
+                        if gameChat == 1:
+                            for triangle in yellowTriangle_list:
+                                for warlock in warlock_list:
+                                    triangle.rect.x = warlock.rect.x + 15
+                                #endfor
+                            #endfor
+                            DrawOrRemove(1, levelOne_list, wordBox_list)
+                            WriteWords(1, script1[8], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 1, 0)
+                            gameChat = 2
+                        elif gameChat == 2:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelOne_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 3:
+                            DrawOrRemove(0, levelOne_list, nextButton_list)
+                            DrawOrRemove(0, levelOne_list, currentLine_list)
+                            WriteWords(1, script1[9], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 1, 0)
+                            gameChat = 4
+                            for rogue in rogue_list:
+                                rogue.TurnAround()
+                            #endfor
+                        elif gameChat == 4:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelOne_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 5:
+                            DrawOrRemove(0, levelOne_list, nextButton_list)
+                            DrawOrRemove(0, levelOne_list, currentLine_list)
+                            WriteWords(1, script1[10], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 1, 0)
+                            gameChat = 6
+                        elif gameChat == 6:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelOne_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 7:
+                            DrawOrRemove(0, levelOne_list, nextButton_list)
+                            DrawOrRemove(0, levelOne_list, currentLine_list)
+                            DrawOrRemove(0, levelOne_list, wordBox_list)
+                            gamePhase = 22
+                            gameChat = 1
+                            for player in player_list:
+                                player.FreezeTrigger(0)
+                            #endfor
+                            conversation = False
+                            for triangle in yellowTriangle_list:
+                                triangle.rect.x = -1000
+                            #endfor
+                        #endif
+                    elif gamePhase == 22:
+                        for warlock in warlock_list:
+                            warlock.EnemyAttackDetection(leftPlayerAttack_list)
+                            warlock.EnemyAttackDetection(rightPlayerAttack_list)
+                            warlock.Death(warlockDead)
+                        #endfor
+                        for rogue in rogue_list:
+                            rogue.Death(rogueDead)
+                        #endfor
+                        if warlockDead[0] == 0:
+                            warlockDead[0] = 1
+                            gameMode[0] = 1
+                            gamePhase = 29
+                            conversation = True
+                            for player in player_list:
+                                player.FreezeTrigger(1)
+                            #endfor
+                        elif rogueDead[0] == 0:
+                            rogueDead[0] = 1
+                            gameMode[0] = 0
+                            gamePhase = 23
+                            conversation = True
+                            for player in player_list:
+                                player.FreezeTrigger(1)
+                            #endfor
+                        #endif
+                    elif gamePhase == 23:
+                        if gameChat == 1:
+                            for triangle in yellowTriangle_list:
+                                for warlock in warlock_list:
+                                    triangle.rect.x = warlock.rect.x + 15
+                                #endfor
+                            #endfor
+                            DrawOrRemove(1, levelOne_list, wordBox_list)
+                            WriteWords(1, script1[11], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 1, 0)
+                            gameChat = 2
+                        elif gameChat == 2:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelOne_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 3:
+                            DrawOrRemove(0, levelOne_list, nextButton_list)
+                            DrawOrRemove(0, levelOne_list, currentLine_list)
+                            WriteWords(1, script1[12], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 1, 0)
+                            gameChat = 4
+                        elif gameChat == 4:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelOne_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 5:
+                            DrawOrRemove(0, levelOne_list, nextButton_list)
+                            DrawOrRemove(0, levelOne_list, currentLine_list)
+                            WriteWords(1, script1[13], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 1, 0)
+                            gameChat = 6
+                        elif gameChat == 6:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelOne_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 7:
+                            DrawOrRemove(0, levelOne_list, nextButton_list)
+                            DrawOrRemove(0, levelOne_list, currentLine_list)
+                            WriteWords(1, script1[14], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 1, 0)
+                            gameChat = 8
+                        elif gameChat == 8:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelOne_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 9:
+                            DrawOrRemove(0, levelOne_list, nextButton_list)
+                            DrawOrRemove(0, levelOne_list, currentLine_list)
+                            DrawOrRemove(0, levelOne_list, wordBox_list)
+                            gamePhase = 24
+                            gameChat = 1
+                            for warlock in warlock_list:
+                                warlock.ChangeSpeed(1)
+                            #endfor
+                            for triangle in yellowTriangle_list:
+                                triangle.rect.x = -1000
+                            #endfor
+                        #endif
+                    elif gamePhase == 24:
+                        for warlock in warlock_list:
+                            if warlock.rect.x >= 1550:
+                                warlock.ChangeSpeed(2)
+                                gamePhase = 25
+                                for player in player_list:
+                                    player.FreezeTrigger(0)
+                                #endfor
+                                conversation = False
+                                readyToUpgrade = True
+                                DrawOrRemove(1, levelOne_list, upgradeButton_list)
+                            #endif
+                        #endfor
+                    elif gamePhase == 25:
                         if player.rect.x < 1550:
                             for arrow in directionArrow_list:
                                 arrow.ArrowUpdate(levelOne_list)
@@ -12454,7 +12883,7 @@ def Game():
                             for rogue in rogue_list:
                                 rogue.HealthDisplay(0, levelOne_list)
                             #endfor
-                            gamePhase = 21
+                            gamePhase = 26
                             readyToUpgrade = False
                             DrawOrRemove(0, levelOne_list, upgradeButton_list)
                             for coin in coin_list:
@@ -12482,7 +12911,7 @@ def Game():
                             #endfor
                             DrawOrRemove(0, levelOne_list, pauseButton_list)
                         #endif
-                    elif gamePhase == 21:
+                    elif gamePhase == 26:
                         if gameChat == 1:
                             DrawOrRemove(1, levelOne_list, wordBox_list)
                             WriteWords(1, script1[7], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 1, 0)
@@ -12502,18 +12931,309 @@ def Game():
                             DrawOrRemove(0, levelOne_list, nextButton_list)
                             DrawOrRemove(0, levelOne_list, currentLine_list)
                             DrawOrRemove(0, levelOne_list, wordBox_list)
-                            gamePhase = 22
+                            gamePhase = 27
                             gameChat = 1
                         #endif
-                    elif gamePhase == 22:
+                    elif gamePhase == 27:
                         DrawOrRemove(1, levelOne_list, nextLevelBlock_list)
-                        gamePhase = 23
-                        SaveProgress(currentFile, currency,live,gameLevel+1, shieldNum, playerLevel)
+                        gamePhase = 28
+                        SaveProgress(currentFile, currency,live,gameLevel+1, shieldNum, playerLevel, gameMode)
+                        advanceLevel = True
+                    elif gamePhase == 29: #If Warlock gets killed
+                        if timeUp[0] == 0:
+                            timer.Counter(1500, timeUp)
+                        elif timeUp[0] == 1:
+                            timeUp[0] = 0
+                            gamePhase = 30
+                            DrawOrRemove(1, levelOne_list, whiteScreen_list)
+                        #endif
+                    elif gamePhase == 30:
+                        if gameChat == 1:
+                            DrawOrRemove(1, levelOne_list, wordBox_list)
+                            WriteWords(1, script1[22], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 1, 0)
+                            gameChat = 2
+                        elif gameChat == 2:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelOne_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 3:
+                            DrawOrRemove(0, levelOne_list, nextButton_list)
+                            DrawOrRemove(0, levelOne_list, currentLine_list)
+                            WriteWords(1, script1[23], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 1, 0)
+                            gameChat = 4
+                        elif gameChat == 4:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelOne_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 5:
+                            DrawOrRemove(0, levelOne_list, nextButton_list)
+                            DrawOrRemove(0, levelOne_list, currentLine_list)
+                            WriteWords(1, script1[24], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 1, 0)
+                            gameChat = 6
+                        elif gameChat == 6:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelOne_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 7:
+                            DrawOrRemove(0, levelOne_list, nextButton_list)
+                            DrawOrRemove(0, levelOne_list, currentLine_list)
+                            DrawOrRemove(0, levelOne_list, wordBox_list)
+                            gamePhase = 31
+                            for warlock in warlock_list:
+                                warlock.rect.x = -100
+                            #endfor
+                            DrawOrRemove(0, levelOne_list, whiteScreen_list)
+                            gameChat = 1
+                        #endif
+                    elif gamePhase == 31: 
+                        for rogue in rogue_list:
+                            posX = rogue.rect.x
+                        #endfor
+                        for player in player_list:
+                            player.TurnAround(posX)
+                        #endfor
+                        gamePhase = 32
+                    elif gamePhase == 32:
+                        if gameChat == 1:
+                            for triangle in yellowTriangle_list:
+                                for rogue in rogue_list:
+                                    triangle.rect.x = rogue.rect.x + 15
+                                #endfor
+                            #endfor
+                            DrawOrRemove(1, levelOne_list, wordBox_list)
+                            WriteWords(1, script1[15], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 1, 0)
+                            gameChat = 2
+                        elif gameChat == 2:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelOne_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 3:
+                            DrawOrRemove(0, levelOne_list, nextButton_list)
+                            DrawOrRemove(0, levelOne_list, currentLine_list)
+                            WriteWords(1, script1[16], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 1, 0)
+                            gameChat = 4
+                        elif gameChat == 4:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelOne_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 5:
+                            DrawOrRemove(0, levelOne_list, nextButton_list)
+                            DrawOrRemove(0, levelOne_list, currentLine_list)
+                            WriteWords(1, script1[17], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 1, 0)
+                            gameChat = 6
+                        elif gameChat == 6:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelOne_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 7:
+                            DrawOrRemove(0, levelOne_list, nextButton_list)
+                            DrawOrRemove(0, levelOne_list, currentLine_list)
+                            WriteWords(1, script1[18], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 1, 0)
+                            gameChat = 8
+                        elif gameChat == 8:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelOne_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 9:
+                            DrawOrRemove(0, levelOne_list, nextButton_list)
+                            DrawOrRemove(0, levelOne_list, currentLine_list)
+                            WriteWords(1, script1[19], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 1, 0)
+                            gameChat = 10
+                        elif gameChat == 10:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelOne_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 11:
+                            DrawOrRemove(0, levelOne_list, nextButton_list)
+                            DrawOrRemove(0, levelOne_list, currentLine_list)
+                            WriteWords(1, script1[20], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 1, 0)
+                            gameChat = 12
+                        elif gameChat == 12:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelOne_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 13:
+                            DrawOrRemove(0, levelOne_list, nextButton_list)
+                            DrawOrRemove(0, levelOne_list, currentLine_list)
+                            WriteWords(1, script1[21], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 1, 0)
+                            gameChat = 14
+                        elif gameChat == 14:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelOne_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 15:
+                            DrawOrRemove(0, levelOne_list, nextButton_list)
+                            DrawOrRemove(0, levelOne_list, currentLine_list)
+                            DrawOrRemove(0, levelOne_list, wordBox_list)
+                            gamePhase = 33
+                            gameChat = 1
+                            for rogue in rogue_list:
+                                rogue.ChangeSpeed(1)
+                            #endfor
+                            for triangle in yellowTriangle_list:
+                                triangle.rect.x = -1000
+                            #endfor
+                        #endif
+                    elif gamePhase == 33:
+                        for rogue in rogue_list:
+                            if rogue.rect.x >= 1550:
+                                rogue.ChangeSpeed(2)
+                                gamePhase = 34
+                                for player in player_list:
+                                    player.FreezeTrigger(0)
+                                #endfor
+                                conversation = False
+                                readyToUpgrade = True
+                                DrawOrRemove(1, levelOne_list, upgradeButton_list)
+                            #endif
+                        #endfor
+                    elif gamePhase == 34:
+                        if player.rect.x < 1550:
+                            for arrow in directionArrow_list:
+                                arrow.ArrowUpdate(levelOne_list)
+                            #endfor
+                        elif player.rect.x >= 1550:
+                            for arrow in directionArrow_list:
+                                arrow.ArrowReset(levelOne_list)
+                            #endfor
+                            player.FreezeTrigger(0)
+                            player.ChangeSpeed(2)
+                            player.FreezeTrigger(1)
+                            conversation = True
+                            player.rect.x = 1600
+                            for rogue in rogue_list:
+                                rogue.HealthDisplay(0, levelOne_list)
+                            #endfor
+                            gamePhase = 35
+                            readyToUpgrade = False
+                            DrawOrRemove(0, levelOne_list, upgradeButton_list)
+                            for coin in coin_list:
+                                levelOne_list.remove(coin)
+                                coin_list.remove(coin)
+                                currency[3] += 1
+                                if currency[3] == 10:
+                                    currency[2] += 1
+                                    currency[3] = 0
+                                #endif
+                                if currency[2] == 10:
+                                    currency[1] += 1
+                                    currency[2] = 0
+                                #endif
+                                if currency[1] == 10:
+                                    currency[0] += 1
+                                    currency[1] = 0
+                                #endif
+                                if currency[0] == 10:
+                                    currency[0] = 0
+                                    currency[1] = 0
+                                    currency[2] = 0
+                                    currency[3] = 0
+                                #endif
+                            #endfor
+                            DrawOrRemove(0, levelOne_list, pauseButton_list)
+                        #endif
+                    elif gamePhase == 35:
+                        if gameChat == 1:
+                            DrawOrRemove(1, levelOne_list, wordBox_list)
+                            WriteWords(1, script1[7], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 1, 0)
+                            gameChat = 2
+                        elif gameChat == 2:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelOne_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 3:
+                            DrawOrRemove(0, levelOne_list, nextButton_list)
+                            DrawOrRemove(0, levelOne_list, currentLine_list)
+                            DrawOrRemove(0, levelOne_list, wordBox_list)
+                            gamePhase = 36
+                            gameChat = 1
+                        #endif
+                    elif gamePhase == 36:
+                        DrawOrRemove(1, levelOne_list, nextLevelBlock_list)
+                        gamePhase = 37
+                        SaveProgress(currentFile, currency,live,gameLevel+1, shieldNum, playerLevel, gameMode)
                         advanceLevel = True
                     #endif
                     levelOne_list.draw(screen) #Display all visible objects
 
-                elif gameLevel == 2: #Level2 Genocide--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                elif gameLevel == 2 and gameMode[0] == 0: #Level2 Genocide--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
                     screen.fill(FORESTWHITE)
                     for button in button_list: #Button Change
 
@@ -13214,7 +13934,1005 @@ def Game():
                     elif gamePhase == 20:
                         DrawOrRemove(1, levelTwo_list, nextLevelBlock_list)
                         gamePhase = 21
-                        SaveProgress(currentFile, currency,live,gameLevel+1, shieldNum, playerLevel)
+                        SaveProgress(currentFile, currency,live,gameLevel+1, shieldNum, playerLevel, gameMode)
+                        advanceLevel = True
+                    #endif
+                    levelTwo_list.draw(screen) #Display all visible objects
+
+                elif gameLevel == 2 and gameMode[0] == 1: #Level2 Version 2--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                    screen.fill(FORESTWHITE)
+                    for button in button_list: #Button Change
+
+                        button.Change(pos, level)
+
+                    #endfor
+
+                    for coin in coin_list:
+
+                        coin.Change()
+                        coin.CoinUpdate(player_list, block2_list, tutorialBlock_list, tutorial_list, levelTwo_list, coin_list, currency)
+
+                    #endfor
+
+                    for fireball in fireBall_list:
+
+                        fireball.EffectUpdate(levelTwo_list)
+                        if fireball.rect.x > 1500 or fireball.rect.x < -160:
+                            fireball.DeleteSelf(levelTwo_list, fireBall_list)
+                        #endif
+
+                    #endfor
+
+                    for thousand in thousand_list:
+                        thousand.Update(currency[0])
+                    #endfor
+                    for hundred in hundred_list:
+                        hundred.Update(currency[1])
+                    #endfor
+                    for ten in ten_list:
+                        ten.Update(currency[2])
+                    #endfor
+                    for one in one_list:
+                        one.Update(currency[3])
+                    #endfor
+
+                    #Player Movement
+                    for player in player_list:
+
+                        #Detection
+                        player.EnemyAttackDetection(leftEnemyAttack_list, rightEnemyAttack_list)
+                        #Javelin Detection
+                        player.JavelinAttackDetection(leftJavelin_list, rightJavelin_list, levelTwo_list)
+                        #Mushroom Detection
+                        player.MushroomDetection(mushroomAttack_list)
+                        #Blocked
+                        player.Blocked(live, shieldNum)
+                        #Hurt
+                        player.Hurt()
+                        #Spell
+                        player.Spell(fireBall_list, levelTwo_list)
+                        #Attack
+                        player.Attack()
+                        #Roll
+                        player.Roll()
+                        #Horizontal Movement
+                        if gamePhase != 6 and gamePhase != 7 and gamePhase != 13 and gamePhase != 14 and gamePhase != 17 and gamePhase != 21 and gamePhase != 22 and gamePhase != 23 and gamePhase != 24:
+                            player.MoveHori(block2_list) #Player move horizontally
+                        else:
+                            player.MoveHori2(block2_list)
+                        #endif
+                        #Attack Checker
+                        player.AttackChecker()
+                        #Vertical Movement
+                        player.MoveVert(block2_list)
+                        #Health
+                        player.Health(live)
+                        #Animation
+                        player.Animation()
+
+                    #endfor
+
+                    if gamePhase >= 1:
+                        for talene in talene_list:
+                            talene.MoveHori(block2_list)
+                            talene.MoveVert(block2_list)
+                            talene.Hurt()
+                            talene.Attack()
+                            talene.Health(levelTwo_list, coin_list, enemyCount)
+                            talene.SA()
+                            talene.Animation()
+                        #endfor
+                    #endif
+
+                    if gamePhase <= 5 or (gamePhase >= 7 and gamePhase <= 10) or (gamePhase >= 14 and gamePhase <= 21):
+                        for arun in arun_list:
+
+                            if gamePhase == 17:
+                                arun.Control(player.rect.x, player.rect.y)
+                            #endif
+                            arun.Attack()
+                            arun.MoveHori(block2_list)
+                            arun.AttackChecker()
+                            arun.MoveVert(block2_list)
+                            arun.Hurt()
+                            arun.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
+                            arun.Health(levelTwo_list, coin_list, enemyCount, mehiraDefeat)
+                            arun.FireBallDetection(levelTwo_list, fireBall_list)
+                            arun.Throw(leftJavelin_list, rightJavelin_list, levelTwo_list)
+                            arun.Animation()
+
+                        #endfor
+                    #endif
+
+                    if gamePhase <= 5:
+                        for mushroom in mushroomGroup1_list:
+
+                            if gamePhase == 5:
+                                mushroom.Control()
+                            #endif
+                            mushroom.Attack()
+                            mushroom.MoveHori(block2_list)
+                            mushroom.MoveVert(block2_list)
+                            mushroom.Hurt()
+                            mushroom.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
+                            mushroom.Health(enemyCount)
+                            mushroom.FireBallDetection(levelTwo_list, fireBall_list)
+                            mushroom.Animation()
+
+                        #endfor
+                    #endif
+
+                    if gamePhase >= 7 and gamePhase <= 12:
+                        for mushroom in mushroomGroup2_list:
+
+                            if gamePhase == 12:
+                                mushroom.Control()
+                            #endif
+                            mushroom.Attack()
+                            mushroom.MoveHori(block2_list)
+                            mushroom.MoveVert(block2_list)
+                            mushroom.Hurt()
+                            mushroom.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
+                            mushroom.FireBallDetection(levelTwo_list, fireBall_list)
+                            mushroom.Health(enemyCount)
+                            mushroom.Animation()
+
+                        #endfor
+                    #endif
+
+                    if gamePhase >= 14 and gamePhase <= 24:
+                        for mushroom in mushroomGroup3_list:
+
+                            if gamePhase == 17:
+                                mushroom.Control()
+                            #endif
+                            mushroom.Attack()
+                            mushroom.MoveHori(block2_list)
+                            mushroom.MoveVert(block2_list)
+                            mushroom.Hurt()
+                            mushroom.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
+                            mushroom.FireBallDetection(levelTwo_list, fireBall_list)
+                            mushroom.Health(enemyCount)
+                            mushroom.Animation()
+
+                        #endfor
+                    #endif
+
+                    if gamePhase >= 1 and gamePhase <= 5:
+
+                        #Bandit Movement
+                        for enemy in banditGroup3_list:
+
+                            enemy.Attack()
+                            enemy.MoveHori(block1_list, block2_list, block3_list, tutorialBlock_list, level, gameLevel)
+                            enemy.AttackChecker()
+                            enemy.MoveVert(block1_list, block2_list, block3_list, tutorialBlock_list, level, gameLevel)
+                            if gamePhase == 5 and not gameOver:
+                                enemy.Control(player_list)
+                            #endif
+                            enemy.Hurt()
+                            enemy.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
+                            enemy.FireBallDetection(levelTwo_list, fireBall_list)
+                            enemy.Health(coin_list, levelTwo_list, level, gameLevel, enemyCount)
+                            enemy.Animation()
+
+                        #endfor
+
+                    #endif
+
+                    if gamePhase >= 7 and gamePhase <= 12:
+
+                        #Bandit Movement
+                        for enemy in banditGroup4_list:
+
+                            enemy.Attack()
+                            enemy.MoveHori(block1_list, block2_list, block3_list, tutorialBlock_list, level, gameLevel)
+                            enemy.AttackChecker()
+                            enemy.MoveVert(block1_list, block2_list, block3_list, tutorialBlock_list, level, gameLevel)
+                            if gamePhase == 12 and not gameOver:
+                                enemy.Control(player_list)
+                            #endif
+                            enemy.Hurt()
+                            enemy.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
+                            enemy.FireBallDetection(levelTwo_list, fireBall_list)
+                            enemy.Health(coin_list, levelTwo_list, level, gameLevel, enemyCount)
+                            enemy.Animation()
+
+                        #endfor
+
+                    #endif
+
+                    if gamePhase == 17:
+                        for javelin in leftJavelin_list:
+
+                            javelin.JavelinUpdate(leftJavelin_list, rightJavelin_list, levelTwo_list)
+
+                        #endfor
+                        for javelin in rightJavelin_list:
+
+                            javelin.JavelinUpdate(leftJavelin_list, rightJavelin_list, levelTwo_list)
+
+                        #endfor
+                    #endif
+                            
+                    if gamePhase == 1:
+                        conversation = True
+                        for talene in talene_list:
+                            talene.rect.x = 120
+                            talene.Turn(1)
+                        #endfor
+                        if gameChat == 1:
+                            for player in player_list:
+                                player.FreezeTrigger(0)
+                                player.ChangeSpeed(2)
+                                player.FreezeTrigger(1)
+                            #endfor
+                            DrawOrRemove(1, levelTwo_list, wordBox_list)
+                            WriteWords(1, script2[6], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 2, 0)
+                            gameChat = 2
+                        elif gameChat == 2:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelTwo_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 3:
+                            DrawOrRemove(0, levelTwo_list, nextButton_list)
+                            DrawOrRemove(0, levelTwo_list, currentLine_list)
+                            WriteWords(1, script2[7], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 2, 0)
+                            gameChat = 4
+                        elif gameChat == 4:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelTwo_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 5:
+                            DrawOrRemove(0, levelTwo_list, nextButton_list)
+                            DrawOrRemove(0, levelTwo_list, currentLine_list)
+                            WriteWords(1, script2[8], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 2, 0)
+                            gameChat = 6
+                        elif gameChat == 6:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelTwo_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 7:
+                            DrawOrRemove(0, levelTwo_list, nextButton_list)
+                            DrawOrRemove(0, levelTwo_list, currentLine_list)
+                            WriteWords(1, script2[9], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 2, 0)
+                            gameChat = 8
+                        elif gameChat == 8:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelTwo_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 9:
+                            DrawOrRemove(0, levelTwo_list, nextButton_list)
+                            DrawOrRemove(0, levelTwo_list, currentLine_list)
+                            WriteWords(1, script2[10], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 2, 0)
+                            gameChat = 10
+                        elif gameChat == 10:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelTwo_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 11:
+                            DrawOrRemove(0, levelTwo_list, nextButton_list)
+                            DrawOrRemove(0, levelTwo_list, currentLine_list)
+                            WriteWords(1, script2[11], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 2, 0)
+                            gameChat = 12
+                        elif gameChat == 12:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelTwo_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 13:
+                            DrawOrRemove(0, levelTwo_list, nextButton_list)
+                            DrawOrRemove(0, levelTwo_list, currentLine_list)
+                            DrawOrRemove(0, levelTwo_list, wordBox_list)
+                            gamePhase = 2
+                            gameChat = 1
+                            for arun in arun_list:
+                                arun.ChangeSpeed(1)
+                            #endfor
+                            for talene in talene_list:
+                                talene.ChangeSpeed(0)
+                            #endfor
+                        #endif
+                    elif gamePhase == 2:
+                        for talene in talene_list:
+                            if talene.rect.x <= -120:
+                                talene.ChangeSpeed(1)
+                                talene.ChangeSpeed(2)
+                                for arun in arun_list:
+                                    arun.ChangeSpeed(0)
+                                    arun.ChangeSpeed(2)
+                                    arun.rect.x = 2900
+                                #endfor
+                                gamePhase = 3
+                            #endif
+                        #endfor
+                    elif gamePhase == 3:
+                        if timeUp[0] == 0:
+                            timer.Counter(900, timeUp)
+                        elif timeUp[0] == 1:
+                            timeUp[0] = 0
+                            gamePhase = 4
+                            endTimer = 0
+                            startTimer = 0
+                            for enemy in banditGroup3_list:
+                                enemy.AttackStance(1)
+                            #endfor
+                        #endif
+                    elif gamePhase == 4:
+                        if timeUp[0] == 0:
+                            timer.Counter(1000, timeUp)
+                        elif timeUp[0] == 1:
+                            timeUp[0] = 0
+                            gamePhase = 5
+                            endTimer = 0
+                            startTimer = 0
+                            enemyCount[0] = 4
+                            for player in player_list:
+                                player.FreezeTrigger(0)
+                                conversation = False
+                            #endfor
+                        #endif
+                    elif gamePhase == 5:
+                        if enemyCount == [0] and live[0] > 0:
+                            if timeUp[0] == 0:
+                                for player in player_list:
+                                    player.FreezeTrigger(0)
+                                    player.ChangeSpeed(2)
+                                    player.FreezeTrigger(1)
+                                #endfor
+                                timer.Counter(1200, timeUp)
+                                conversation = True
+                            elif timeUp[0] == 1:
+                                gamePhase = 6
+                                for player in player_list:
+                                    player.FreezeTrigger(0)
+                                #endfor
+                                conversation = False
+                                readyToUpgrade = True
+                                DrawOrRemove(1, levelTwo_list, upgradeButton_list)
+                            #endif
+                        #endif
+                        if live[0] == 0:
+                            gameOver = True
+                        #endif
+                    elif gamePhase == 6:
+                        if player.rect.x < 1550:
+                            for arrow in directionArrow_list:
+                                arrow.ArrowUpdate(levelTwo_list)
+                            #endfor
+                        elif player.rect.x >= 1550:
+                            for arrow in directionArrow_list:
+                                arrow.ArrowReset(levelTwo_list)
+                            #endfor
+                            for talene in talene_list:
+                                talene.rect.x = 1620
+                                talene.Turn(1)
+                            #endfor
+                            for player in player_list:
+                                player.FreezeTrigger(0)
+                                player.ChangeSpeed(2)
+                                player.FreezeTrigger(1)
+                            #endfor
+                            readyToUpgrade = False
+                            DrawOrRemove(0, levelTwo_list, upgradeButton_list)
+                            conversation = True
+                            player.rect.x = 1550
+                            gamePhase = 7
+                            for coin in coin_list:
+                                levelTwo_list.remove(coin)
+                                coin_list.remove(coin)
+                                currency[3] += 1
+                                if currency[3] == 10:
+                                    currency[2] += 1
+                                    currency[3] = 0
+                                #endif
+                                if currency[2] == 10:
+                                    currency[1] += 1
+                                    currency[2] = 0
+                                #endif
+                                if currency[1] == 10:
+                                    currency[0] += 1
+                                    currency[1] = 0
+                                #endif
+                                if currency[0] == 10:
+                                    currency[0] = 0
+                                    currency[1] = 0
+                                    currency[2] = 0
+                                    currency[3] = 0
+                                #endif
+                            #endfor
+                        #endif
+                    elif gamePhase == 7:
+                        if player.rect.x > 50:
+                            player.FreezeTrigger(1)
+                            player.rect.x -= 10
+                            for talene in talene_list:
+                                talene.rect.x -= 10
+                            #endfor
+                            for block in block2_list:
+                                block.rect.x -= 10
+                            #endfor
+                            for arun in arun_list:
+                                arun.rect.x -= 10
+                                arun.Animation()
+                            #endfor
+                            for enemy in banditGroup4_list:
+                                enemy.rect.x -= 10
+                                enemy.Animation()
+                            #endfor
+                            for mushroom in mushroomGroup2_list:
+                                mushroom.rect.x -= 10
+                                mushroom.Animation()
+                            #endfor
+                            for mushroom in mushroomGroup1_list:
+                                mushroom.rect.x -= 10
+                                mushroom.Animation()
+                            #endfor
+                            for bandit in banditGroup3_list:
+                                bandit.rect.x -= 10
+                                bandit.Animation()
+                            #endfor
+                            for background in background2_list:
+                                background.BackUpdate()
+                            #endfor
+                            for ground in ground_list:
+                                ground.Update(1)
+                            #endfor
+                        elif player.rect.x == 50:
+                            gamePhase = 8
+                            for ground in ground_list:
+                                ground.Update(0)
+                            #endfor
+                        #endif
+                    elif gamePhase == 8:
+                        if gameChat == 1:
+                            DrawOrRemove(1, levelTwo_list, wordBox_list)
+                            WriteWords(1, script2[12], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 2, 0)
+                            gameChat = 2
+                        elif gameChat == 2:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelTwo_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 3:
+                            DrawOrRemove(0, levelTwo_list, nextButton_list)
+                            DrawOrRemove(0, levelTwo_list, currentLine_list)
+                            WriteWords(1, script2[13], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 2, 0)
+                            gameChat = 4
+                        elif gameChat == 4:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelTwo_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 5:
+                            DrawOrRemove(0, levelTwo_list, nextButton_list)
+                            DrawOrRemove(0, levelTwo_list, currentLine_list)
+                            WriteWords(1, script2[14], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 2, 0)
+                            gameChat = 6
+                        elif gameChat == 6:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelTwo_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 7:
+                            DrawOrRemove(0, levelTwo_list, nextButton_list)
+                            DrawOrRemove(0, levelTwo_list, currentLine_list)
+                            WriteWords(1, script2[15], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 2, 0)
+                            gameChat = 8
+                        elif gameChat == 8:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelTwo_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 9:
+                            DrawOrRemove(0, levelTwo_list, nextButton_list)
+                            DrawOrRemove(0, levelTwo_list, currentLine_list)
+                            WriteWords(1, script2[16], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 2, 0)
+                            gameChat = 10
+                        elif gameChat == 10:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelTwo_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 11:
+                            DrawOrRemove(0, levelTwo_list, nextButton_list)
+                            DrawOrRemove(0, levelTwo_list, currentLine_list)
+                            DrawOrRemove(0, levelTwo_list, wordBox_list)
+                            gamePhase = 9
+                            gameChat = 1
+                            for arun in arun_list:
+                                arun.ChangeSpeed(1)
+                            #endfor
+                            for talene in talene_list:
+                                talene.ChangeSpeed(0)
+                            #endfor
+                        #endif
+                    elif gamePhase == 9:
+                        for arun in arun_list:
+                            if arun.rect.x >= 1600:
+                                arun.ChangeSpeed(0)
+                                arun.ChangeSpeed(2)
+                                arun.rect.x = 2900
+                                gamePhase = 10
+                                for talene in talene_list:
+                                    talene.ChangeSpeed(1)
+                                    talene.ChangeSpeed(2)
+                                #endfor
+                            #endif
+                        #endfor
+                    elif gamePhase == 10:
+                        if timeUp[0] == 0:
+                            timer.Counter(900, timeUp)
+                        elif timeUp[0] == 1:
+                            timeUp[0] = 0
+                            gamePhase = 11
+                            endTimer = 0
+                            startTimer = 0
+                            for enemy in banditGroup4_list:
+                                enemy.AttackStance(1)
+                            #endfor
+                        #endif
+                    elif gamePhase == 11:
+                        if timeUp[0] == 0:
+                            timer.Counter(1000, timeUp)
+                        elif timeUp[0] == 1:
+                            timeUp[0] = 0
+                            gamePhase = 12
+                            endTimer = 0
+                            startTimer = 0
+                            enemyCount[0] = 6
+                            for player in player_list:
+                                player.FreezeTrigger(0)
+                                conversation = False
+                            #endfor
+                        #endif
+                    elif gamePhase == 12:
+                        if enemyCount == [0] and live[0] > 0:
+                            if timeUp[0] == 0:
+                                for player in player_list:
+                                    player.FreezeTrigger(0)
+                                    player.ChangeSpeed(2)
+                                    player.FreezeTrigger(1)
+                                #endfor
+                                timer.Counter(1200, timeUp)
+                                conversation = True
+                            elif timeUp[0] == 1:
+                                gamePhase = 13
+                                for player in player_list:
+                                    player.FreezeTrigger(0)
+                                #endfor
+                                conversation = False
+                                readyToUpgrade = True
+                                DrawOrRemove(1, levelTwo_list, upgradeButton_list)
+                            #endif
+                        #endif
+                        if live[0] == 0:
+                            gameOver = True
+                        #endif
+                    elif gamePhase == 13:
+                        if player.rect.x < 1550:
+                            for arrow in directionArrow_list:
+                                arrow.ArrowUpdate(levelTwo_list)
+                            #endfor
+                        elif player.rect.x >= 1550:
+                            for arrow in directionArrow_list:
+                                arrow.ArrowReset(levelTwo_list)
+                            #endfor
+                            readyToUpgrade = False
+                            DrawOrRemove(0, levelTwo_list, upgradeButton_list)
+                            player.FreezeTrigger(0)
+                            player.ChangeSpeed(2)
+                            player.FreezeTrigger(1)
+                            conversation = True
+                            player.rect.x = 1550
+                            gamePhase = 14
+                            for talene in talene_list:
+                                talene.rect.x = 1620
+                                talene.Turn(1)
+                            #endfor
+                            for mushroom in mushroomGroup3_list:
+                                mushroom.rect.x = randint(1700, 2800)
+                            #endfor
+                            for coin in coin_list:
+                                levelTwo_list.remove(coin)
+                                coin_list.remove(coin)
+                                currency[3] += 1
+                                if currency[3] == 10:
+                                    currency[2] += 1
+                                    currency[3] = 0
+                                #endif
+                                if currency[2] == 10:
+                                    currency[1] += 1
+                                    currency[2] = 0
+                                #endif
+                                if currency[1] == 10:
+                                    currency[0] += 1
+                                    currency[1] = 0
+                                #endif
+                                if currency[0] == 10:
+                                    currency[0] = 0
+                                    currency[1] = 0
+                                    currency[2] = 0
+                                    currency[3] = 0
+                                #endif
+                            #endfor
+                        #endif
+                    elif gamePhase == 14:
+                        if player.rect.x > 50:
+                            player.rect.x -= 10
+                            for talene in talene_list:
+                                talene.rect.x -= 10
+                            #endfor
+                            for block in block2_list:
+                                block.rect.x -= 10
+                            #endfor
+                            for arun in arun_list:
+                                arun.rect.x -= 10
+                                arun.Animation()
+                            #endfor
+                            for enemy in banditGroup4_list:
+                                enemy.rect.x -= 10
+                                enemy.Animation()
+                            #endfor
+                            for mushroom in mushroomGroup2_list:
+                                mushroom.rect.x -= 10
+                                mushroom.Animation()
+                            #endfor
+                            for mushroom in mushroomGroup3_list:
+                                mushroom.rect.x -= 10
+                                mushroom.Animation()
+                            #endfor
+                            for background in background2_list:
+                                background.BackUpdate()
+                            #endfor
+                            for ground in ground_list:
+                                ground.Update(1)
+                            #endfor
+                        elif player.rect.x == 50:
+                            gamePhase = 15
+                            for ground in ground_list:
+                                ground.Update(0)
+                            #endfor
+                        #endif
+                    elif gamePhase == 15:
+                        if gameChat == 1:
+                            DrawOrRemove(1, levelTwo_list, wordBox_list)
+                            WriteWords(1, script2[4], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 2, 0)
+                            gameChat = 2
+                        elif gameChat == 2:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelTwo_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 3:
+                            DrawOrRemove(0, levelTwo_list, nextButton_list)
+                            DrawOrRemove(0, levelTwo_list, currentLine_list)
+                            WriteWords(1, script2[21], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 2, 0)
+                            gameChat = 4
+                        elif gameChat == 4:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelTwo_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 5:
+                            DrawOrRemove(0, levelTwo_list, nextButton_list)
+                            DrawOrRemove(0, levelTwo_list, currentLine_list)
+                            DrawOrRemove(0, levelTwo_list, wordBox_list)
+                            gamePhase = 16
+                            gameChat = 1
+                            for talene in talene_list:
+                                talene.ChangeSpeed(0)
+                            #endfor
+                        #endif
+                    elif gamePhase == 16:
+                        if timeUp[0] == 0:
+                            timer.Counter(1000, timeUp)
+                        elif timeUp[0] == 1:
+                            for talene in talene_list:
+                                talene.ChangeSpeed(2)
+                            #endfor
+                            timeUp[0] = 0
+                            gamePhase = 17
+                            endTimer = 0
+                            startTimer = 0
+                            enemyCount[0] = 3
+                            for arun in arun_list:
+                                arun.HealthDisplay(1, levelTwo_list)
+                            #endfor
+                            for player in player_list:
+                                player.FreezeTrigger(0)
+                                conversation = False
+                            #endfor
+                        #endif
+                    elif gamePhase == 17:
+                        if mehiraDefeat == [0] and live[0] > 0:
+                            if timeUp[0] == 0:
+                                for player in player_list:
+                                    player.FreezeTrigger(0)
+                                    player.ChangeSpeed(2)
+                                    player.FreezeTrigger(1)
+                                    conversation = True
+                                #endfor
+                                timer.Counter(500, timeUp)
+                            elif timeUp[0] == 1:
+                                gamePhase = 18
+                                conversation = True
+                                DrawOrRemove(1, levelTwo_list, whiteScreen_list)
+                                timeUp[0] = 0
+                                mehiraDefeat[0] = 1
+                                for talene in talene_list:
+                                    for arun in arun_list:
+                                        if arun.rect.x < 80:
+                                            arun.rect.x = 80
+                                        #endif
+                                        talene.rect.x = arun.rect.x - 80
+                                    #endfor
+                                #endfor
+                            #endif
+                        #endif
+                        if live[0] == 0:
+                            gameOver = True
+                        #endif
+                    elif gamePhase == 18:
+                        if timeUp[0] == 0:
+                            timer.Counter(2000, timeUp)
+                        elif timeUp[0] == 1:
+                            timeUp[0] = 0
+                            gamePhase = 19
+                            DrawOrRemove(0, levelTwo_list, whiteScreen_list)
+                            for arun in arun_list:
+                                arun.ChangeSpeed(0)
+                                arun.ChangeSpeed(2)
+                            #endfor
+                        #endif
+                    elif gamePhase == 19:
+                        if gameChat == 1:
+                            DrawOrRemove(1, levelTwo_list, wordBox_list)
+                            WriteWords(1, script2[17], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 2, 0)
+                            gameChat = 2
+                        elif gameChat == 2:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelTwo_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 3:
+                            DrawOrRemove(0, levelTwo_list, nextButton_list)
+                            DrawOrRemove(0, levelTwo_list, currentLine_list)
+                            WriteWords(1, script2[18], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 2, 0)
+                            gameChat = 4
+                        elif gameChat == 4:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelTwo_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 5:
+                            DrawOrRemove(0, levelTwo_list, nextButton_list)
+                            DrawOrRemove(0, levelTwo_list, currentLine_list)
+                            WriteWords(1, script2[19], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 2, 0)
+                            gameChat = 6
+                        elif gameChat == 6:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelTwo_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 7:
+                            DrawOrRemove(0, levelTwo_list, nextButton_list)
+                            DrawOrRemove(0, levelTwo_list, currentLine_list)
+                            WriteWords(1, script2[20], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 2, 0)
+                            gameChat = 8
+                        elif gameChat == 8:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelTwo_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 9:
+                            DrawOrRemove(0, levelTwo_list, nextButton_list)
+                            DrawOrRemove(0, levelTwo_list, currentLine_list)
+                            DrawOrRemove(0, levelTwo_list, wordBox_list)
+                            gamePhase = 20
+                            gameChat = 1
+                            for arun in arun_list:
+                                arun.ChangeSpeed(1)
+                            #endfor
+                            for talene in talene_list:
+                                talene.ChangeSpeed(1)
+                            #endfor
+                        #endif
+                    elif gamePhase == 20:
+                        for arun in arun_list:
+                            if arun.rect.x >= 1600:
+                                arun.ChangeSpeed(2)
+                                gamePhase = 21
+                                for player in player_list:
+                                    player.FreezeTrigger(0)
+                                #endfor
+                                for talene in talene_list:
+                                    talene.ChangeSpeed(2)
+                                #endfor
+                                conversation = False
+                                readyToUpgrade = True
+                                DrawOrRemove(1, levelTwo_list, upgradeButton_list)
+                            #endif
+                        #endfor
+                    elif gamePhase == 21:
+                        if player.rect.x < 1550:
+                            for arrow in directionArrow_list:
+                                arrow.ArrowUpdate(levelTwo_list)
+                            #endfor
+                        if player.rect.x >= 1550:
+                            for arrow in directionArrow_list:
+                                arrow.ArrowReset(levelTwo_list)
+                            #endfor
+                            readyToUpgrade = False
+                            DrawOrRemove(0, levelTwo_list, upgradeButton_list)
+                            player.FreezeTrigger(0)
+                            player.ChangeSpeed(2)
+                            player.FreezeTrigger(1)
+                            conversation = True
+                            player.rect.x = 1600
+                            for arun in arun_list:
+                                arun.HealthDisplay(0, levelTwo_list)
+                            #endfor
+                            gamePhase = 22
+                            DrawOrRemove(0, levelTwo_list, pauseButton_list)
+                            for coin in coin_list:
+                                levelTwo_list.remove(coin)
+                                coin_list.remove(coin)
+                                currency[3] += 1
+                                if currency[3] == 10:
+                                    currency[2] += 1
+                                    currency[3] = 0
+                                #endif
+                                if currency[2] == 10:
+                                    currency[1] += 1
+                                    currency[2] = 0
+                                #endif
+                                if currency[1] == 10:
+                                    currency[0] += 1
+                                    currency[1] = 0
+                                #endif
+                                if currency[0] == 10:
+                                    currency[0] = 0
+                                    currency[1] = 0
+                                    currency[2] = 0
+                                    currency[3] = 0
+                                #endif
+                            #endfor
+                        #endif
+                    elif gamePhase == 22:
+                        if gameChat == 1:
+                            DrawOrRemove(1, levelTwo_list, wordBox_list)
+                            WriteWords(1, script2[5], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 2, 0)
+                            gameChat = 2
+                        elif gameChat == 2:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelTwo_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 3:
+                            DrawOrRemove(0, levelTwo_list, nextButton_list)
+                            DrawOrRemove(0, levelTwo_list, currentLine_list)
+                            DrawOrRemove(0, levelTwo_list, wordBox_list)
+                            gamePhase = 23
+                            gameChat = 1
+                        #endif
+                    elif gamePhase == 23:
+                        DrawOrRemove(1, levelTwo_list, nextLevelBlock_list)
+                        gamePhase = 24
+                        SaveProgress(currentFile, currency,live,gameLevel+1, shieldNum, playerLevel, gameMode)
                         advanceLevel = True
                     #endif
                     levelTwo_list.draw(screen) #Display all visible objects
@@ -13312,7 +15030,9 @@ def Game():
                             if gamePhase == 2:
                                 skeleton.Control(player.rect.x, player.rect.y - 20)
                             #endif
-                            skeleton.Recover(levelThree_list, enemyCount)
+                            if gamePhase <= 2:
+                                skeleton.Recover(levelThree_list, enemyCount)
+                            #endif
                             skeleton.Attack()
                             skeleton.MoveHori(block3_list)
                             skeleton.MoveVert(block3_list)
@@ -13345,6 +15065,7 @@ def Game():
                             DrawOrRemove(1, levelThree_list, wordBox_list)
                             WriteWords(1, script3[0], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 3, 0)
                             gameChat = 2
+                            enemyCount[0] = -1
                         elif gameChat == 2:
                             if timeUp[0] == 0 and not ReadyToClick:
                                 timer.Counter(2000, timeUp)
@@ -13413,19 +15134,41 @@ def Game():
                                 conversation = True
                             elif timeUp[0] == 1:
                                 gamePhase = 3
+                                for player in player_list:
+                                    player.FreezeTrigger(0)
+                                #endfor
+                                conversation = False
+                                readyToUpgrade = True
+                                DrawOrRemove(1, levelThree_list, upgradeButton_list)
                             #endif
                         #endif
                         if live[0] == 0:
                             gameOver = True
                         #endif
                     elif gamePhase == 3:
-                        if gameChat == 1:
-                            for player in player_list:
-                                player.FreezeTrigger(0)
-                                player.ChangeSpeed(2)
-                                player.FreezeTrigger(1)
-                                conversation = True
+                        if player.rect.x < 1550:
+                            for arrow in directionArrow_list:
+                                arrow.ArrowUpdate(levelThree_list)
                             #endfor
+                        if player.rect.x >= 1550:
+                            for arrow in directionArrow_list:
+                                arrow.ArrowReset(levelThree_list)
+                            #endfor
+                            readyToUpgrade = False
+                            DrawOrRemove(0, levelThree_list, upgradeButton_list)
+                            player.FreezeTrigger(0)
+                            player.ChangeSpeed(2)
+                            player.FreezeTrigger(1)
+                            conversation = True
+                            player.rect.x = 1600
+                            for necro in necromancer_list:
+                                necro.HealthDisplay(0, levelThree_list)
+                            #endfor
+                            gamePhase = 4
+                            DrawOrRemove(0, levelThree_list, pauseButton_list)
+                        #endif
+                    elif gamePhase == 4:
+                        if gameChat == 1:
                             DrawOrRemove(1, levelThree_list, wordBox_list)
                             WriteWords(1, script3[3], 0, 815, file_list, levelOne_list, levelTwo_list, levelThree_list, currentLine_list, 4, 3, 0)
                             gameChat = 2
@@ -13444,10 +15187,14 @@ def Game():
                             DrawOrRemove(0, levelThree_list, nextButton_list)
                             DrawOrRemove(0, levelThree_list, currentLine_list)
                             DrawOrRemove(0, levelThree_list, wordBox_list)
-                            gamePhase = 4
+                            gamePhase = 5
                             gameChat = 1
-                            enemyCount[0] = -1
                         #endif
+                    elif gamePhase == 5:
+                        DrawOrRemove(1, levelThree_list, nextLevelBlock_list)
+                        gamePhase = 6
+                        SaveProgress(currentFile, currency,live,gameLevel+1, shieldNum, playerLevel, gameMode)
+                        advanceLevel = True
                     #endif
                     levelThree_list.draw(screen) #Display all visible objects
 
