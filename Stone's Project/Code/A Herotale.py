@@ -124,11 +124,13 @@ def CreatePanel(button_list, optionBlock_list, pauseButton_list, panelButton_lis
 #endprocedure
 
 #Characters
-def CreateCharacters0(oden_list, skull_list, character2_list, character3_list, mehira_list, talene2_list, yellowTriangle_list, player_list, leftPlayerAttack_list, rightPlayerAttack_list, tutorialEnemy_list, tutorial_list, levelOne_list, levelTwo_list, levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list, character1_list, talene_list, taleneAttack_list):
+def CreateCharacters0(oden_list, skull_list, skullAttack_list, character2_list, character3_list, mehira_list, talene2_list, yellowTriangle_list, player_list, leftPlayerAttack_list, rightPlayerAttack_list, tutorialEnemy_list, tutorial_list, levelOne_list, levelTwo_list, levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list, character1_list, talene_list, taleneAttack_list):
 
     player = PlayerClass(50, 700, leftPlayerAttack_list, rightPlayerAttack_list)
     player_list.add(player)
     character1_list.add(player)
+    character2_list.add(player)
+    character3_list.add(player)
 
     dummy = BanditClass(1, 295, 250, tutorial_list, leftEnemyAttack_list, rightEnemyAttack_list)
     tutorialEnemy_list.add(dummy) #Specify Level
@@ -140,11 +142,11 @@ def CreateCharacters0(oden_list, skull_list, character2_list, character3_list, m
 
     talene2 = RogueClass(-1000, 710, levelThree_list, leftPlayerAttack_list, rightPlayerAttack_list, taleneAttack_list)
     talene2_list.add(talene2)
-    character3_list.add(talene)
+    character3_list.add(talene2)
 
     mehira = ArunClass(-1000, 700, levelThree_list, leftPlayerAttack_list, rightPlayerAttack_list)
     mehira_list.add(mehira)
-    character3_list.add(talene)
+    character3_list.add(mehira)
 
     oden = WarlockClass(-1000, 730, levelThree_list)
     oden_list.add(oden)
@@ -157,6 +159,7 @@ def CreateCharacters0(oden_list, skull_list, character2_list, character3_list, m
     levelThree_list.add(yellowTriangle)
 
     skull = ItemClass(12, 0, 0, -1000, 50, 4)
+    skull.SkullInitiation(skullAttack_list)
     levelThree_list.add(skull)
     skull_list.add(skull)
 
@@ -243,8 +246,9 @@ def CreateCharacters3(levelThree_list, leftEnemyAttack_list, rightEnemyAttack_li
     necromancer_list.add(necromancer)
     character3_list.add(necromancer)
 
-    abomination = AbominationClass(-1000, 565, levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list)
+    abomination = AbominationClass(-500, 565, levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list)
     abomination_list.add(abomination)
+    character3_list.add(abomination)
 
     warlock = WarlockClass(-1000,730,levelThree_list)
     warlock3_list.add(warlock)
@@ -313,16 +317,16 @@ def CreateMenu(menu_list, button_list):
 #endprocedure
 
 #Setting Creation
-def CreateSettings(setting_list, button_list, easy_list, hard_list):
+def CreateSettings(setting_list, button_list, invincibleOn_list, invincibleOff_list):
 
-    easy = Button(6, 411, 120, 0, 544.5, 250) #Easy Button
-    easy_list.add(easy)
-    setting_list.add(easy)
-    button_list.add(easy)
+    on = Button(18, 0, 0, 0, 844, 390) #On Button
+    invincibleOn_list.add(on)
+    button_list.add(on)
 
-    hard = Button(7, 441, 120, 0, 529.5, 250) #Hard Button
-    hard_list.add(hard)
-    button_list.add(hard)
+    off = Button(19, 0, 0, 0, 844, 390) #Off Button
+    invincibleOff_list.add(off)
+    setting_list.add(off)
+    button_list.add(off)
 
     #Back
     back = Button(5, 106, 31 ,0, 50, 820) #Back Button
@@ -330,8 +334,8 @@ def CreateSettings(setting_list, button_list, easy_list, hard_list):
     setting_list.add(back)
 
     #Text
-    chooseDiff = BlockClass(4, 1220, 202, 140, 480)
-    setting_list.add(chooseDiff)
+    invin = InstructionClass(16, 0, 0, 537, 383) #Invincible instruction
+    setting_list.add(invin)
 
 #endprocedure
 
@@ -866,6 +870,8 @@ class Button(pygame.sprite.Sprite):
         self.upgrade = [pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Upgrade1.png'), (60, 60)), pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Upgrade2.png'), (60, 60))]
         self.upgradeText = [pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/UpgradeText1.png'), (160, 40)), pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/UpgradeText2.png'), (160, 40))]
         self.ok = [pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Ok1.png'), (54, 30)), pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Ok2.png'), (54, 30))]
+        self.on = [pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/On1.png'), (74, 40)), pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/On2.png'), (74, 40))]
+        self.off = [pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Off1.png'), (100, 40)), pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Off2.png'), (100, 40))]
 
         if self.imageNum == 1:
 
@@ -934,6 +940,14 @@ class Button(pygame.sprite.Sprite):
         elif self.imageNum == 17:
 
             self.image = self.ok[0]
+
+        elif self.imageNum == 18:
+
+            self.image = self.on[0]
+
+        elif self.imageNum == 19:
+
+            self.image = self.off[0]
 
         #endif
         
@@ -1048,6 +1062,14 @@ class Button(pygame.sprite.Sprite):
         elif level == 4 and pos[0] >= 700 and pos[1] >= 533 and pos[0] <= 800 and pos[1] <= 573 and self.imageNum == 11 and self.num == 4:
 
             self.image = self.quit[1]
+
+        elif level == 1 and pos[0] >= 844 and pos[1] >= 390 and pos[0] <= 918 and pos[1] <= 430 and self.imageNum == 18 and self.num == 0:
+
+            self.image = self.on[1]
+
+        elif level == 1 and pos[0] >= 844 and pos[1] >= 390 and pos[0] <= 944 and pos[1] <= 430 and self.imageNum == 19 and self.num == 0:
+
+            self.image = self.off[1]
             
         else:
 
@@ -1119,6 +1141,14 @@ class Button(pygame.sprite.Sprite):
 
                 self.image = self.ok[0]
 
+            elif self.imageNum == 18:
+
+                self.image = self.on[0]
+
+            elif self.imageNum == 19:
+
+                self.image = self.off[0]
+
             #endif
 
         #endif
@@ -1128,7 +1158,7 @@ class Button(pygame.sprite.Sprite):
 #endclass
 
 #Save Files Class------------------------------------------------------------------------------------------------------------------
-#Item Class
+#ItemClassPos
 class ItemClass(pygame.sprite.Sprite):
 
     def __init__(self, typeOfItem, width, height, x, y, level):
@@ -1195,7 +1225,7 @@ class ItemClass(pygame.sprite.Sprite):
         self.arrows = [pygame.transform.scale(pygame.image.load("Game_Images/Object/Arrows/Arrow.png"), (140, 121))] #Arrow
         self.whiteScreen = [pygame.transform.scale(pygame.image.load("Game_Images/Object/Screens/White.png"), (1500, 900))] #White Screen
         self.yellowTriangle = [pygame.transform.scale(pygame.image.load("Game_Images/Object/Shapes/YellowTriangle.png"), (50, 30))] #Yellow Triangle
-        self.skull = [pygame.transform.scale(pygame.image.load("Game_Images/Skull/Skull1.png"), (700, 402)), pygame.transform.scale(pygame.image.load("Game_Images/Skull/Skull2.png"), (700, 402))] #Skull
+        self.skull = [pygame.transform.scale(pygame.image.load("Game_Images/Skull/Skull1.png"), (400, 400)), pygame.transform.scale(pygame.image.load("Game_Images/Skull/Skull2.png"), (400, 400))] #Skull
 
         if self.item == 1: #Set image
 
@@ -1247,6 +1277,8 @@ class ItemClass(pygame.sprite.Sprite):
         elif self.item == 12:
 
             self.image = self.skull[0]
+            self.scaley = self.rect.y*10
+            self.scalex = self.rect.x*10
             self.up = True
 
         #endif
@@ -1256,16 +1288,44 @@ class ItemClass(pygame.sprite.Sprite):
     def SkullMove(self):
 
         if self.up:
-            self.rect.y -= 1
+            self.scaley -= 5
+            self.rect.y = self.scaley/10
             if self.rect.y == 45:
                 self.up = False
             #endif
         else:
-            self.rect.y += 1
+            self.scaley += 5
+            self.rect.y = self.scaley/10
             if self.rect.y == 55:
                 self.up = True
             #endif
         #endif
+
+    #endprocedure
+
+    def SkullInitiation(self, skullAttack_list):
+
+        self.attack = AttackClass(400, 400, -1000, 0) #Attack
+        skullAttack_list.add(self.attack)
+
+    #endprocedure
+
+    def SkullResetY(self):
+
+        self.scaley = 500
+        self.rect.y = self.scaley/10
+        self.scalex = 5500
+        self.rect.x = self.scalex/10
+
+    #endprocedure
+
+    def SkullReset(self):
+
+        self.scaley = 500
+        self.rect.y = self.scaley/10
+        self.scalex = -10000
+        self.rect.x = self.scalex/10
+        self.attack.rect.x = -1000
 
     #endprocedure
 
@@ -1274,6 +1334,19 @@ class ItemClass(pygame.sprite.Sprite):
         self.image = self.skull[num]
 
     #endif
+
+    def SkullCrush(self):
+
+        self.scalex += 660
+        self.scaley += 515
+        self.rect.x = self.scalex/10
+        self.rect.y = self.scaley/10
+        if self.rect.x % 1 == 0 and self.rect.y % 1 == 0:
+            self.attack.rect.x = self.rect.x
+            self.attack.rect.y = self.rect.y
+        #endif
+
+    #endprocedue
 
     def ArrowUpdate(self, level_list):
 
@@ -1882,6 +1955,7 @@ class InstructionClass(pygame.sprite.Sprite): #Instruction is a sprite, because 
         self.levelUp = [pygame.transform.scale(pygame.image.load('Game_Images/Text/Level1Instruction.png'), (583, 77)), pygame.transform.scale(pygame.image.load('Game_Images/Text/Level2Instruction.png'), (583, 77)), pygame.transform.scale(pygame.image.load('Game_Images/Text/Level3Instruction.png'), (583, 77))]
         self.upgradeCost = [pygame.transform.scale(pygame.image.load('Game_Images/Text/CostInstruction.png'), (700, 84))]
         self.finish = [pygame.transform.scale(pygame.image.load('Game_Images/Text/FinishInstruction.png'), (743, 82))]
+        self.invincible = [pygame.transform.scale(pygame.image.load('Game_Images/Text/Invincible.png'), (287, 47))]
 
         if typeNum == 1:
 
@@ -1942,6 +2016,10 @@ class InstructionClass(pygame.sprite.Sprite): #Instruction is a sprite, because 
         elif typeNum == 15:
 
             self.image = self.finish[0]
+
+        elif typeNum == 16:
+
+            self.image = self.invincible[0]
 
         #endif
 
@@ -2321,6 +2399,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
         self.star = 0
         self.limitX = False
         self.leftSide = False
+        self.invincible = False
 
         #Background
         self.backMove = 0
@@ -2362,6 +2441,16 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
         self.hurtCounter = 0
         self.spellCounter = 0
         
+    #endprocedure
+
+    def Invincible(self, num):
+
+        if num == 0:
+            self.invincible = False
+        else:
+            self.invincible = True
+        #endif
+
     #endprocedure
 
     def LimitMovement(self, num):
@@ -3232,18 +3321,20 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
         if self.reduceHealth == True and not self.freezeAnimation:
 
             self.reduceHealth = False
-            if self.hp > 0:
-                #self.hp -= 1
-                self.hp += self.hp2
-                self.hp2 = 0
-                if self.hp < 0:
-                    self.hp = 0
+            if not self.invincible:
+                if self.hp > 0:
+                    self.hp -= 1
+                    self.hp += self.hp2
+                    self.hp2 = 0
+                    if self.hp < 0:
+                        self.hp = 0
+                    #endif
+                    self.playerHealth.Update(self.hp)
+                if self.hp == 0:
+                    self.death = True
                 #endif
-                self.playerHealth.Update(self.hp)
-            if self.hp == 0:
-                self.death = True
+                live[0] = self.hp
             #endif
-            live[0] = self.hp
 
         #endif
 
@@ -4758,6 +4849,7 @@ class WarlockClass(pygame.sprite.Sprite): #Class of the warlock
         self.reduceHealth = False
         self.trigger = False
         self.immune = False
+        self.skullAttack = False
 
         #Timers
         self.endAnimation = 0
@@ -4841,6 +4933,7 @@ class WarlockClass(pygame.sprite.Sprite): #Class of the warlock
         self.reduceHealth = False
         self.trigger = False
         self.immune = False
+        self.skullAttack = False
 
         #Timers
         self.endAnimation = 0
@@ -4889,7 +4982,7 @@ class WarlockClass(pygame.sprite.Sprite): #Class of the warlock
         self.warlockAnimation.rect.y = self.rect.y - 90
         self.warlockAnimation.rect.x = self.rect.x - 40
 
-        if self.death == False and self.freeze == False:
+        if not self.death and not self.freeze:
         
             if not self.hurt and self.horiSpeed == 0:
 
@@ -4936,7 +5029,7 @@ class WarlockClass(pygame.sprite.Sprite): #Class of the warlock
 
             #endif
 
-        elif self.death:
+        elif self.death and not self.freeze:
 
             if self.endAnimation - self.startAnimation >= 50:
 
@@ -4964,14 +5057,20 @@ class WarlockClass(pygame.sprite.Sprite): #Class of the warlock
             #endif
         #endif
 
-        if self.reduceHealth == True and not self.freeze:
+        if self.reduceHealth and not self.freeze and not self.death:
             self.startImmune = pygame.time.get_ticks()
             self.immune = True
             self.reduceHealth = False
-            self.hp -= 1
+            if self.hp > 0:
+                self.hp -= 1
+                if self.skullAttack:
+                    self.hp = 0
+                    self.skullAttack = False
+                    self.death = True
+                #endif
+            #endif
             odenHealth[0] = self.hp
             self.warlockHealth.Update(self.hp)
-
         #endif
 
         if self.hp == 5:
@@ -4998,6 +5097,20 @@ class WarlockClass(pygame.sprite.Sprite): #Class of the warlock
             if self.hurt == False and not self.death and not self.freeze and not self.immune:
                 self.hurt = True
                 self.reduceHealth = True
+            #endif
+        #endfor
+
+    #endprocedure
+
+    def SkullAttackDetection(self,attack_list):
+
+        enemyGetHit_list = pygame.sprite.spritecollide(self, attack_list, False)#If get hit
+        for attack in enemyGetHit_list:
+            if not self.death:
+                self.hurt = True
+                self.reduceHealth = True
+                self.skullAttack = True
+                print(0)
             #endif
         #endfor
 
@@ -9985,7 +10098,7 @@ class AbominationClass(pygame.sprite.Sprite): #Class of the Abomination AKA The 
 
             self.reduceHealth = False
             if self.actualHp > 0:
-                self.actualHp -= 1
+                self.actualHp -= 200
                 if self.actualHp % 5 == 0:
                     self.hp = int(self.actualHp / 5)
                     if self.hp >= 35:
@@ -10161,6 +10274,7 @@ class AbominationClass(pygame.sprite.Sprite): #Class of the Abomination AKA The 
             if self.hurt == False and not self.death and not self.freeze:
                 self.hurt = True
                 self.reduceHealth = True
+                print("left")
             #endif
         #endfor
 
@@ -10169,6 +10283,7 @@ class AbominationClass(pygame.sprite.Sprite): #Class of the Abomination AKA The 
             if self.hurt == False and not self.death and not self.freeze:
                 self.hurt = True
                 self.reduceHealth = True
+                print("right")
             #endif
         #endfor
 
@@ -10226,7 +10341,7 @@ class AbominationClass(pygame.sprite.Sprite): #Class of the Abomination AKA The 
 
     def Hurt(self):
         
-        if self.hurt and not self.freeze:
+        if self.hurt and not self.freeze and not self.death:
 
             if self.hurtCounter == 3:
                 self.hurt = False
@@ -11605,6 +11720,7 @@ def Game():
     warlockDodgeTime = 0
     odenHealth = [5]
     warlockMove = False
+    playerInvincible = False
 
     posX = 0
 
@@ -11716,6 +11832,8 @@ def Game():
 
     rightPlayerAttack_list = pygame.sprite.Group() #Player's attack
 
+    skullAttack_list = pygame.sprite.Group()
+
     talene_list = pygame.sprite.Group()
 
     taleneAttack_list = pygame.sprite.Group()
@@ -11760,9 +11878,13 @@ def Game():
 
     setting_list = pygame.sprite.Group() #Setting screen
 
-    easy_list = pygame.sprite.Group() #Easy
+    invincibleOn_list = pygame.sprite.Group() #Invincible on
 
-    hard_list = pygame.sprite.Group() #Hard
+    invincibleOff_list = pygame.sprite.Group() #Invincible off
+
+    instantKillOn_list = pygame.sprite.Group() #Instant Kill on
+
+    instantKillOff_list = pygame.sprite.Group() #Instant Kill off
 
     background1_list = pygame.sprite.Group() #Backgrounds
 
@@ -11845,24 +11967,28 @@ def Game():
                     player.Freeze(0)
                     player.FreezeTrigger(0)
                     fileLoaded = True
-                elif level == 1 and pos[0] >= 529.5 and pos[1] >= 300 and pos[0] <= 970.5 and pos[1] <= 420: #Select Difficulty
-                    if difficulty == 0:
-                        difficulty = 1
-                        for easy in easy_list:
-                            setting_list.remove(easy)
-                        #endfor
-                        for hard in hard_list:
-                            setting_list.add(hard)
-                        #endfor
-                    else:
-                        difficulty = 0
-                        for easy in easy_list:
-                            setting_list.add(easy)
-                        #endfor
-                        for hard in hard_list:
-                            setting_list.remove(hard)
-                        #endfor
-                    #endif
+                elif level == 1 and pos[0] >= 844 and pos[1] >= 390 and pos[0] <= 918 and pos[1] <= 430 and playerInvincible: #Turn Off Invincible
+                    playerInvincible = False
+                    for player in player_list:
+                        player.Invincible(0)
+                    #endfor
+                    for on in invincibleOn_list:
+                        setting_list.remove(on)
+                    #endfor
+                    for off in invincibleOff_list:
+                        setting_list.add(off)
+                    #endfor
+                elif level == 1 and pos[0] >= 844 and pos[1] >= 390 and pos[0] <= 944 and pos[1] <= 430 and not playerInvincible: #Turn On Invincible
+                    playerInvincible = True
+                    for player in player_list:
+                        player.Invincible(1)
+                    #endfor
+                    for on in invincibleOn_list:
+                        setting_list.add(on)
+                    #endfor
+                    for off in invincibleOff_list:
+                        setting_list.remove(off)
+                    #endfor
                 elif level == 3 and pos[0] >= 249.5 and pos[1] >= 680.5 and pos[0] <= 410.5 and pos[1] <= 711.5: #Select file 1
                     level = -1
                     levelToGo = 4
@@ -12384,8 +12510,7 @@ def Game():
                             necro.HealthDisplay(0, levelThree_list)
                         #endfor
                         for skull in skull_list:
-                            skull.rect.x = -1000
-                            skull.rect.y = 50
+                            skull.SkullReset()
                             skull.SkullUpdate(0)
                         #endfor
                         DrawOrRemove(0, levelThree_list, shadowBolt_list)
@@ -12948,13 +13073,13 @@ def Game():
 
                     CreateFile(file_list, button_list, item_list, crown_list, currentFileData_list)
                     CreateMenu(menu_list, button_list)
-                    CreateSettings(setting_list, button_list, easy_list, hard_list)
+                    CreateSettings(setting_list, button_list, invincibleOn_list, invincibleOff_list)
                     CreateBackgrounds(levelOne_list, levelTwo_list, levelThree_list, background1_list, background2_list, background3_list, cloud_list, ground_list, allBackgrounds_list, background_list, whiteScreen_list)#Backgrounds and ground
                     CreateLevelOnePlatform(block1_list, levelOne_list) #Level One Platforms
                     CreateLevelTwoPlatform(block2_list, levelTwo_list) #Level Two Platforms
                     CreatePanel(button_list, optionBlock_list, pauseButton_list, panelButton_list, levelOne_list, levelTwo_list, levelThree_list, nextLevelBlock_list, restartLevel_list, directionArrow_list, levelUp_list, upgradeButton_list, upgradeInstruction_list, upgradeTextButton_list, upgradeBox_list, okButton_list, quitLevel_list)
                     CreateTutorialPlatform(tutorialBlock_list, tutorial_list, button_list)
-                    CreateCharacters0(oden_list, skull_list, character2_list, character3_list, mehira_list, talene2_list, yellowTriangle_list, player_list, leftPlayerAttack_list, rightPlayerAttack_list, tutorialEnemy_list, tutorial_list, levelOne_list, levelTwo_list, levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list, character1_list, talene_list, taleneAttack_list)
+                    CreateCharacters0(oden_list, skull_list, skullAttack_list, character2_list, character3_list, mehira_list, talene2_list, yellowTriangle_list, player_list, leftPlayerAttack_list, rightPlayerAttack_list, tutorialEnemy_list, tutorial_list, levelOne_list, levelTwo_list, levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list, character1_list, talene_list, taleneAttack_list)
                     CreateCharacters1(levelOne_list, enemy_list, warlock_list, wordBox_list, nextButton_list, rogue_list, leftEnemyAttack_list, rightEnemyAttack_list, rogueAttack_list, banditGroup1_list, banditGroup2_list, character1_list)
                     CreateCharacters2(levelTwo_list, enemyAttack_list, leftEnemyAttack_list, rightEnemyAttack_list, banditGroup3_list, banditGroup4_list, mushroomGroup1_list, mushroomGroup2_list, mushroomGroup3_list, character2_list, arun_list, mushroomAttack_list)
                     CreateCharacters3(levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list, character3_list, skeleton1_list, abomination_list, abominationAttack_list, necromancer_list, warlock3_list)
@@ -16917,6 +17042,7 @@ def Game():
                             oden.Hurt()
                             oden.Health(odenHealth)
                             oden.Animation()
+                            oden.SkullAttackDetection(skullAttack_list)
                         #endfor
                     #endif
 
@@ -17407,7 +17533,7 @@ def Game():
                             elif timeUp[0] == 1:
                                 timeUp[0] = 0
                                 for skull in skull_list:
-                                    skull.rect.x = 400
+                                    skull.rect.x = 550
                                 #endfor
                                 DrawOrRemove(0, levelThree_list, whiteScreen_list)
                                 gameChat = 9
@@ -17415,7 +17541,7 @@ def Game():
                         elif gameChat == 9:
                             for triangle in yellowTriangle_list:
                                 triangle.rect.x = 725
-                                triangle.rect.y = 20
+                                triangle.rect.y = 40
                             #endfor
                             DrawOrRemove(0, levelThree_list, nextButton_list)
                             DrawOrRemove(0, levelThree_list, currentLine_list)
@@ -17481,24 +17607,37 @@ def Game():
                             for triangle in yellowTriangle_list:
                                 triangle.rect.x = -1000
                             #endfor
-                            DrawOrRemove(1, levelThree_list, whiteScreen_list)
                             for skull in skull_list:
-                                skull.rect.x = -1000
-                                skull.rect.y = 50
-                                skull.SkullUpdate(0)
-                            #endfor
-                            for oden in oden_list:
-                                oden.rect.x = -1000
+                                skull.SkullResetY()
                             #endfor
                             gameChat = 1
                         #endif
                     elif gamePhase == 9:
+                        if odenHealth[0] != 0:
+                            for skull in skull_list:
+                                skull.SkullCrush()
+                            #endfor
+                        else:
+                            if timeUp[0] == 0:
+                                timer.Counter(400, timeUp)
+                                for skull in skull_list:
+                                    skull.SkullCrush()
+                                #endfor
+                            elif timeUp[0] == 1:
+                                timeUp[0] = 0
+                                gamePhase = 10
+                                for skull in skull_list:
+                                    skull.SkullReset()
+                                    skull.SkullUpdate(0)
+                                #endfor
+                            #endif
+                        #endif
+                    elif gamePhase == 10:
                         if timeUp[0] == 0:
-                            timer.Counter(2000, timeUp)
+                            timer.Counter(1000, timeUp)
                         elif timeUp[0] == 1:
                             timeUp[0] = 0
-                            DrawOrRemove(0, levelThree_list, whiteScreen_list)
-                            gamePhase = 10
+                            gamePhase = 11
                             for talene in talene2_list:
                                 talene.Turn(0)
                             #endfor
@@ -17506,7 +17645,7 @@ def Game():
                                 mehira.Turn(0)
                             #endfor
                         #endif
-                    elif gamePhase == 10:
+                    elif gamePhase == 11:
                         if gameChat == 1:
                             for triangle in yellowTriangle_list:
                                 for talene in talene2_list:
@@ -17661,13 +17800,13 @@ def Game():
                             DrawOrRemove(0, levelThree_list, nextButton_list)
                             DrawOrRemove(0, levelThree_list, currentLine_list)
                             DrawOrRemove(0, levelThree_list, wordBox_list)
-                            gamePhase = 11
+                            gamePhase = 12
                             gameChat = 1
                         #endif
-                    elif gamePhase == 11:
+                    elif gamePhase == 12:
                         DrawOrRemove(0, levelThree_list, pauseButton_list)
                         DrawOrRemove(1, levelThree_list, quitLevel_list)
-                        gamePhase = 12
+                        gamePhase = 13
                         quitLevel = True
                     #endif
                     levelThree_list.draw(screen) #Display all visible objects
