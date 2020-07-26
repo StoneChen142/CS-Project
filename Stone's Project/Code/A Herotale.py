@@ -128,9 +128,6 @@ def CreateCharacters0(oden_list, skull_list, skullAttack_list, character2_list, 
 
     player = PlayerClass(50, 700, leftPlayerAttack_list, rightPlayerAttack_list)
     player_list.add(player)
-    character1_list.add(player)
-    character2_list.add(player)
-    character3_list.add(player)
 
     dummy = BanditClass(1, 295, 250, tutorial_list, leftEnemyAttack_list, rightEnemyAttack_list)
     tutorialEnemy_list.add(dummy) #Specify Level
@@ -140,11 +137,11 @@ def CreateCharacters0(oden_list, skull_list, skullAttack_list, character2_list, 
     talene_list.add(talene)
     character2_list.add(talene)
 
-    talene2 = RogueClass(-1000, 710, levelThree_list, leftPlayerAttack_list, rightPlayerAttack_list, taleneAttack_list)
+    talene2 = RogueClass(-500, 710, levelThree_list, leftPlayerAttack_list, rightPlayerAttack_list, taleneAttack_list)
     talene2_list.add(talene2)
     character3_list.add(talene2)
 
-    mehira = ArunClass(-1000, 700, levelThree_list, leftPlayerAttack_list, rightPlayerAttack_list)
+    mehira = ArunClass(-500, 700, levelThree_list, leftPlayerAttack_list, rightPlayerAttack_list)
     mehira_list.add(mehira)
     character3_list.add(mehira)
 
@@ -198,7 +195,7 @@ def CreateCharacters1(levelOne_list, enemy_list, warlock_list, wordBox_list, nex
 
 #endprocedure
 
-def CreateCharacters2(levelTwo_list, enemyAttack_list, leftEnemyAttack_list, rightEnemyAttack_list, banditGroup3_list, banditGroup4_list, mushroomGroup1_list, mushroomGroup2_list, mushroomGroup3_list, character2_list, arun_list, mushroomAttack_list):
+def CreateCharacters2(levelTwo_list, enemyAttack_list, leftEnemyAttack_list, rightEnemyAttack_list, banditGroup3_list, banditGroup4_list, mushroomGroup1_list, mushroomGroup2_list, mushroomGroup3_list, character2_list, arun_list, mushroomAttack_list, warlock2_list):
 
     arun = ArunClass(1400, 700, levelTwo_list, leftEnemyAttack_list, rightEnemyAttack_list)
     arun_list.add(arun)
@@ -229,8 +226,11 @@ def CreateCharacters2(levelTwo_list, enemyAttack_list, leftEnemyAttack_list, rig
         mushroomGroup3_list.add(mush3)
         character2_list.add(mush3)
     #endfor
+
+    warlock = WarlockClass(-500,730,levelTwo_list)
+    warlock2_list.add(warlock)
     
-    character2_list.add(arun, bandit1, bandit2, bandit3, bandit4, bandit5)
+    character2_list.add(arun, bandit1, bandit2, bandit3, bandit4, bandit5, warlock)
     
 #endprocedure
 
@@ -250,7 +250,7 @@ def CreateCharacters3(levelThree_list, leftEnemyAttack_list, rightEnemyAttack_li
     abomination_list.add(abomination)
     character3_list.add(abomination)
 
-    warlock = WarlockClass(-1000,730,levelThree_list)
+    warlock = WarlockClass(-500,730,levelThree_list)
     warlock3_list.add(warlock)
     character3_list.add(warlock)
 
@@ -317,7 +317,7 @@ def CreateMenu(menu_list, button_list):
 #endprocedure
 
 #Setting Creation
-def CreateSettings(setting_list, button_list, invincibleOn_list, invincibleOff_list):
+def CreateSettings(setting_list, button_list, invincibleOn_list, invincibleOff_list, instantKillOn_list, instantKillOff_list, playerInvincible, instantKill):
 
     on = Button(18, 0, 0, 0, 844, 390) #On Button
     invincibleOn_list.add(on)
@@ -325,8 +325,33 @@ def CreateSettings(setting_list, button_list, invincibleOn_list, invincibleOff_l
 
     off = Button(19, 0, 0, 0, 844, 390) #Off Button
     invincibleOff_list.add(off)
-    setting_list.add(off)
     button_list.add(off)
+
+    on2 = Button(18, 0, 0, 1, 844, 470) #On Button
+    instantKillOn_list.add(on2)
+    button_list.add(on2)
+
+    off2 = Button(19, 0, 0, 1, 844, 470) #Off Button
+    instantKillOff_list.add(off2)
+    button_list.add(off2)
+
+    f = open("Game_Files/Setting.txt","r+") #Open Setting
+    lines = f.readlines() #All data
+    f.close() #Close
+
+    if lines[0].rstrip("\n") == "0":
+        setting_list.add(off)
+    else:
+        setting_list.add(on)
+        playerInvincible[0] = 1
+    #endif
+
+    if lines[1].rstrip("\n") == "0":
+        setting_list.add(off2)
+    else:
+        setting_list.add(on2)
+        instantKill[0] = 1
+    #endif
 
     #Back
     back = Button(5, 106, 31 ,0, 50, 820) #Back Button
@@ -334,8 +359,11 @@ def CreateSettings(setting_list, button_list, invincibleOn_list, invincibleOff_l
     setting_list.add(back)
 
     #Text
-    invin = InstructionClass(16, 0, 0, 537, 383) #Invincible instruction
+    invin = InstructionClass(16, 0, 0, 537, 390) #Invincible instruction
     setting_list.add(invin)
+
+    insta = InstructionClass(17, 0, 0, 537, 470) #Instant Kill instruction
+    setting_list.add(insta)
 
 #endprocedure
 
@@ -1068,6 +1096,14 @@ class Button(pygame.sprite.Sprite):
             self.image = self.on[1]
 
         elif level == 1 and pos[0] >= 844 and pos[1] >= 390 and pos[0] <= 944 and pos[1] <= 430 and self.imageNum == 19 and self.num == 0:
+
+            self.image = self.off[1]
+
+        elif level == 1 and pos[0] >= 844 and pos[1] >= 470 and pos[0] <= 918 and pos[1] <= 510 and self.imageNum == 18 and self.num == 1:
+
+            self.image = self.on[1]
+
+        elif level == 1 and pos[0] >= 844 and pos[1] >= 470 and pos[0] <= 944 and pos[1] <= 510 and self.imageNum == 19 and self.num == 1:
 
             self.image = self.off[1]
             
@@ -1930,16 +1966,15 @@ class LoadingClass(pygame.sprite.Sprite):
 
 #Instruction Class----------------------------------------------------------------------------------
 class InstructionClass(pygame.sprite.Sprite): #Instruction is a sprite, because I need to create multiple instructions
-    
+    #Instantiation
     def __init__(self, typeNum, width, height, x, y):
         super().__init__()
-        
         self.image = pygame.Surface([width,height])
         self.rect = self.image.get_rect() #Get the shape
-
+        #Assign Position
         self.rect.x = x
         self.rect.y = y
-
+        #Images
         self.move = [pygame.transform.scale(pygame.image.load('Game_Images/Text/MoveInstruction.png'), (439, 27))]
         self.jump = [pygame.transform.scale(pygame.image.load('Game_Images/Text/JumpInstruction.png'), (210, 25))]
         self.dJump = [pygame.transform.scale(pygame.image.load('Game_Images/Text/DoubleJumpInstruction.png'), (305, 25))]
@@ -1956,79 +1991,47 @@ class InstructionClass(pygame.sprite.Sprite): #Instruction is a sprite, because 
         self.upgradeCost = [pygame.transform.scale(pygame.image.load('Game_Images/Text/CostInstruction.png'), (700, 84))]
         self.finish = [pygame.transform.scale(pygame.image.load('Game_Images/Text/FinishInstruction.png'), (743, 82))]
         self.invincible = [pygame.transform.scale(pygame.image.load('Game_Images/Text/Invincible.png'), (287, 47))]
-
+        self.instantKill = [pygame.transform.scale(pygame.image.load('Game_Images/Text/InstantKill.png'), (261, 40))]
+        #Decide Which Instruction
         if typeNum == 1:
-
             self.image = self.move[0]
-
         elif typeNum == 2:
-
             self.image = self.jump[0]
-
         elif typeNum == 3:
-
             self.image = self.attack[0]
-
         elif typeNum == 4:
-
             self.image = self.roll[0]
-
         elif typeNum == 5:
-
             self.image = self.dJump[0]
-
         elif typeNum == 6:
-
             self.image = self.block[0]
-
         elif typeNum == 7:
-
             self.image = self.minus[0]
-
         elif typeNum == 8:
-
             self.image = self.coin[0]
-
         elif typeNum == 9:
-
             self.image = self.fake[0]
-
         elif typeNum == 10:
-
             self.image = self.quit[0]
-
         elif typeNum == 11:
-
             self.image = self.saved[0]
-
         elif typeNum == 12:
-
             self.image = self.restart[0]
-
         elif typeNum == 13:
-
             self.image = self.levelUp[0]
-
         elif typeNum == 14:
-
             self.image = self.upgradeCost[0]
-
         elif typeNum == 15:
-
             self.image = self.finish[0]
-
         elif typeNum == 16:
-
             self.image = self.invincible[0]
-
+        elif typeNum == 17:
+            self.image = self.instantKill[0]
         #endif
-
     #endprocedure
-
+    
     def LevelUpdate(self, num):
-
         self.image = self.levelUp[num-1]
-
     #endprocedure
 
 #endclass
@@ -2441,6 +2444,16 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
         self.hurtCounter = 0
         self.spellCounter = 0
         
+    #endprocedure
+
+    def Turn(self, num):
+
+        if num == 0:
+            self.lastHoriSpeed = -1
+        elif num == 1:
+            self.lastHoriSpeed = 1
+        #endif
+
     #endprocedure
 
     def Invincible(self, num):
@@ -4025,6 +4038,7 @@ class BanditClass(pygame.sprite.Sprite): #Class of the bandit
         self.random2 = False
         self.jumpTime = 0
         self.attackDirectionAssign = False
+        self.instantDeath = True
 
         #Timers
         self.endAnimation = 0
@@ -4054,6 +4068,14 @@ class BanditClass(pygame.sprite.Sprite): #Class of the bandit
         self.hurtCounter = 0
         self.deathCounter = 0
         
+    #endprocedure
+
+    def InstantKill(self, num):
+        if num == 1:
+            self.instantDeath = True
+        else:
+            self.instantDeath = False
+        #endif
     #endprocedure
 
     def Freeze(self, num):
@@ -4379,7 +4401,11 @@ class BanditClass(pygame.sprite.Sprite): #Class of the bandit
             self.reduceHealth = False
             if self.hp > 0:
                 self.hp -= 1
+                if self.instantDeath:
+                    self.hp = 0
+                #endif
                 self.banditHealth.Update(self.hp)
+            #endif
             if self.hp == 0:
                 if self.num == 1:
                     coinNum = 2
@@ -4850,6 +4876,7 @@ class WarlockClass(pygame.sprite.Sprite): #Class of the warlock
         self.trigger = False
         self.immune = False
         self.skullAttack = False
+        self.instantDeath = False
 
         #Timers
         self.endAnimation = 0
@@ -4870,6 +4897,36 @@ class WarlockClass(pygame.sprite.Sprite): #Class of the warlock
         self.hurtCounter = 0
         self.deathCounter = 0
         
+    #endprocedure
+
+    def Face(self, posX):
+
+        if posX >= self.rect.x:
+            self.ChangeSpeed(1)
+        else:
+            self.ChangeSpeed(0)
+        #endif
+        self.ChangeSpeed(2)
+
+    #endprocedure
+
+    def Turn(self, num):
+
+        if num == 0:
+            self.ChangeSpeed(0)
+        elif num == 1:
+            self.ChangeSpeed(1)
+        #endif
+        self.ChangeSpeed(2)
+
+    #endprocedure
+
+    def InstantKill(self, num):
+        if num == 1:
+            self.instantDeath = True
+        else:
+            self.instantDeath = False
+        #endif
     #endprocedure
 
     def Reappear(self, posX):
@@ -5289,6 +5346,7 @@ class RogueClass(pygame.sprite.Sprite): #Class of the rogue
         self.immune = False
         self.immuneFinish = False
         self.invincible = False
+        self.instantDeath = False
 
         #Timers
         self.endAnimation = 0
@@ -5314,6 +5372,14 @@ class RogueClass(pygame.sprite.Sprite): #Class of the rogue
         self.deathCounter = 0
         self.saCounter = 0
         
+    #endprocedure
+
+    def InstantKill(self, num):
+        if num == 1:
+            self.instantDeath = True
+        else:
+            self.instantDeath = False
+        #endif
     #endprocedure
 
     def FaceKing(self, xPos):
@@ -5755,6 +5821,10 @@ class RogueClass(pygame.sprite.Sprite): #Class of the rogue
             if self.hp > 0:
                 if not self.invincible:
                     self.hp -= 1
+                    if self.instantDeath:
+                        self.hp = 1
+                        self.rogueHealth2.Update(0)
+                    #endif
                 #endif
                 if self.hp >= 5:
                     hpNum = self.hp - 5
@@ -6024,6 +6094,7 @@ class MushroomClass(pygame.sprite.Sprite): #Class of the mushroom
         self.hurt = False
         self.death = False
         self.reduceHealth = False
+        self.instantDeath = False
 
         #Timers
         self.endAnimation = 0
@@ -6044,6 +6115,14 @@ class MushroomClass(pygame.sprite.Sprite): #Class of the mushroom
         self.hurtCounter = 0
         self.deathCounter = 0
         
+    #endprocedure
+
+    def InstantKill(self, num):
+        if num == 1:
+            self.instantDeath = True
+        else:
+            self.instantDeath = False
+        #endif
     #endprocedure
 
     def Reset(self):
@@ -6228,6 +6307,10 @@ class MushroomClass(pygame.sprite.Sprite): #Class of the mushroom
             self.reduceHealth = False
             if self.hp > 0:
                 self.hp -= 1
+                if self.instantDeath:
+                    self.hp = 0
+                    self.mushroomHealth2.Update(0)
+                #endif
                 if self.hp >= 5:
                     hpNum = self.hp - 5
                     self.mushroomHealth2.Update(hpNum)
@@ -6522,6 +6605,8 @@ class ArunClass(pygame.sprite.Sprite): #Class of the Arun Swordsmith
         self.immune = False
         self.immuneFinish = False
         self.invincible = False
+        self.instantDeath = False
+        self.deathNum = 0
 
         #Timers
         self.endAnimation = 0
@@ -6557,6 +6642,30 @@ class ArunClass(pygame.sprite.Sprite): #Class of the Arun Swordsmith
         self.fallCounter = 0
         self.jumpCounter = 0
         
+    #endprocedure
+
+    def SetDeathHp(self, num):
+        if num == 1:
+            self.deathNum = 1
+        elif num == 0:
+            self.deathNum = 0
+        #endif
+    #endmethod
+
+    def InstantKill(self, num):
+        if num == 1:
+            self.instantDeath = True
+        else:
+            self.instantDeath = False
+        #endif
+    #endmethod
+
+    def InstantKill(self, num):
+        if num == 1:
+            self.instantDeath = True
+        else:
+            self.instantDeath = False
+        #endif
     #endprocedure
 
     def FaceKing(self, xPos):
@@ -7195,6 +7304,12 @@ class ArunClass(pygame.sprite.Sprite): #Class of the Arun Swordsmith
             if self.hp > 0:
                 if not self.invincible:
                     self.hp -= 1
+                    if self.instantDeath:
+                        self.hp = self.deathNum
+                        self.arunHealth4.Update(0)
+                        self.arunHealth3.Update(0)
+                        self.arunHealth2.Update(0)
+                    #endif
                 #endif
                 if self.hp >= 15:
                     hpNum = self.hp - 15
@@ -7493,6 +7608,7 @@ class SkeletonClass(pygame.sprite.Sprite): #Class of the skeleton
         self.dice = 0
         self.rest = False
         self.reviveTime = randint(8000, 12000)
+        self.instantDeath = False
 
         #Timers
         self.endAnimation = 0
@@ -7518,6 +7634,14 @@ class SkeletonClass(pygame.sprite.Sprite): #Class of the skeleton
 
         self.Reset()
         
+    #endprocedure
+
+    def InstantKill(self, num):
+        if num == 1:
+            self.instantDeath = True
+        else:
+            self.instantDeath = False
+        #endif
     #endprocedure
 
     def Reset(self):
@@ -7742,7 +7866,11 @@ class SkeletonClass(pygame.sprite.Sprite): #Class of the skeleton
             self.reduceHealth = False
             if self.hp > 0:
                 self.hp -= 1
+                if self.instantDeath:
+                    self.hp = 0
+                #endif
                 self.skeletonHealth.Update(self.hp)
+            #endif
             if self.hp == 0:
                 self.death = True
                 self.hurt = False
@@ -8827,16 +8955,12 @@ class DarkKnightClass(pygame.sprite.Sprite): #Class of the Dark Knight
 
         #endif
 
-    #endprocedure
+    #endmethod
 
     def MoveHori(self, block_list):
-
         if self.freeze == False:
-            
-            self.rect.x += self.horiSpeed
-                
-            for block in block_list:
-                        
+            self.rect.x += self.horiSpeed 
+            for block in block_list:          
                 if self.rect.colliderect(block.rect): #If player hit block
                     if self.horiSpeed > 0:
                         self.rect.right = block.rect.left
@@ -8844,12 +8968,9 @@ class DarkKnightClass(pygame.sprite.Sprite): #Class of the Dark Knight
                         self.rect.left = block.rect.right
                     #endif
                 #endif
-
             #endfor
-
         #endif
-
-    #endprocedure
+    #endmethod
 
 #endclass
 
@@ -8908,6 +9029,7 @@ class NecromancerClass(pygame.sprite.Sprite): #Class of the Necromancer
         self.restTime = 1000
         self.attackCountNum = 4
         self.shadowNum = 0
+        self.instantDeath = False
 
         #Timers
         self.endAnimation = 0
@@ -8945,6 +9067,14 @@ class NecromancerClass(pygame.sprite.Sprite): #Class of the Necromancer
         self.fallCounter = 0
         self.jumpCounter = 0
         
+    #endprocedure
+
+    def InstantKill(self, num):
+        if num == 1:
+            self.instantDeath = True
+        else:
+            self.instantDeath = False
+        #endif
     #endprocedure
 
     def HealthDisplay(self, num, levelThree_list):
@@ -9446,7 +9576,13 @@ class NecromancerClass(pygame.sprite.Sprite): #Class of the Necromancer
 
             self.reduceHealth = False
             if self.hp > 0:
-                self.hp -= 5
+                self.hp -= 1
+                if self.instantDeath:
+                    self.hp = 0
+                    self.necroHealth4.Update(0)
+                    self.necroHealth3.Update(0)
+                    self.necroHealth2.Update(0)
+                #endif
                 if self.hp >= 15:
                     hpNum = self.hp - 15
                     self.necroHealth4.Update(hpNum)
@@ -9748,6 +9884,7 @@ class AbominationClass(pygame.sprite.Sprite): #Class of the Abomination AKA The 
         self.attackCountNum = 8
         self.reduceTwice = False
         self.immune = False
+        self.instantDeath = False
 
         #Timers
         self.endAnimation = 0
@@ -9780,6 +9917,14 @@ class AbominationClass(pygame.sprite.Sprite): #Class of the Abomination AKA The 
         self.hurtCounter = 0
         self.deathCounter = 0
         
+    #endprocedure
+
+    def InstantKill(self, num):
+        if num == 1:
+            self.instantDeath = True
+        else:
+            self.instantDeath = False
+        #endif
     #endprocedure
 
     def HealthDisplay(self, num, levelThree_list):
@@ -10098,7 +10243,17 @@ class AbominationClass(pygame.sprite.Sprite): #Class of the Abomination AKA The 
 
             self.reduceHealth = False
             if self.actualHp > 0:
-                self.actualHp -= 200
+                self.actualHp -= 1
+                if self.instantDeath:
+                    self.actualHp = 0
+                    self.kingHealth8.Update(0)
+                    self.kingHealth7.Update(0)
+                    self.kingHealth6.Update(0)
+                    self.kingHealth5.Update(0)
+                    self.kingHealth4.Update(0)
+                    self.kingHealth3.Update(0)
+                    self.kingHealth2.Update(0)
+                #endif
                 if self.actualHp % 5 == 0:
                     self.hp = int(self.actualHp / 5)
                     if self.hp >= 35:
@@ -11720,7 +11875,8 @@ def Game():
     warlockDodgeTime = 0
     odenHealth = [5]
     warlockMove = False
-    playerInvincible = False
+    playerInvincible = [0]
+    instantKill = [0]
 
     posX = 0
 
@@ -11967,8 +12123,8 @@ def Game():
                     player.Freeze(0)
                     player.FreezeTrigger(0)
                     fileLoaded = True
-                elif level == 1 and pos[0] >= 844 and pos[1] >= 390 and pos[0] <= 918 and pos[1] <= 430 and playerInvincible: #Turn Off Invincible
-                    playerInvincible = False
+                elif level == 1 and pos[0] >= 844 and pos[1] >= 390 and pos[0] <= 918 and pos[1] <= 430 and playerInvincible[0] == 1: #Turn Off Invincible
+                    playerInvincible[0] = 0
                     for player in player_list:
                         player.Invincible(0)
                     #endfor
@@ -11978,8 +12134,14 @@ def Game():
                     for off in invincibleOff_list:
                         setting_list.add(off)
                     #endfor
-                elif level == 1 and pos[0] >= 844 and pos[1] >= 390 and pos[0] <= 944 and pos[1] <= 430 and not playerInvincible: #Turn On Invincible
-                    playerInvincible = True
+                    f = open("Game_Files/Setting.txt","r+") #Open Setting
+                    lines = f.readlines() #All data
+                    f.close() #Close
+                    f = open("Game_Files/Setting.txt","w+") #Modify Setting
+                    f.write("0\n"+lines[1])
+                    f.close() #Close
+                elif level == 1 and pos[0] >= 844 and pos[1] >= 390 and pos[0] <= 944 and pos[1] <= 430 and playerInvincible[0] == 0: #Turn On Invincible
+                    playerInvincible[0] = 1
                     for player in player_list:
                         player.Invincible(1)
                     #endfor
@@ -11989,6 +12151,58 @@ def Game():
                     for off in invincibleOff_list:
                         setting_list.remove(off)
                     #endfor
+                    f = open("Game_Files/Setting.txt","r+") #Open Setting
+                    lines = f.readlines() #All data
+                    f.close() #Close
+                    f = open("Game_Files/Setting.txt","w+") #Modify Setting
+                    f.write("1\n"+lines[1])
+                    f.close() #Close
+                elif level == 1 and pos[0] >= 844 and pos[1] >= 470 and pos[0] <= 918 and pos[1] <= 510 and instantKill[0] == 1: #Turn Off Instant Kill
+                    instantKill[0] = 0
+                    for character in character1_list:
+                        character.InstantKill(0)
+                    #endfor
+                    for character in character2_list:
+                        character.InstantKill(0)
+                    #endfor
+                    for character in character3_list:
+                        character.InstantKill(0)
+                    #endfor
+                    for on in instantKillOn_list:
+                        setting_list.remove(on)
+                    #endfor
+                    for off in instantKillOff_list:
+                        setting_list.add(off)
+                    #endfor
+                    f = open("Game_Files/Setting.txt","r+") #Open Setting
+                    lines = f.readlines() #All data
+                    f.close() #Close
+                    f = open("Game_Files/Setting.txt","w+") #Modify Setting
+                    f.write(lines[0]+"0")
+                    f.close() #Close
+                elif level == 1 and pos[0] >= 844 and pos[1] >= 470 and pos[0] <= 944 and pos[1] <= 510 and instantKill[0] == 0: #Turn On Instant Kill
+                    instantKill[0] = 1
+                    for character in character1_list:
+                        character.InstantKill(1)
+                    #endfor
+                    for character in character2_list:
+                        character.InstantKill(1)
+                    #endfor
+                    for character in character3_list:
+                        character.InstantKill(1)
+                    #endfor
+                    for on in instantKillOn_list:
+                        setting_list.add(on)
+                    #endfor
+                    for off in instantKillOff_list:
+                        setting_list.remove(off)
+                    #endfor
+                    f = open("Game_Files/Setting.txt","r+") #Open Setting
+                    lines = f.readlines() #All data
+                    f.close() #Close
+                    f = open("Game_Files/Setting.txt","w+") #Modify Setting
+                    f.write(lines[0]+"1")
+                    f.close() #Close
                 elif level == 3 and pos[0] >= 249.5 and pos[1] >= 680.5 and pos[0] <= 410.5 and pos[1] <= 711.5: #Select file 1
                     level = -1
                     levelToGo = 4
@@ -13073,7 +13287,7 @@ def Game():
 
                     CreateFile(file_list, button_list, item_list, crown_list, currentFileData_list)
                     CreateMenu(menu_list, button_list)
-                    CreateSettings(setting_list, button_list, invincibleOn_list, invincibleOff_list)
+                    CreateSettings(setting_list, button_list, invincibleOn_list, invincibleOff_list, instantKillOn_list, instantKillOff_list, playerInvincible, instantKill)
                     CreateBackgrounds(levelOne_list, levelTwo_list, levelThree_list, background1_list, background2_list, background3_list, cloud_list, ground_list, allBackgrounds_list, background_list, whiteScreen_list)#Backgrounds and ground
                     CreateLevelOnePlatform(block1_list, levelOne_list) #Level One Platforms
                     CreateLevelTwoPlatform(block2_list, levelTwo_list) #Level Two Platforms
@@ -13081,13 +13295,28 @@ def Game():
                     CreateTutorialPlatform(tutorialBlock_list, tutorial_list, button_list)
                     CreateCharacters0(oden_list, skull_list, skullAttack_list, character2_list, character3_list, mehira_list, talene2_list, yellowTriangle_list, player_list, leftPlayerAttack_list, rightPlayerAttack_list, tutorialEnemy_list, tutorial_list, levelOne_list, levelTwo_list, levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list, character1_list, talene_list, taleneAttack_list)
                     CreateCharacters1(levelOne_list, enemy_list, warlock_list, wordBox_list, nextButton_list, rogue_list, leftEnemyAttack_list, rightEnemyAttack_list, rogueAttack_list, banditGroup1_list, banditGroup2_list, character1_list)
-                    CreateCharacters2(levelTwo_list, enemyAttack_list, leftEnemyAttack_list, rightEnemyAttack_list, banditGroup3_list, banditGroup4_list, mushroomGroup1_list, mushroomGroup2_list, mushroomGroup3_list, character2_list, arun_list, mushroomAttack_list)
+                    CreateCharacters2(levelTwo_list, enemyAttack_list, leftEnemyAttack_list, rightEnemyAttack_list, banditGroup3_list, banditGroup4_list, mushroomGroup1_list, mushroomGroup2_list, mushroomGroup3_list, character2_list, arun_list, mushroomAttack_list, warlock2_list)
                     CreateCharacters3(levelThree_list, leftEnemyAttack_list, rightEnemyAttack_list, character3_list, skeleton1_list, abomination_list, abominationAttack_list, necromancer_list, warlock3_list)
                     CreateMoney(tutorial_list, levelOne_list, levelTwo_list, levelThree_list, thousand_list, hundred_list, ten_list, one_list)
                     for player in player_list:
                         player.DrawOnCanvas(tutorial_list, levelOne_list, levelTwo_list, levelThree_list)
+                        if playerInvincible[0] == 1:
+                            player.Invincible(1)
+                        #endif
                     #endfor
+                    if instantKill[0] == 1:
+                        for character in character1_list:
+                            character.InstantKill(1)
+                        #endfor
+                        for character in character2_list:
+                            character.InstantKill(1)
+                        #endfor
+                        for character in character3_list:
+                            character.InstantKill(1)
+                        #endfor
+                    #endif
                     ReadScript(script1, script2, script3)
+                    
 
                 #endif
 
@@ -14871,7 +15100,7 @@ def Game():
                         #Roll
                         player.Roll()
                         #Horizontal Movement
-                        if gamePhase != 6 and gamePhase != 7 and gamePhase != 13 and gamePhase != 14 and gamePhase != 17 and gamePhase != 18 and gamePhase != 19 and gamePhase != 20 and gamePhase != 21:
+                        if gamePhase != 6 and gamePhase != 7 and gamePhase != 13 and gamePhase != 14 and gamePhase != 20 and gamePhase != 21 and gamePhase != 22 and gamePhase != 23:
                             player.MoveHori(block2_list) #Player move horizontally
                         else:
                             player.MoveHori2(block2_list)
@@ -14887,6 +15116,24 @@ def Game():
 
                     #endfor
 
+                    if gamePhase >= 17:
+
+                        for warlock in warlock2_list:
+
+                            if gamePhase == 20:
+                                for player in player_list:
+                                    warlock.Face(player.rect.x)
+                                #endfor
+                            #endif
+                            warlock.MoveHori(block2_list)
+                            warlock.MoveVert(block2_list)
+                            warlock.Health(odenHealth)
+                            warlock.Animation()
+
+                        #endfor
+
+                    #endif
+
                     if gamePhase <= 5 or (gamePhase >= 7 and gamePhase <= 10) or (gamePhase >= 14 and gamePhase <= 17):
                         for arun in arun_list:
 
@@ -14899,7 +15146,7 @@ def Game():
                             arun.MoveVert(block2_list)
                             arun.Hurt()
                             arun.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
-                            arun.Health(levelTwo_list, coin_list, enemyCount)
+                            arun.Health(levelTwo_list, coin_list, enemyCount, mehiraDefeat)
                             arun.FireBallDetection(levelTwo_list, fireBall_list)
                             arun.Throw(leftJavelin_list, rightJavelin_list, levelTwo_list)
                             arun.Animation()
@@ -15025,6 +15272,9 @@ def Game():
                                 for arun in arun_list:
                                     triangle.rect.x = arun.rect.x
                                 #endfor
+                            #endfor
+                            for arun in arun_list:
+                                arun.SetDeathHp(0)
                             #endfor
                             for player in player_list:
                                 player.FreezeTrigger(0)
@@ -15317,12 +15567,12 @@ def Game():
                             elif timeUp[0] == 1:
                                 timeUp[0] = 0
                                 gamePhase = 13
+                                readyToUpgrade = True
+                                DrawOrRemove(1, levelTwo_list, upgradeButton_list)
+                                conversation = False
                                 for player in player_list:
                                     player.FreezeTrigger(0)
                                 #endfor
-                                conversation = False
-                                readyToUpgrade = True
-                                DrawOrRemove(1, levelTwo_list, upgradeButton_list)
                             #endif
                         #endif
                         if live[0] == 0:
@@ -15474,18 +15724,100 @@ def Game():
                             elif timeUp[0] == 1:
                                 timeUp[0] = 0
                                 gamePhase = 18
-                                for player in player_list:
-                                    player.FreezeTrigger(0)
+                                for warlock in warlock2_list:
+                                    warlock.rect.x = -100
                                 #endfor
-                                conversation = False
-                                readyToUpgrade = True
-                                DrawOrRemove(1, levelTwo_list, upgradeButton_list)
                             #endif
                         #endif
                         if live[0] == 0:
                             gameOver = True
                         #endif
                     elif gamePhase == 18:
+                        for warlock in warlock2_list:
+                            for player in player_list:
+                                if player.rect.x <= 1350:
+                                    warlock.rect.x = player.rect.x + 70
+                                    warlock.Turn(0)
+                                    player.Turn(1)
+                                    gamePhase = 19
+                                elif player.rect.x >= 1350:
+                                    warlock.ChangeSpeed(2)
+                                    warlock.rect.x = player.rect.x - 100
+                                    player.Turn(0)
+                                    gamePhase = 19
+                                #endif
+                            #endfor
+                        #endfor
+                    elif gamePhase == 19:
+                        if gameChat == 1:
+                            for triangle in yellowTriangle_list:
+                                for warlock in warlock2_list:
+                                    triangle.rect.x = warlock.rect.x + 15
+                                #endfor
+                            #endfor
+                            DrawOrRemove(1, levelTwo_list, wordBox_list)
+                            WriteWords(1, script2[23], 0, 815, levelTwo_list, currentLine_list)
+                            gameChat = 2
+                        elif gameChat == 2:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelTwo_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 3:
+                            DrawOrRemove(0, levelTwo_list, nextButton_list)
+                            DrawOrRemove(0, levelTwo_list, currentLine_list)
+                            WriteWords(1, script2[24], 0, 815, levelTwo_list, currentLine_list)
+                            gameChat = 4
+                        elif gameChat == 4:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelTwo_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 5:
+                            DrawOrRemove(0, levelTwo_list, nextButton_list)
+                            DrawOrRemove(0, levelTwo_list, currentLine_list)
+                            WriteWords(1, script2[25], 0, 815, levelTwo_list, currentLine_list)
+                            gameChat = 6
+                        elif gameChat == 6:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelTwo_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 7:
+                            DrawOrRemove(0, levelTwo_list, nextButton_list)
+                            DrawOrRemove(0, levelTwo_list, currentLine_list)
+                            DrawOrRemove(0, levelTwo_list, wordBox_list)
+                            gamePhase = 20
+                            gameChat = 1
+                            for triangle in yellowTriangle_list:
+                                triangle.rect.x = -1000
+                            #endfor
+                            conversation = False
+                            for player in player_list:
+                                player.FreezeTrigger(0)
+                            #endfor
+                            readyToUpgrade = True
+                            DrawOrRemove(1, levelTwo_list, upgradeButton_list)
+                        #endif
+                    elif gamePhase == 20:
                         if player.rect.x < 1550:
                             for arrow in directionArrow_list:
                                 arrow.ArrowUpdate(levelTwo_list)
@@ -15510,7 +15842,7 @@ def Game():
                                 for arun in arun_list:
                                     arun.HealthDisplay(0, levelTwo_list)
                                 #endfor
-                                gamePhase = 19
+                                gamePhase = 21
                                 DrawOrRemove(0, levelTwo_list, pauseButton_list)
                                 for coin in coin_list:
                                     levelTwo_list.remove(coin)
@@ -15535,9 +15867,12 @@ def Game():
                                         currency[3] = 0
                                     #endif
                                 #endfor
+                                for warlock in warlock2_list:
+                                    warlock.rect.x = -500
+                                #endfor
                             #endif
                         #endif
-                    elif gamePhase == 19:
+                    elif gamePhase == 21:
                         if gameChat == 1:
                             DrawOrRemove(1, levelTwo_list, wordBox_list)
                             WriteWords(1, script2[5], 0, 815, levelTwo_list, currentLine_list)
@@ -15557,12 +15892,12 @@ def Game():
                             DrawOrRemove(0, levelTwo_list, nextButton_list)
                             DrawOrRemove(0, levelTwo_list, currentLine_list)
                             DrawOrRemove(0, levelTwo_list, wordBox_list)
-                            gamePhase = 20
+                            gamePhase = 22
                             gameChat = 1
                         #endif
-                    elif gamePhase == 20:
+                    elif gamePhase == 22:
                         DrawOrRemove(1, levelTwo_list, nextLevelBlock_list)
-                        gamePhase = 21
+                        gamePhase = 23
                         SaveProgress(currentFile, currency,live,gameLevel+1, shieldNum, playerLevel, gameMode)
                         advanceLevel = True
                     #endif
@@ -15804,6 +16139,9 @@ def Game():
                             DrawOrRemove(1, levelTwo_list, wordBox_list)
                             WriteWords(1, script2[6], 0, 815, levelTwo_list, currentLine_list)
                             gameChat = 2
+                            for arun in arun_list:
+                                arun.SetDeathHp(1)
+                            #endfor
                         elif gameChat == 2:
                             if timeUp[0] == 0 and not ReadyToClick:
                                 timer.Counter(2000, timeUp)
@@ -16790,6 +17128,15 @@ def Game():
 
                         #endfor
 
+                        for warlock in warlock3_list:
+
+                            warlock.MoveHori(block3_list)
+                            warlock.MoveVert(block3_list)
+                            warlock.Health(odenHealth)
+                            warlock.Animation()
+
+                        #endfor
+
                         for stuff in shadowBolt_list:
 
                             if gamePhase == 2:
@@ -16887,52 +17234,106 @@ def Game():
                                 timer.Counter(1200, timeUp)
                                 conversation = True
                             elif timeUp[0] == 1:
+                                player.FreezeTrigger(1)
                                 timeUp[0] = 0
                                 gamePhase = 3
-                                for player in player_list:
-                                    player.FreezeTrigger(0)
+                                for warlock in warlock3_list:
+                                    warlock.rect.x = -100
+                                    warlock.ChangeSpeed(1)
                                 #endfor
-                                conversation = False
-                                readyToUpgrade = True
-                                DrawOrRemove(1, levelThree_list, upgradeButton_list)
                             #endif
                         #endif
                         if live[0] == 0:
                             gameOver = True
                         #endif
                     elif gamePhase == 3:
-                        if player.rect.x < 1550:
-                            for arrow in directionArrow_list:
-                                arrow.ArrowUpdate(levelThree_list)
+                        for warlock in warlock3_list:
+                            for player in player_list:
+                                if player.rect.x <= 1350:
+                                    if warlock.rect.x >= player.rect.x + 70:
+                                        warlock.ChangeSpeed(2)
+                                        warlock.rect.x = player.rect.x + 70
+                                        warlock.Turn(0)
+                                        gamePhase = 4
+                                    #endif
+                                elif player.rect.x >= 1350:
+                                    if warlock.rect.x >= player.rect.x - 100:
+                                        warlock.ChangeSpeed(2)
+                                        warlock.rect.x = player.rect.x - 100
+                                        gamePhase = 4
+                                    #endif
+                                #endif
                             #endfor
-                        elif player.rect.x >= 1550:
-                            if timeUp[0] == 0:
-                                timer.Counter(1000, timeUp)
-                                for player in player_list:
-                                    player.ChangeSpeed(2)
-                                    player.FreezeTrigger(1)
-                                    conversation = True
-                                    player.ResetForTransition()
-                                #endfor
-                            elif timeUp[0] == 1:
-                                timeUp[0] = 0
-                                for arrow in directionArrow_list:
-                                    arrow.ArrowReset(levelThree_list)
-                                #endfor
-                                readyToUpgrade = False
-                                DrawOrRemove(0, levelThree_list, upgradeButton_list)
-                                player.rect.x = 1600
-                                for necro in necromancer_list:
-                                    necro.HealthDisplay(0, levelThree_list)
-                                #endfor
-                                gamePhase = 4
-                                DrawOrRemove(0, levelThree_list, pauseButton_list)
-                            #endif
-                        #endif
+                        #endfor
                     elif gamePhase == 4:
                         if gameChat == 1:
+                            for triangle in yellowTriangle_list:
+                                for warlock in warlock3_list:
+                                    triangle.rect.x = warlock.rect.x + 15
+                                #endfor
+                            #endfor
                             DrawOrRemove(1, levelThree_list, wordBox_list)
                             WriteWords(1, script3[3], 0, 815, levelThree_list, currentLine_list)
+                            gameChat = 2
+                            enemyCount[0] = -1
+                        elif gameChat == 2:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelThree_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 3:
+                            DrawOrRemove(0, levelThree_list, nextButton_list)
+                            DrawOrRemove(0, levelThree_list, currentLine_list)
+                            WriteWords(1, script3[26], 0, 815, levelThree_list, currentLine_list)
+                            gameChat = 4
+                        elif gameChat == 4:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelThree_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 5:
+                            DrawOrRemove(0, levelThree_list, nextButton_list)
+                            DrawOrRemove(0, levelThree_list, currentLine_list)
+                            WriteWords(1, script3[27], 0, 815, levelThree_list, currentLine_list)
+                            gameChat = 6
+                        elif gameChat == 6:
+                            if timeUp[0] == 0 and not ReadyToClick:
+                                timer.Counter(2000, timeUp)
+                            elif timeUp[0] == 1 and not ReadyToClick:
+                                timeUp[0] = 0
+                                ReadyToClick = True
+                                DrawOrRemove(1, levelThree_list, nextButton_list)
+                            #endif
+                            for button in nextButton_list:
+                                button.Change(pos, level)
+                            #endfor
+                        elif gameChat == 7:
+                            DrawOrRemove(0, levelThree_list, nextButton_list)
+                            DrawOrRemove(0, levelThree_list, currentLine_list)
+                            DrawOrRemove(0, levelThree_list, wordBox_list)
+                            gamePhase = 5
+                            gameChat = 1
+                            enemyCount[0] = 1
+                            for triangle in yellowTriangle_list:
+                                triangle.rect.x = -1000
+                            #endfor
+                        #endif
+                    elif gamePhase == 5:
+                        if gameChat == 1:
+                            DrawOrRemove(1, levelThree_list, wordBox_list)
+                            WriteWords(1, script3[25], 0, 815, levelThree_list, currentLine_list)
                             gameChat = 2
                         elif gameChat == 2:
                             if timeUp[0] == 0 and not ReadyToClick:
@@ -16949,12 +17350,12 @@ def Game():
                             DrawOrRemove(0, levelThree_list, nextButton_list)
                             DrawOrRemove(0, levelThree_list, currentLine_list)
                             DrawOrRemove(0, levelThree_list, wordBox_list)
-                            gamePhase = 5
+                            gamePhase = 6
                             gameChat = 1
                         #endif
-                    elif gamePhase == 5:
+                    elif gamePhase == 6:
                         DrawOrRemove(1, levelThree_list, quitLevel_list)
-                        gamePhase = 6
+                        gamePhase = 7
                         quitLevel = True
                     #endif
                     levelThree_list.draw(screen) #Display all visible objects
