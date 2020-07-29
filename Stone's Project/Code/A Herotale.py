@@ -4877,6 +4877,8 @@ class WarlockClass(pygame.sprite.Sprite): #Class of the warlock
         self.immune = False
         self.skullAttack = False
         self.instantDeath = False
+        self.escape = False
+        self.appear = False
 
         #Timers
         self.endAnimation = 0
@@ -4896,6 +4898,8 @@ class WarlockClass(pygame.sprite.Sprite): #Class of the warlock
         self.attackCounter = 0
         self.hurtCounter = 0
         self.deathCounter = 0
+        self.escapeCounter = 0
+        self.appearCounter = 0
         
     #endprocedure
 
@@ -4933,10 +4937,10 @@ class WarlockClass(pygame.sprite.Sprite): #Class of the warlock
 
         self.rect.y = 730
         if posX >= 670:
-            self.rect.x = randint(50, 150)
+            self.AppearTrigger(randint(50, 150))
             self.lastHoriSpeed = 7
         elif posX < 670:
-            self.rect.x = randint(1270, 1370)
+            self.AppearTrigger(randint(1270, 1370))
             self.lastHoriSpeed = -7
         #endif
 
@@ -4991,6 +4995,8 @@ class WarlockClass(pygame.sprite.Sprite): #Class of the warlock
         self.trigger = False
         self.immune = False
         self.skullAttack = False
+        self.escape = False
+        self.appear = False
 
         #Timers
         self.endAnimation = 0
@@ -5008,6 +5014,8 @@ class WarlockClass(pygame.sprite.Sprite): #Class of the warlock
         self.attackCounter = 0
         self.hurtCounter = 0
         self.deathCounter = 0
+        self.escapeCounter = 0
+        self.appearCounter = 0
         
         self.warlockHealth.Update(5)
         self.warlockHealth.rect.x = self.rect.x - 10
@@ -5041,7 +5049,7 @@ class WarlockClass(pygame.sprite.Sprite): #Class of the warlock
 
         if not self.death and not self.freeze:
         
-            if not self.hurt and self.horiSpeed == 0:
+            if not self.hurt and self.horiSpeed == 0 and not self.appear and not self.escape:
 
                 if self.endAnimation - self.startAnimation >= 70: #If next image
                     
@@ -5056,7 +5064,7 @@ class WarlockClass(pygame.sprite.Sprite): #Class of the warlock
 
                 #endif
 
-            elif not self.hurt and self.horiSpeed != 0:
+            elif not self.hurt and self.horiSpeed != 0 and not self.appear and not self.escape:
 
                 if self.endAnimation - self.startAnimation >= 100:
                     
@@ -5071,7 +5079,7 @@ class WarlockClass(pygame.sprite.Sprite): #Class of the warlock
 
                 #endif
             
-            elif self.hurt == True:
+            elif self.hurt and not self.appear and not self.escape:
 
                 if self.endAnimation - self.startAnimation >= 100:
 
@@ -5080,6 +5088,32 @@ class WarlockClass(pygame.sprite.Sprite): #Class of the warlock
 
                     if self.hurtCounter != 3: #If reached the end
                         self.hurtCounter += 1
+                    #endif
+
+                #endif
+
+            elif self.appear and not self.escape:
+
+                if self.endAnimation - self.startAnimation >= 60:
+
+                    self.startAnimation = self.endAnimation #If player is appearing
+                    self.warlockAnimation.Appear(self.lastHoriSpeed, self.appearCounter)
+
+                    if self.appearCounter != 8: #If reached the end
+                        self.appearCounter += 1
+                    #endif
+
+                #endif
+
+            elif self.escape and not self.appear:
+
+                if self.endAnimation - self.startAnimation >= 60:
+
+                    self.startAnimation = self.endAnimation #If player is escaping
+                    self.warlockAnimation.Escape(self.lastHoriSpeed, self.escapeCounter)
+
+                    if self.escapeCounter != 8: #If reached the end
+                        self.escapeCounter += 1
                     #endif
 
                 #endif
@@ -5167,11 +5201,35 @@ class WarlockClass(pygame.sprite.Sprite): #Class of the warlock
                 self.hurt = True
                 self.reduceHealth = True
                 self.skullAttack = True
-                print(0)
             #endif
         #endfor
 
     #endprocedure
+
+    def EscapeTrigger(self):
+        self.escape = True
+        self.escapeCounter = 0
+    #endmethod
+
+    def Escape(self):
+        if self.escapeCounter == 8:
+            self.rect.x = -500
+            self.escapeCounter = 0
+            self.escape = False
+        #endif
+    #endmethod
+
+    def AppearTrigger(self, num):
+        self.appear = True
+        self.rect.x = num
+    #endmethod
+
+    def Appear(self):
+        if self.appearCounter == 8:
+            self.appearCounter = 0
+            self.appear = False
+        #endif
+    #endmethod
 
     def Hurt(self):
         
@@ -5820,9 +5878,13 @@ class RogueClass(pygame.sprite.Sprite): #Class of the rogue
             self.reduceHealth = False
             if self.hp > 0:
                 if not self.invincible:
-                    self.hp -= 1
-                    if self.instantDeath:
-                        self.hp = 1
+                    if not self.instantDeath:
+                        self.hp -= 1
+                    elif self.instantDeath:
+                        self.hp -= 9
+                        if self.hp < 0:
+                            self.hp = 0
+                        #endif
                         self.rogueHealth2.Update(0)
                     #endif
                 #endif
@@ -10869,6 +10931,16 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             add_str = str(x+1)
             self.warlockHurt.append(pygame.transform.scale(pygame.image.load("Game_Images/Warlock/WarlockHurt" + add_str + ".png"), (160, 160)))
         #endfor
+        self.warlockEscape = [] #Escape
+        for x in range(9):
+            add_str = str(x+1)
+            self.warlockEscape.append(pygame.transform.scale(pygame.image.load("Game_Images/Warlock/WarlockEscape" + add_str + ".png"), (160, 160)))
+        #endfor
+        self.warlockAppear = [] #Appear
+        for x in range(9):
+            add_str = str(x+1)
+            self.warlockAppear.append(pygame.transform.scale(pygame.image.load("Game_Images/Warlock/WarlockAppear" + add_str + ".png"), (160, 160)))
+        #endfor
 
         #Rogue
         self.rogueIdle = [] #Idle 
@@ -11114,7 +11186,7 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             self.image = pygame.transform.flip(self.necromancerIdle[0],1,0)
         #endif
         
-    #endprocedure
+    #endmethod
 
     def Idle(self, speed, i): #When enemy not moving
 
@@ -11192,7 +11264,7 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             #endif
         #endif
 
-    #endprocedure
+    #endmethod
 
     def Adle(self, speed, i): #When enemy not moving 2
 
@@ -11210,7 +11282,7 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             #endif
         #endif
 
-    #endprocedure
+    #endmethod
 
     def Run(self, speed, i):
 
@@ -11288,7 +11360,7 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             #endif
         #endif
 
-    #endprocedure
+    #endmethod
 
     def Jump(self, speed, i):
 
@@ -11318,7 +11390,7 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             #endif
         #endif
 
-    #endprocedure
+    #endmethod
 
     def Fall(self, speed, i):
 
@@ -11336,7 +11408,7 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             #endif
         #endif
 
-    #endprocedure
+    #endmethod
 
     def Attack(self, speed, i):
 
@@ -11408,7 +11480,7 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             #endif
         #endif
 
-    #endprocedure
+    #endmethod
 
     def Hurt(self, speed, i):
 
@@ -11486,7 +11558,7 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             #endif
         #endif
 
-    #endprocedure
+    #endmethod
 
     def Recover(self, speed, i):
 
@@ -11510,7 +11582,7 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             #endif
         #endif
 
-    #endprocedure
+    #endmethod
 
     def Death(self, speed, i):
 
@@ -11588,7 +11660,7 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             #endif
         #endif
 
-    #endprocedure
+    #endmethod
 
     def Spell(self, speed, i):
 
@@ -11606,7 +11678,7 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             #endif
         #endif
 
-    #endprocedure
+    #endmethod
 
     def SA(self, speed, i):
 
@@ -11618,7 +11690,7 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             #endif
         #endif
 
-    #endprocedure
+    #endmethod
 
     def Throw(self, speed, i):
 
@@ -11630,7 +11702,7 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
             #endif
         #endif
 
-    #endprocedure
+    #endmethod
 
     def FlameAttack(self, speed, i):
 
@@ -11643,7 +11715,7 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
 
         #endif
 
-    #endprocedure
+    #endmethod
 
     def Block(self, speed, i):
 
@@ -11656,7 +11728,7 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
 
         #endif
                 
-    #endprocedure
+    #endmethod
 
     def Blocked(self, speed, i):
 
@@ -11669,7 +11741,27 @@ class EnemyAnimation(pygame.sprite.Sprite): #Class of player's animation
 
         #endif
                 
-    #endprocedure
+    #endmethod
+
+    def Escape(self, speed, i):
+
+        if speed > 0:
+            self.image = self.warlockEscape[i] #Right
+        else:
+            self.image = pygame.transform.flip(self.warlockEscape[i],1,0) #Left
+        #endif
+
+    #endmethod
+
+    def Appear(self, speed, i):
+
+        if speed > 0:
+            self.image = self.warlockAppear[i] #Right
+        else:
+            self.image = pygame.transform.flip(self.warlockAppear[i],1,0) #Left
+        #endif
+
+    #endmethod
 
 #endclass
 
@@ -13644,7 +13736,7 @@ def Game():
                     #endfor
 
                     #Warlock
-                    if gamePhase <= 5 or gamePhase >= 20:
+                    if gamePhase <= 7 or gamePhase >= 20:
                         for warlock in warlock_list:
                             if gamePhase == 3 and warlockDodgeTime < 3 and warlockMove:
                                 warlock.rect.x -= 60
@@ -13656,6 +13748,8 @@ def Game():
                             warlock.Health(odenHealth)
                             warlock.EnemyAttackDetection(leftPlayerAttack_list)
                             warlock.EnemyAttackDetection(rightPlayerAttack_list)
+                            warlock.Appear()
+                            warlock.Escape()
                             warlock.Animation()
                         #endfor
                     #endif
@@ -13962,9 +14056,6 @@ def Game():
                             gameChat = 1
                         #endif
                     elif gamePhase == 5:
-                        for warlock in warlock_list:
-                            warlock.rect.x = -1000
-                        #endfor
                         for bandit in banditGroup1_list:
                             bandit.ChangeSpeed(0)
                         #endfor
@@ -14000,6 +14091,9 @@ def Game():
                             startTimer = 0
                             for enemy in banditGroup1_list:
                                 enemy.AttackStance(1)
+                            #endfor
+                            for warlock in warlock_list:
+                                warlock.EscapeTrigger()
                             #endfor
                         #endif
                     elif gamePhase == 7:
@@ -14447,6 +14541,7 @@ def Game():
                             gamePhase = 29
                             conversation = True
                             for player in player_list:
+                                player.ChangeSpeed(2)
                                 player.FreezeTrigger(1)
                                 player.LimitMovement(1)
                             #endfor
@@ -14456,6 +14551,7 @@ def Game():
                             gamePhase = 23
                             conversation = True
                             for player in player_list:
+                                player.ChangeSpeed(2)
                                 player.FreezeTrigger(1)
                             #endfor
                         #endif
@@ -14798,9 +14894,8 @@ def Game():
                             DrawOrRemove(0, levelOne_list, wordBox_list)
                             gamePhase = 31
                             for warlock in warlock_list:
-                                warlock.rect.x = -100
+                                warlock.EscapeTrigger()
                             #endfor
-                            DrawOrRemove(1, levelOne_list, whiteScreen_list)
                             gameChat = 1
                         #endif
                     elif gamePhase == 31:
@@ -14814,7 +14909,6 @@ def Game():
                             for player in player_list:
                                 player.TurnAround(posX)
                             #endfor
-                            DrawOrRemove(0, levelOne_list, whiteScreen_list)
                             gamePhase = 32
                         #endif
                     elif gamePhase == 32:
@@ -15128,6 +15222,8 @@ def Game():
                             warlock.MoveHori(block2_list)
                             warlock.MoveVert(block2_list)
                             warlock.Health(odenHealth)
+                            warlock.Escape()
+                            warlock.Appear()
                             warlock.Animation()
 
                         #endfor
@@ -15724,9 +15820,6 @@ def Game():
                             elif timeUp[0] == 1:
                                 timeUp[0] = 0
                                 gamePhase = 18
-                                for warlock in warlock2_list:
-                                    warlock.rect.x = -100
-                                #endfor
                             #endif
                         #endif
                         if live[0] == 0:
@@ -15736,13 +15829,14 @@ def Game():
                         for warlock in warlock2_list:
                             for player in player_list:
                                 if player.rect.x <= 1350:
-                                    warlock.rect.x = player.rect.x + 70
+                                    warlock.ChangeSpeed(2)
+                                    warlock.AppearTrigger(player.rect.x + 70)
                                     warlock.Turn(0)
                                     player.Turn(1)
                                     gamePhase = 19
                                 elif player.rect.x >= 1350:
                                     warlock.ChangeSpeed(2)
-                                    warlock.rect.x = player.rect.x - 100
+                                    warlock.AppearTrigger(player.rect.x - 100)
                                     player.Turn(0)
                                     gamePhase = 19
                                 #endif
@@ -15868,7 +15962,7 @@ def Game():
                                     #endif
                                 #endfor
                                 for warlock in warlock2_list:
-                                    warlock.rect.x = -500
+                                    warlock.EscapeTrigger()
                                 #endfor
                             #endif
                         #endif
@@ -16783,6 +16877,13 @@ def Game():
                                     player.FreezeTrigger(0)
                                     player.ChangeSpeed(2)
                                     player.FreezeTrigger(1)
+                                    for talene in talene_list:
+                                        if player.rect.x <= talene.rect.x:
+                                            player.Turn(1)
+                                        else:
+                                            player.Turn(0)
+                                        #endif
+                                    #endfor
                                 #endfor
                                 for talene in talene_list:
                                     talene.rect.x = -100
@@ -17133,6 +17234,8 @@ def Game():
                             warlock.MoveHori(block3_list)
                             warlock.MoveVert(block3_list)
                             warlock.Health(odenHealth)
+                            warlock.Escape()
+                            warlock.Appear()
                             warlock.Animation()
 
                         #endfor
@@ -17237,10 +17340,6 @@ def Game():
                                 player.FreezeTrigger(1)
                                 timeUp[0] = 0
                                 gamePhase = 3
-                                for warlock in warlock3_list:
-                                    warlock.rect.x = -100
-                                    warlock.ChangeSpeed(1)
-                                #endfor
                             #endif
                         #endif
                         if live[0] == 0:
@@ -17250,21 +17349,17 @@ def Game():
                         for warlock in warlock3_list:
                             for player in player_list:
                                 if player.rect.x <= 1350:
-                                    if warlock.rect.x >= player.rect.x + 70:
-                                        warlock.ChangeSpeed(2)
-                                        warlock.rect.x = player.rect.x + 70
-                                        warlock.Turn(0)
-                                        gamePhase = 4
-                                    #endif
+                                    warlock.AppearTrigger(player.rect.x + 70)
+                                    warlock.Turn(0)
+                                    player.Turn(1)
                                 elif player.rect.x >= 1350:
-                                    if warlock.rect.x >= player.rect.x - 100:
-                                        warlock.ChangeSpeed(2)
-                                        warlock.rect.x = player.rect.x - 100
-                                        gamePhase = 4
-                                    #endif
+                                    warlock.AppearTrigger(player.rect.x - 100)
+                                    warlock.Turn(1)
+                                    player.Turn(0)
                                 #endif
                             #endfor
                         #endfor
+                        gamePhase = 4
                     elif gamePhase == 4:
                         if gameChat == 1:
                             for triangle in yellowTriangle_list:
@@ -17352,6 +17447,9 @@ def Game():
                             DrawOrRemove(0, levelThree_list, wordBox_list)
                             gamePhase = 6
                             gameChat = 1
+                            for warlock in warlock3_list:
+                                warlock.EscapeTrigger()
+                            #endfor
                         #endif
                     elif gamePhase == 6:
                         DrawOrRemove(1, levelThree_list, quitLevel_list)
@@ -17444,6 +17542,8 @@ def Game():
                             oden.Health(odenHealth)
                             oden.Animation()
                             oden.SkullAttackDetection(skullAttack_list)
+                            oden.Escape()
+                            oden.Appear()
                         #endfor
                     #endif
 
@@ -17683,18 +17783,21 @@ def Game():
                                 triangle.rect.x = -1000
                             #endfor
                             for oden in oden_list:
-                                oden.ChangeSpeed(1)
+                                oden.EscapeTrigger()
                             #endfor
                         #endif
                     elif gamePhase == 2:
-                        for oden in oden_list:
-                            if oden.rect.x >= 1550:
+                        if timeUp[0] == 0:
+                            timer.Counter(600, timeUp)
+                        elif timeUp[0] == 1:
+                            timeUp[0] = 0
+                            for oden in oden_list:
                                 oden.ChangeSpeed(0)
                                 oden.ChangeSpeed(2)
                                 oden.rect.x = 2870
                                 gamePhase = 3
-                            #endif
-                        #endfor
+                            #endfor
+                        #endif
                     elif gamePhase == 3:
                         if enemyCount == [0] and live[0] > 0:
                             if timeUp[0] == 0:
