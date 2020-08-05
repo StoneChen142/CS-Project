@@ -318,54 +318,53 @@ def CreateMenu(menu_list, button_list):
 
 #Setting Creation
 def CreateSettings(setting_list, button_list, invincibleOn_list, invincibleOff_list, instantKillOn_list, instantKillOff_list, playerInvincible, instantKill):
-
     on = Button(18, 0, 0, 0, 844, 390) #On Button
     invincibleOn_list.add(on)
-    button_list.add(on)
-
     off = Button(19, 0, 0, 0, 844, 390) #Off Button
     invincibleOff_list.add(off)
-    button_list.add(off)
-
     on2 = Button(18, 0, 0, 1, 844, 470) #On Button
     instantKillOn_list.add(on2)
-    button_list.add(on2)
-
     off2 = Button(19, 0, 0, 1, 844, 470) #Off Button
     instantKillOff_list.add(off2)
-    button_list.add(off2)
-
+    button_list.add(on, off, on2, off2)
     f = open("Game_Files/Setting.txt","r+") #Open Setting
     lines = f.readlines() #All data
     f.close() #Close
-
+    #Determine which button to keep
     if lines[0].rstrip("\n") == "0":
         setting_list.add(off)
     else:
         setting_list.add(on)
         playerInvincible[0] = 1
     #endif
-
     if lines[1].rstrip("\n") == "0":
         setting_list.add(off2)
     else:
         setting_list.add(on2)
         instantKill[0] = 1
     #endif
-
-    #Back
-    back = Button(5, 106, 31 ,0, 50, 820) #Back Button
-    button_list.add(back)
-    setting_list.add(back)
-
+    #More Buttons
+    back = Button(5, 106, 31, 0, 50, 820) #Back Button
+    credit = Button(20, 0, 0, 0, 1315, 820) #Back Button
+    button_list.add(back, credit)
     #Text
     invin = InstructionClass(16, 0, 0, 537, 390) #Invincible instruction
-    setting_list.add(invin)
-
     insta = InstructionClass(17, 0, 0, 537, 470) #Instant Kill instruction
-    setting_list.add(insta)
+    setting_list.add(insta, invin, back, credit)
+#endfunction
 
-#endprocedure
+def CreateCredits(credit_list, button_list):
+    #Instructions
+    pro = InstructionClass(18, 0, 0, 493, 290)
+    des = InstructionClass(19, 0, 0, 551, 360)
+    scr = InstructionClass(20, 0, 0, 493, 430)
+    ani = InstructionClass(21, 0, 0, 551, 500)
+    tes = InstructionClass(22, 0, 0, 578, 570)
+    #Back
+    back2 = Button(5, 106, 31 ,0, 50, 820) #Back Button
+    button_list.add(back2)
+    credit_list.add(pro, des, scr, ani, tes, back2)
+#endfunction
 
 #Reset some objects in file
 def ResetFile(file_list, currentFileData_list):
@@ -900,297 +899,162 @@ class Button(pygame.sprite.Sprite):
         self.ok = [pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Ok1.png'), (54, 30)), pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Ok2.png'), (54, 30))]
         self.on = [pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/On1.png'), (74, 40)), pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/On2.png'), (74, 40))]
         self.off = [pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Off1.png'), (100, 40)), pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Off2.png'), (100, 40))]
+        self.credits = [pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Credits1.png'), (135, 31)), pygame.transform.scale(pygame.image.load('Game_Images/Object/Buttons/Credits2.png'), (135, 31))]
 
         if self.imageNum == 1:
-
             self.image = self.play[0]
-
         elif self.imageNum == 2:
-
             self.image = self.set[0]
-
         elif self.imageNum == 3:
-
             self.image = self.tutorial[0]
-
         elif self.imageNum == 4:
-
             self.image = self.select[0]
-
         elif self.imageNum == 5:
-
             self.image = self.back[0]
-
         elif self.imageNum == 6:
-
             self.image = self.easy[0]
-
         elif self.imageNum == 7:
-
             self.image = self.hard[0]
-
         elif self.imageNum == 8:
-
             self.image = self.pause[0]
-
         elif self.imageNum == 9:
-
             self.image = self.next[0]
-
         elif self.imageNum == 10:
-
             self.image = self.close[0]
-
         elif self.imageNum == 11:
-
             self.image = self.quit[0]
-
         elif self.imageNum == 12:
-
             self.image = self.nextLevel[0]
-
         elif self.imageNum == 13:
-
             self.image = self.restart[0]
-
         elif self.imageNum == 14:
-
             self.image = self.reset[0]
-
         elif self.imageNum == 15:
-
             self.image = self.upgrade[0]
-
         elif self.imageNum == 16:
-
             self.image = self.upgradeText[0]
-
         elif self.imageNum == 17:
-
             self.image = self.ok[0]
-
         elif self.imageNum == 18:
-
             self.image = self.on[0]
-
         elif self.imageNum == 19:
-
             self.image = self.off[0]
-
+        elif self.imageNum == 20:
+            self.image = self.credits[0]
         #endif
-        
-    #endprocedure
+    #endmethod
 
     def Change(self, pos, level):
-
         if level == 0 and pos[0] >= 595.5 and pos[1] >= 420 and pos[0] <= 904.5 and pos[1] <= 513 and self.imageNum == 1: #Menu
-            
             self.image = self.play[1] #Hover on start button
-            
         elif level == 0 and pos[0] >= 442.5 and pos[1] >= 560 and pos[0] <= 1057.5 and pos[1] <= 653 and self.imageNum == 2: #Settings
-            
             self.image = self.set[1] #Hover on Settings
-            
         elif level == 0 and pos[0] >= 430.5 and pos[1] >= 700 and pos[0] <= 1069.5 and pos[1] <= 793 and self.imageNum == 3: #Tutorial
-            
             self.image = self.tutorial[1] #Hover on Tutorial
-
         elif level == 1 and pos[0] >= 544.5 and pos[1] >= 300 and pos[0] <= 955.5 and pos[1] <= 420 and self.imageNum == 6: #Easy
-            
             self.image = self.easy[1] #Hover on Easy
-
         elif level == 1 and pos[0] >= 529.5 and pos[1] >= 300 and pos[0] <= 970.5 and pos[1] <= 420 and self.imageNum == 7: #Hard
-            
             self.image = self.hard[1] #Hover on Hard
-
         elif level == 1 and pos[0] >= 50 and pos[1] >= 820 and pos[0] <= 156 and pos[1] <= 851 and self.imageNum == 5: #Back Button on Settings
-            
             self.image = self.back[1] #Hover on back
-
         elif level == 3 and pos[0] >= 249.5 and pos[1] >= 680.5 and pos[0] <= 410.5 and pos[1] <= 711.5 and self.imageNum == 4 and self.num == 1: #Save Files Select
-            
             self.image = self.select[1] #Hover on select file 1
-            
         elif level == 3 and pos[0] >= 669.5 and pos[1] >= 680.5 and pos[0] <= 830.5 and pos[1] <= 711.5 and self.imageNum == 4 and self.num == 2:
-            
             self.image = self.select[1] #Hover on select file 2
-
         elif level == 3 and pos[0] >= 1089.5 and pos[1] >= 680.5 and pos[0] <= 1250.5 and pos[1] <= 711.5 and self.imageNum == 4 and self.num == 3:
-            
             self.image = self.select[1] #Hover on select file 3
-            
         elif level == 3 and pos[0] >= 50 and pos[1] >= 820 and pos[0] <= 156 and pos[1] <= 851 and self.imageNum == 5:
-            
             self.image = self.back[1] #Hover on back
-
         elif level == 2 and pos[0] >= 1430 and pos[1] >= 10 and pos[0] <= 1490 and pos[1] <= 70 and self.imageNum == 10:
-            
             self.image = self.close[1] #Hover on pause
-
         elif level == 4 and pos[0] >= 1430 and pos[1] >= 820 and pos[0] <= 1490 and pos[1] <= 880 and self.imageNum == 8:
-            
             self.image = self.pause[1] #Hover on close
-
         elif level == 4 and pos[0] >= 1195 and pos[1] >= 850 and pos[0] <= 1255 and pos[1] <= 870 and self.imageNum == 9:
-
             self.image = self.next[1]
-
         elif level == 4 and pos[0] >= 1068 and pos[1] >= 234 and pos[0] <= 1128 and pos[1] <= 294 and self.imageNum == 10:
-
             self.image = self.close[1]
-
         elif level == 4 and pos[0] >= 700 and pos[1] >= 503 and pos[0] <= 800 and pos[1] <= 543 and self.imageNum == 11 and self.num == 1:
-
             self.image = self.quit[1]
-
         elif level == 4 and pos[0] >= 616 and pos[1] >= 503 and pos[0] <= 884 and pos[1] <= 543 and self.imageNum == 12:
-
             self.image = self.nextLevel[1]
-
         elif level == 4 and pos[0] >= 700 and pos[1] >= 573 and pos[0] <= 800 and pos[1] <= 613 and self.imageNum == 11 and self.num == 3:
-
             self.image = self.quit[1]
-
         elif level == 4 and pos[0] >= 700 and pos[1] >= 573 and pos[0] <= 800 and pos[1] <= 613 and self.imageNum == 11 and self.num == 2:
-
             self.image = self.quit[1]
-
         elif level == 4 and pos[0] >= 654.5 and pos[1] >= 503 and pos[0] <= 845.5 and pos[1] <= 543 and self.imageNum == 13 and self.num == 1:
-
             self.image = self.restart[1]
-
         elif level == 4 and pos[0] >= 654.5 and pos[1] >= 573 and pos[0] <= 845.5 and pos[1] <= 613 and self.imageNum == 13 and self.num == 2:
-
             self.image = self.restart[1]
-
         elif level == 3 and pos[0] >= 284 and pos[1] >= 778 and pos[0] <= 376 and pos[1] <= 798 and self.imageNum == 14 and self.num == 1: #Save Files Reset
-            
             self.image = self.reset[1] #Hover on reset file 1
-            
         elif level == 3 and pos[0] >= 704 and pos[1] >= 778 and pos[0] <= 796 and pos[1] <= 798 and self.imageNum == 14 and self.num == 2:
-            
             self.image = self.reset[1] #Hover on reset file 2
-
         elif level == 3 and pos[0] >= 1124 and pos[1] >= 778 and pos[0] <= 1216 and pos[1] <= 798 and self.imageNum == 14 and self.num == 3:
-            
             self.image = self.reset[1] #Hover on reset file 3
-
         elif level == 4 and pos[0] >= 1360 and pos[1] >= 820 and pos[0] <= 1420 and pos[1] <= 880 and self.imageNum == 15:
-            
             self.image = self.upgrade[1] #Hover on close
-
         elif level == 4 and pos[0] >= 670 and pos[1] >= 503 and pos[0] <= 830 and pos[1] <= 543 and self.imageNum == 16:
-
             self.image = self.upgradeText[1]
-
         elif level == 4 and pos[0] >= 723 and pos[1] >= 503 and pos[0] <= 777 and pos[1] <= 533 and self.imageNum == 17:
-
             self.image = self.ok[1]
-
         elif level == 4 and pos[0] >= 700 and pos[1] >= 533 and pos[0] <= 800 and pos[1] <= 573 and self.imageNum == 11 and self.num == 4:
-
             self.image = self.quit[1]
-
         elif level == 1 and pos[0] >= 844 and pos[1] >= 390 and pos[0] <= 918 and pos[1] <= 430 and self.imageNum == 18 and self.num == 0:
-
             self.image = self.on[1]
-
         elif level == 1 and pos[0] >= 844 and pos[1] >= 390 and pos[0] <= 944 and pos[1] <= 430 and self.imageNum == 19 and self.num == 0:
-
             self.image = self.off[1]
-
         elif level == 1 and pos[0] >= 844 and pos[1] >= 470 and pos[0] <= 918 and pos[1] <= 510 and self.imageNum == 18 and self.num == 1:
-
             self.image = self.on[1]
-
         elif level == 1 and pos[0] >= 844 and pos[1] >= 470 and pos[0] <= 944 and pos[1] <= 510 and self.imageNum == 19 and self.num == 1:
-
             self.image = self.off[1]
-            
+        elif level == 5 and pos[0] >= 50 and pos[1] >= 820 and pos[0] <= 156 and pos[1] <= 851 and self.imageNum == 5:
+            self.image = self.back[1] #Hover on back
+        elif level == 1 and pos[0] >= 1315 and pos[1] >= 820 and pos[0] <= 1450 and pos[1] <= 851 and self.imageNum == 20:
+            self.image = self.credits[1]
         else:
-
             if self.imageNum == 1:
-
                 self.image = self.play[0]
-
             elif self.imageNum == 2:
-
                 self.image = self.set[0]
-
             elif self.imageNum == 3:
-
                 self.image = self.tutorial[0]
-
             elif self.imageNum == 4:
-
                 self.image = self.select[0]
-
             elif self.imageNum == 5:
-
                 self.image = self.back[0]
-
             elif self.imageNum == 6:
-
                 self.image = self.easy[0]
-
             elif self.imageNum == 7:
-
                 self.image = self.hard[0]
-
             elif self.imageNum == 8:
-
                 self.image = self.pause[0]
-
             elif self.imageNum == 9:
-
                 self.image = self.next[0]
-
             elif self.imageNum == 10:
-
                 self.image = self.close[0]
-
             elif self.imageNum == 11:
-
                 self.image = self.quit[0]
-
             elif self.imageNum == 12:
-
                 self.image = self.nextLevel[0]
-
             elif self.imageNum == 13:
-
                 self.image = self.restart[0]
-
             elif self.imageNum == 14:
-
                 self.image = self.reset[0]
-
             elif self.imageNum == 15:
-
                 self.image = self.upgrade[0]
-
             elif self.imageNum == 16:
-
                 self.image = self.upgradeText[0]
-
             elif self.imageNum == 17:
-
                 self.image = self.ok[0]
-
             elif self.imageNum == 18:
-
                 self.image = self.on[0]
-
             elif self.imageNum == 19:
-
                 self.image = self.off[0]
-
+            elif self.imageNum == 20:
+                self.image = self.credits[0]
             #endif
-
         #endif
-
-    #endprocedure
-
+    #endmethod
 #endclass
 
 #Save Files Class------------------------------------------------------------------------------------------------------------------
@@ -1992,6 +1856,11 @@ class InstructionClass(pygame.sprite.Sprite): #Instruction is a sprite, because 
         self.finish = [pygame.transform.scale(pygame.image.load('Game_Images/Text/FinishInstruction.png'), (743, 82))]
         self.invincible = [pygame.transform.scale(pygame.image.load('Game_Images/Text/Invincible.png'), (287, 47))]
         self.instantKill = [pygame.transform.scale(pygame.image.load('Game_Images/Text/InstantKill.png'), (261, 40))]
+        self.programmer = [pygame.transform.scale(pygame.image.load('Game_Images/Text/Programmer.png'), (514, 54))]
+        self.designer = [pygame.transform.scale(pygame.image.load('Game_Images/Text/Designer.png'), (398, 54))]
+        self.screenwriter = [pygame.transform.scale(pygame.image.load('Game_Images/Text/Screenwriter.png'), (514, 40))]
+        self.animator = [pygame.transform.scale(pygame.image.load('Game_Images/Text/Animator.png'), (398, 40))]
+        self.tester = [pygame.transform.scale(pygame.image.load('Game_Images/Text/Tester.png'), (344, 40))]
         #Decide Which Instruction
         if typeNum == 1:
             self.image = self.move[0]
@@ -2027,6 +1896,16 @@ class InstructionClass(pygame.sprite.Sprite): #Instruction is a sprite, because 
             self.image = self.invincible[0]
         elif typeNum == 17:
             self.image = self.instantKill[0]
+        elif typeNum == 18:
+            self.image = self.programmer[0]
+        elif typeNum == 19:
+            self.image = self.designer[0]
+        elif typeNum == 20:
+            self.image = self.screenwriter[0]
+        elif typeNum == 21:
+            self.image = self.animator[0]
+        elif typeNum == 22:
+            self.image = self.tester[0]
         #endif
     #endprocedure
     
@@ -4038,7 +3917,7 @@ class BanditClass(pygame.sprite.Sprite): #Class of the bandit
         self.random2 = False
         self.jumpTime = 0
         self.attackDirectionAssign = False
-        self.instantDeath = True
+        self.instantDeath = False
 
         #Timers
         self.endAnimation = 0
@@ -4400,8 +4279,9 @@ class BanditClass(pygame.sprite.Sprite): #Class of the bandit
 
             self.reduceHealth = False
             if self.hp > 0:
-                self.hp -= 1
-                if self.instantDeath:
+                if not self.instantDeath:
+                    self.hp -= 1
+                elif self.instantDeath:
                     self.hp = 0
                 #endif
                 self.banditHealth.Update(self.hp)
@@ -12186,6 +12066,8 @@ def Game():
 
     whiteScreen_list = pygame.sprite.Group() #White screen
 
+    credit_list = pygame.sprite.Group() #Credit
+
     CreateLoad(loading_list)
 
     while not game_over:
@@ -12322,6 +12204,10 @@ def Game():
                     ResetProgress(3)
                     ResetFile(file_list, currentFileData_list)
                     SetCrown(crown_list)
+                elif level == 5 and pos[0] >= 50 and pos[1] >= 820 and pos[0] <= 156 and pos[1] <= 851:
+                    level = 1
+                elif level == 1 and pos[0] >= 1315 and pos[1] >= 820 and pos[0] <= 1450 and pos[1] <= 851:
+                    level = 5
                 elif level == 3 and pos[0] >= 50 and pos[1] >= 820 and pos[0] <= 156 and pos[1] <= 851: #Go back to menu
                     level = 0
                     fileLoaded = True
@@ -12343,6 +12229,7 @@ def Game():
                     enemyCount = [-1]
                     for triangle in yellowTriangle_list:
                         triangle.rect.x = -1000
+                        triangle.rect.y = 670
                     #endfor
                     if gameLevel == 1:
                         DrawOrRemove(0, levelOne_list, nextLevelBlock_list)
@@ -12440,6 +12327,7 @@ def Game():
                     enemyCount = [-1]
                     for triangle in yellowTriangle_list:
                         triangle.rect.x = -1000
+                        triangle.rect.y = 670
                     #endfor
                     if gameLevel == 1:
                         DrawOrRemove(0, levelOne_list, nextLevelBlock_list)
@@ -12726,6 +12614,7 @@ def Game():
                     DrawOrRemove(0, coin_list, coin_list)
                     for triangle in yellowTriangle_list:
                         triangle.rect.x = -1000
+                        triangle.rect.y = 670
                     #endfor
                     if gameLevel == 1:
                         for block in block1_list:
@@ -12845,6 +12734,7 @@ def Game():
                     live[0] = 5
                     for triangle in yellowTriangle_list:
                         triangle.rect.x = -1000
+                        triangle.rect.y = 670
                     #endfor
                     DrawOrRemove(0, coin_list, coin_list)
                     if gameLevel == 1:
@@ -12962,6 +12852,7 @@ def Game():
                     live[0] = 5
                     for triangle in yellowTriangle_list:
                         triangle.rect.x = -1000
+                        triangle.rect.y = 670
                     #endfor
                     if gameLevel == 1:
                         for block in block1_list:
@@ -13068,6 +12959,7 @@ def Game():
                     live[0] = 5
                     for triangle in yellowTriangle_list:
                         triangle.rect.x = -1000
+                        triangle.rect.y = 670
                     #endfor
                     if gameLevel == 1:
                         for block in block1_list:
@@ -13171,6 +13063,7 @@ def Game():
                     live[0] = loadedLive[0]
                     for triangle in yellowTriangle_list:
                         triangle.rect.x = -1000
+                        triangle.rect.y = 670
                     #endfor
                     if gameLevel == 1:
                         for block in block1_list:
@@ -13378,6 +13271,7 @@ def Game():
                     levelCreated = True
 
                     CreateFile(file_list, button_list, item_list, crown_list, currentFileData_list)
+                    CreateCredits(credit_list, button_list)
                     CreateMenu(menu_list, button_list)
                     CreateSettings(setting_list, button_list, invincibleOn_list, invincibleOff_list, instantKillOn_list, instantKillOff_list, playerInvincible, instantKill)
                     CreateBackgrounds(levelOne_list, levelTwo_list, levelThree_list, background1_list, background2_list, background3_list, cloud_list, ground_list, allBackgrounds_list, background_list, whiteScreen_list)#Backgrounds and ground
@@ -13550,28 +13444,20 @@ def Game():
             #endif
 
         elif level == 1: #Settings
-
             screen.fill(BLACK)
-
             for button in button_list:
-
                 button.Change(pos, level)
-
             #endfor
-
             setting_list.draw(screen) #Display objects
-
         elif level == 2: #Tutorial
-
             screen.fill(BLACK)
-
             if tutorialReset == True:
                 for cloud in cloud_list:
                     cloud.rect.x = 0
                 #endfor
                 tutorialReset = False
             #endif
-
+                
             for thousand in thousand_list:
                 thousand.Update(currency[0])
             #endfor
@@ -13584,38 +13470,29 @@ def Game():
             for one in one_list:
                 one.Update(currency[3])
             #endfor
-
+                
             for button in button_list: #Button Change
-
                 button.Change(pos, level)
-
             #endfor
-
+                
             for cloud in cloud_list:
-
                 cloud.CloudUpdate()
-
             #endfor
 
             for coin in coin_list:
-
                 coin.Change()
                 coin.CoinUpdate(player_list, block1_list, tutorialBlock_list, tutorial_list, levelOne_list, coin_list, currency)
-
             #endfor
 
             for fireball in fireBall_list:
-
                 fireball.EffectUpdate(tutorial_list)
                 if fireball.rect.x > 1500 or fireball.rect.x < -160:
                     fireball.DeleteSelf(tutorial_list, fireBall_list)
                 #endif
-
             #endfor
 
             #Enemy Movement
             for enemy in tutorialEnemy_list:
-
                 dummyEndAttack = pygame.time.get_ticks()
                 if dummyEndAttack - dummyStartAttack > 3000:
                     dummyStartAttack = dummyEndAttack
@@ -13623,7 +13500,6 @@ def Game():
                     enemy.ChangeSpeed(2)
                     enemy.AttackTrigger()
                 #endif
-
                 enemy.Attack()
                 enemy.MoveHori(block1_list, block2_list, block3_list, tutorialBlock_list, level, gameLevel)
                 enemy.AttackChecker()
@@ -13634,12 +13510,10 @@ def Game():
                 enemy.FireBallDetection(tutorial_list, fireBall_list)
                 enemy.Health(coin_list, tutorial_list, level, gameLevel, enemyCount)
                 enemy.Animation()
-
             #endfor
 
             #Player Movement
             for player in player_list:
-
                 #Detection
                 player.EnemyAttackDetection(leftEnemyAttack_list, rightEnemyAttack_list)
                 #Blocked
@@ -13664,29 +13538,24 @@ def Game():
                 player.Health(live)
                 #Animation
                 player.Animation()
-
             #endfor
-
             tutorial_list.draw(screen) #Display all visible objects
 
         elif level == 3: #Save Files
-
             screen.fill(BLACK)
-
             for button in button_list:
-
                 button.Change(pos, level)
-
             #endfor
-
             for item in item_list:
-
                 item.Change()
-
             #endfor
-
             file_list.draw(screen) #Display all visible objects
-
+        elif level == 5: #Credit
+            screen.fill(BLACK)
+            for button in button_list: #Button Change
+                button.Change(pos, level)
+            #endfor
+            credit_list.draw(screen) #Display objects
         elif level == 4: #Gameplay
 
             if not gamePause and not gameOver and not gameUpgrade:
@@ -14557,6 +14426,11 @@ def Game():
                         #endif
                     elif gamePhase == 23:
                         if gameChat == 1:
+                            for player in player_list:
+                                player.FreezeTrigger(0)
+                                player.ChangeSpeed(2)
+                                player.FreezeTrigger(1)
+                            #endfor
                             for triangle in yellowTriangle_list:
                                 for warlock in warlock_list:
                                     triangle.rect.x = warlock.rect.x + 15
