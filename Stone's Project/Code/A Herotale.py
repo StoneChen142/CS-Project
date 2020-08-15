@@ -1720,6 +1720,8 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
         self.endAddShield = 0
         self.startStar = 0
         self.endStar = 0
+        self.startRecover=0
+        self.endRecover=0
         #Counter
         self.idleCounter = 0
         self.runCounter = 0
@@ -1771,7 +1773,9 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
     def LevelSet(self, playerLevel):
         self.lvl = playerLevel[0]
         self.playerLevelNumber.UpdateLevel(self.lvl)
-        if self.lvl == 2:
+        if self.lvl < 2:
+            self.speedX = 10
+        elif self.lvl >= 2:
             self.speedX = 13
         #endif
     #endmethod
@@ -1893,6 +1897,8 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
         self.endAddShield = 0
         self.startStar = 0
         self.endStar = 0
+        self.startRecover=0
+        self.endRecover=0
         if self.lvl >= 1:
             self.star = 3
             self.playerStar.StarUpdate(self.star)
@@ -2171,7 +2177,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
     def ShadowBoltDetection(self, shadowBolt_list, levelThree_list):
         playerGetHit_list = pygame.sprite.spritecollide(self, shadowBolt_list, False)#If get hit
         for attack in playerGetHit_list:
-            if self.hurt == False and not self.death and not self.roll and not self.freezeAnimation and attack.rect.y >= self.rect.y:
+            if self.hurt == False and not self.death and not self.freezeAnimation and attack.rect.y >= self.rect.y:
                 self.hurt = True
                 self.reduceHealth = True
                 self.block = False
@@ -2441,6 +2447,18 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
                 live[0] = self.hp
             #endif
         #endif
+        if self.hp > 0 and self.hp < 5:
+            if self.startRecover == 0: #If start timer has not started yet
+                self.startRecover = pygame.time.get_ticks() #Record current time
+            #endif
+            self.endRecover = pygame.time.get_ticks() #Get current time for end time
+            if self.endRecover - self.startRecover >= 25000:
+                self.startRecover = 0
+                self.endRecover = 0
+                self.hp+=1
+                self.playerHealth.Update(self.hp)
+            #endif
+        #endif
     #endmethod
     def Death(self):
         if self.death == True:
@@ -2696,7 +2714,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
         #endif
     #endmethod
     def ChangeSpeed(self,num):
-        if self.freeze == False and self.attacked == False and self.roll == False and self.hurt == False and self.blocked == False and not self.death and not self.spell:
+        if self.freeze == False and not self.blocked and not self.death and not self.spell:
             if num == 0:
                 self.horiSpeed = -self.speedX
                 self.block = False
@@ -3065,6 +3083,9 @@ class BanditClass(pygame.sprite.Sprite): #Class of the bandit
         self.attackDirectionAssign = False
         self.reproduced = False
         self.childNum = self.originalChild
+        if self.childNum >= 0:
+            self.childBandit.Reset()
+        #endif
         #Timers
         self.startAttack = 0
         self.endAttack = 0
@@ -4608,6 +4629,7 @@ class MushroomClass(pygame.sprite.Sprite): #Class of the mushroom
         self.death = False
         self.reduceHealth = False
         self.instantDeath = False
+        self.burned = False
         #Timers
         self.endAnimation = 0
         self.startAnimation = 0
@@ -4646,6 +4668,7 @@ class MushroomClass(pygame.sprite.Sprite): #Class of the mushroom
         self.hurt = False
         self.death = False
         self.reduceHealth = False
+        self.burned = False
         #Timers
         self.endAnimation = 0
         self.startAnimation = 0
@@ -4763,6 +4786,16 @@ class MushroomClass(pygame.sprite.Sprite): #Class of the mushroom
             self.reduceHealth = False
             if self.hp > 0:
                 self.hp -= 1
+                if self.hp >= 5:
+                    hpNum = self.hp - 5
+                    self.mushroomHealth2.Update(hpNum)
+                else:
+                    self.mushroomHealth1.Update(self.hp)
+                #endif
+                if self.hp > 0 and self.burned:
+                    self.hp -= 1
+                    self.burned = False
+                #endif
                 if self.instantDeath:
                     self.hp = 0
                     self.mushroomHealth2.Update(0)
@@ -4856,6 +4889,7 @@ class MushroomClass(pygame.sprite.Sprite): #Class of the mushroom
             if self.hurt == False and not self.death and not self.freeze:
                 self.hurt = True
                 self.reduceHealth = True
+                self.burned = True
             #endif
         #endfor
     #endmethod
@@ -5193,7 +5227,7 @@ class ArunClass(pygame.sprite.Sprite): #Class of the Arun Swordsmith
                     #endif
                 #endif
             elif self.attacked == True and not self.hurt and not self.throwed:
-                if self.endAnimation - self.startAnimation >= 50:
+                if self.endAnimation - self.startAnimation >= 55:
                     self.startAnimation = self.endAnimation #If player is attacking
                     self.arunAnimation.Attack(self.lastHoriSpeed, self.attackCounter)
                     if self.attackCounter != 11: #If reached the end
@@ -5247,7 +5281,7 @@ class ArunClass(pygame.sprite.Sprite): #Class of the Arun Swordsmith
     #endmethod
     def AttackTrigger(self):
         self.endAttackRest = pygame.time.get_ticks() #Get current time for end time
-        if not self.freeze and self.attacked == False and self.jumped == False and self.death == False and self.endAttackRest - self.startAttackRest >= 750:
+        if not self.freeze and self.attacked == False and self.jumped == False and self.death == False and self.endAttackRest - self.startAttackRest >= 400:
             self.attacked = True
             self.endAttackRest = 0
             self.startAttackRest = 0
@@ -5513,7 +5547,7 @@ class ArunClass(pygame.sprite.Sprite): #Class of the Arun Swordsmith
         #endif
         if self.reduceHealth == True and not self.freeze:
             self.reduceHealth = False
-            if self.hp > 0:
+            if self.hp > self.deathNum:
                 if not self.invincible:
                     self.hp -= 1
                     if self.instantDeath:
@@ -6351,7 +6385,7 @@ class NecromancerClass(pygame.sprite.Sprite): #Class of the Necromancer
                         #endif
                     #endif
                 elif self.spell == True and not self.attacked:
-                    if self.endAnimation - self.startAnimation >= 60:
+                    if self.endAnimation - self.startAnimation >= 40:
                         self.startAnimation = self.endAnimation #If player is special attacking
                         self.necroAnimation.Spell(self.lastHoriSpeed, self.spellCounter)
                         if self.spellCounter != 12: #If reached the end
@@ -6392,7 +6426,7 @@ class NecromancerClass(pygame.sprite.Sprite): #Class of the Necromancer
                 #endif
             #endif
         elif self.attacked == True and not self.hurt and not self.death:
-            if self.endAnimation - self.startAnimation >= 50:
+            if self.endAnimation - self.startAnimation >= 45:
                 self.startAnimation = self.endAnimation #If player is attacking
                 self.necroAttackAnimation.Attack(self.lastHoriSpeed, self.attackCounter)
                 self.necroAttackAnimation.rect.x = self.rect.x - 95
@@ -9919,6 +9953,9 @@ def Game():
             screen.fill(BLACK)
             if startLoadTime == 0: #If start timer has not started yet
                 startLoadTime = pygame.time.get_ticks() #Record current time
+                for load in loading_list:
+                    load.Animation(loadNum)
+                #endfor
             #endif
             if gameInitiated == False:
                 endLoadTime = pygame.time.get_ticks() #Record current time
@@ -9930,7 +9967,6 @@ def Game():
                         if loadNum == 4: #If animation finished
                             gameInitiated = True #Reset Loading
                             loadNum = 0
-                            load.Animation(loadNum)
                             startLoadTime = 0
                             endLoadTime = 0
                             fileLoaded = False
@@ -9983,7 +10019,6 @@ def Game():
                         loadNum += 1
                         if loadNum == 4: #If animation finished
                             loadNum = 0
-                            load.Animation(loadNum)
                             startLoadTime = 0
                             endLoadTime = 0
                             if levelToGo == 4:
@@ -12631,6 +12666,7 @@ def Game():
                             enemy.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
                             enemy.FireBallDetection(levelTwo_list, fireBall_list)
                             enemy.Health(coin_list, levelTwo_list, level, gameLevel, enemyCount)
+                            enemy.Reproduce(tempBandit_list)
                             enemy.Animation()
                         #endfor
                     #endif
@@ -12648,7 +12684,35 @@ def Game():
                             enemy.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
                             enemy.FireBallDetection(levelTwo_list, fireBall_list)
                             enemy.Health(coin_list, levelTwo_list, level, gameLevel, enemyCount)
+                            enemy.Reproduce(tempBandit_list)
                             enemy.Animation()
+                        #endfor
+                    #endif
+                    if gamePhase == 5 or gamePhase == 12:#Temporary Bandit
+                        for enemy in tempBandit_list:
+                            if enemy.rect.x < 0:
+                                enemy.ChangeSpeed(1)
+                                enemy.MoveHori(block1_list, block2_list, block3_list, tutorialBlock_list, level, gameLevel)
+                                enemy.Animation()
+                            elif enemy.rect.x > 1500:
+                                enemy.ChangeSpeed(0)
+                                enemy.MoveHori(block1_list, block2_list, block3_list, tutorialBlock_list, level, gameLevel)
+                                enemy.Animation()
+                            else:
+                                enemy.Attack()
+                                enemy.MoveHori(block1_list, block2_list, block3_list, tutorialBlock_list, level, gameLevel)
+                                enemy.AttackChecker()
+                                enemy.MoveVert(block1_list, block2_list, block3_list, tutorialBlock_list, level, gameLevel)
+                                if not gameOver:
+                                    enemy.Control(player_list)
+                                #endif
+                                enemy.Hurt()
+                                enemy.EnemyAttackDetection(leftPlayerAttack_list, rightPlayerAttack_list)
+                                enemy.FireBallDetection(levelTwo_list, fireBall_list)
+                                enemy.Health(coin_list, levelTwo_list, level, gameLevel, enemyCount)
+                                enemy.Reproduce(tempBandit_list)
+                                enemy.Animation()
+                            #endif
                         #endfor
                     #endif
                     if gamePhase == 17:
@@ -12832,7 +12896,7 @@ def Game():
                             gamePhase = 5
                             endTimer = 0
                             startTimer = 0
-                            enemyCount[0] = 4
+                            enemyCount[0] = 14
                             for player in player_list:
                                 player.FreezeTrigger(0)
                                 conversation = False
@@ -12943,6 +13007,10 @@ def Game():
                             for bandit in banditGroup3_list:
                                 bandit.rect.x -= 10
                                 bandit.Animation()
+                            #endfor
+                            for enemy in tempBandit_list:
+                                enemy.rect.x -= 10
+                                enemy.Animation()
                             #endfor
                             for background in background2_list:
                                 background.BackUpdate()
@@ -13111,7 +13179,7 @@ def Game():
                             gamePhase = 12
                             endTimer = 0
                             startTimer = 0
-                            enemyCount[0] = 6
+                            enemyCount[0] = 24
                             for player in player_list:
                                 player.FreezeTrigger(0)
                                 conversation = False
@@ -13220,6 +13288,10 @@ def Game():
                             for mushroom in mushroomGroup3_list:
                                 mushroom.rect.x -= 10
                                 mushroom.Animation()
+                            #endfor
+                            for enemy in tempBandit_list:
+                                enemy.rect.x -= 10
+                                enemy.Animation()
                             #endfor
                             for background in background2_list:
                                 background.BackUpdate()
@@ -14843,7 +14915,7 @@ def Game():
                             arun.AttackChecker()
                             arun.MoveVert(block2_list)
                             arun.Hurt()
-                            arun.Health(levelTwo_list, coin_list, enemyCount)
+                            arun.Health(levelTwo_list, coin_list, enemyCount, mehiraDefeat)
                             arun.Throw(leftJavelin_list, rightJavelin_list, levelTwo_list)
                             arun.Animation()
                         #endfor
