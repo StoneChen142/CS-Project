@@ -14836,13 +14836,13 @@ def Game():
                 for button in button_list: #Button Change
                     button.Change(pos, level)
                 #endfor
-                for coin in coin_list:
-                    coin.Change()
-                    coin.CoinUpdate(player_list, block1_list, tutorialBlock_list, tutorial_list, levelOne_list, coin_list, currency)
-                #endfor
                 if gameLevel == 1:
                     for cloud in cloud_list: #Cloud
                         cloud.CloudUpdate()
+                    #endfor
+                    for coin in coin_list:
+                        coin.Change()
+                        coin.CoinUpdate(player_list, block1_list, levelOne_list, coin_list, currency)
                     #endfor
                     for player in player_list:
                         #Hurt
@@ -14895,6 +14895,10 @@ def Game():
                     #endif
                     levelOne_list.draw(screen) #Display all visible objects
                 elif gameLevel == 2:
+                    for coin in coin_list:
+                        coin.Change()
+                        coin.CoinUpdate(player_list, block2_list, levelTwo_list, coin_list, currency)
+                    #endfor
                     #Player Movement
                     for player in player_list:
                         #Hurt
@@ -14986,6 +14990,10 @@ def Game():
                     #endif
                     levelTwo_list.draw(screen) #Display all visible objects
                 elif gameLevel == 3 and gameMode[0] == 0:
+                    for coin in coin_list:
+                        coin.Change()
+                        coin.CoinUpdate(player_list, block3_list, levelThree_list, coin_list, currency)
+                    #endfor
                     #Player Movement
                     for player in player_list:
                         #Hurt
@@ -15022,6 +15030,10 @@ def Game():
                     #endfor
                     levelThree_list.draw(screen) #Display all visible objects
                 elif gameLevel == 3 and gameMode[0] == 1:
+                    for coin in coin_list:
+                        coin.Change()
+                        coin.CoinUpdate(player_list, block3_list, levelThree_list, coin_list, currency)
+                    #endfor
                     if gamePhase >= 1:
                         for talene in talene2_list:
                             talene.ChangeSpeed(2)
