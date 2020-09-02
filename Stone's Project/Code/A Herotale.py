@@ -2301,7 +2301,14 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
                 self.jumpCounter = 0
                 self.fallCounter = 0
             elif self.jumped and not self.doubleJumped: #If double jump
-                self.vertSpeed = 12
+                if self.vertSpeed >= 0:
+                    self.vertSpeed += 12
+                    if self.vertSpeed > 17:
+                        self.vertSpeed = 17
+                    #endif
+                else:
+                    self.vertSpeed = 12
+                #endif
                 self.doubleJumped = True
                 self.jumpCounter = 0
                 self.fallCounter = 0
@@ -2323,7 +2330,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
                 self.rect.y = 0
                 self.vertSpeed = 0
             #endif
-            self.rect.y -= int(self.vertSpeed) #Player move
+            self.rect.y -= self.vertSpeed #Move
             playerVertBlock_list = pygame.sprite.spritecollide(self, block_list, False)#If collide
             for block in playerVertBlock_list:
                 if self.vertSpeed <= 0: #If player is falling
@@ -3452,7 +3459,7 @@ class BanditClass(pygame.sprite.Sprite): #Class of the bandit
                 self.rect.y = 0
                 self.vertSpeed = 0
             #endif
-            self.rect.y -= int(self.vertSpeed) #Move
+            self.rect.y -= self.vertSpeed #Move
             if level == 4:
                 if gameLevel == 1:
                     selfVertBlock_list = pygame.sprite.spritecollide(self, block1_list, False)#If collide
@@ -3948,7 +3955,7 @@ class WarlockClass(pygame.sprite.Sprite): #Class of the warlock
                 self.rect.y = 0
                 self.vertSpeed = 0
             #endif
-            self.rect.y -= int(self.vertSpeed) #Move
+            self.rect.y -= self.vertSpeed #Move
             selfVertBlock_list = pygame.sprite.spritecollide(self, block_list, False)#If collide
             for block in selfVertBlock_list:
                 if self.vertSpeed <= 0: #If player is falling
@@ -4554,7 +4561,7 @@ class RogueClass(pygame.sprite.Sprite): #Class of the rogue
                 self.rect.y = 0
                 self.vertSpeed = 0
             #endif
-            self.rect.y -= int(self.vertSpeed) #Move
+            self.rect.y -= self.vertSpeed #Move
             selfVertBlock_list = pygame.sprite.spritecollide(self, block_list, False)#If collide
             for block in selfVertBlock_list:
                 if self.vertSpeed <= 0: #If player is falling
@@ -4924,7 +4931,7 @@ class MushroomClass(pygame.sprite.Sprite): #Class of the mushroom
                 self.rect.y = 0
                 self.vertSpeed = 0
             #endif
-            self.rect.y -= int(self.vertSpeed) #Move
+            self.rect.y -= self.vertSpeed #Move
             selfVertBlock_list = pygame.sprite.spritecollide(self, block_list, False)#If collide
             for block in selfVertBlock_list:
                 if self.vertSpeed <= 0: #If player is falling
@@ -5707,7 +5714,7 @@ class ArunClass(pygame.sprite.Sprite): #Class of the Arun Swordsmith
                 self.rect.y = 0
                 self.vertSpeed = 0
             #endif
-            self.rect.y -= int(self.vertSpeed) #Move
+            self.rect.y -= self.vertSpeed #Move
             selfVertBlock_list = pygame.sprite.spritecollide(self, block_list, False)#If collide
             for block in selfVertBlock_list:
                 if self.vertSpeed <= 0: #If player is falling
@@ -6126,7 +6133,7 @@ class SkeletonClass(pygame.sprite.Sprite): #Class of the skeleton
                 self.rect.y = 0
                 self.vertSpeed = 0
             #endif
-            self.rect.y -= int(self.vertSpeed) #Move
+            self.rect.y -= self.vertSpeed #Move
             selfVertBlock_list = pygame.sprite.spritecollide(self, block_list, False)#If collide
             for block in selfVertBlock_list:
                 if self.vertSpeed <= 0: #If player is falling
@@ -6765,7 +6772,7 @@ class NecromancerClass(pygame.sprite.Sprite): #Class of the Necromancer
                 self.rect.y = 0
                 self.vertSpeed = 0
             #endif
-            self.rect.y -= int(self.vertSpeed) #Move
+            self.rect.y -= self.vertSpeed #Move
             selfVertBlock_list = pygame.sprite.spritecollide(self, block_list, False)#If collide
             for block in selfVertBlock_list:
                 if self.vertSpeed <= 0: #If player is falling
@@ -7376,7 +7383,7 @@ class AbominationClass(pygame.sprite.Sprite): #Class of the Abomination AKA The 
                 self.rect.y = 0
                 self.vertSpeed = 0
             #endif
-            self.rect.y -= int(self.vertSpeed) #Move
+            self.rect.y -= self.vertSpeed #Move
             selfVertBlock_list = pygame.sprite.spritecollide(self, block_list, False)#If collide
             for block in selfVertBlock_list:
                 if self.vertSpeed <= 0: #If player is falling
