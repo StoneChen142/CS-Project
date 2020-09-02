@@ -1773,6 +1773,12 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
     def LevelSet(self, playerLevel):
         self.lvl = playerLevel[0]
         self.playerLevelNumber.UpdateLevel(self.lvl)
+        if self.lvl >= 1:
+            if self.star == 0:
+                self.star = 1
+                self.playerStar.StarUpdate(self.star)
+            #endif
+        #endif
         if self.lvl < 2:
             self.speedX = 10
         elif self.lvl >= 2:
