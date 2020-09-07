@@ -517,12 +517,12 @@ def CreateTutorialPlatform(tutorialBlock_list, tutorial_list, button_list):
     startBlock = BlockClass(0, 10, 800, -10, 0)
     tutorialBlock_list.add(block)
     #Instructions
-    moveInstruction = InstructionClass(1, 439, 27, 40, 670)
-    jumpInstruction = InstructionClass(2, 210, 25, 810, 670)
-    attackInstruction = InstructionClass(3, 289, 25, 175, 200)
-    rollInstruction = InstructionClass(4, 230, 20, 1105, 330)
-    dJumpInstruction = InstructionClass(5, 305, 25, 760, 580)
-    blockInstruction = InstructionClass(6, 189, 20, 225, 120)
+    moveInstruction = InstructionClass(1, 439, 27, 88, 670)
+    jumpInstruction = InstructionClass(2, 210, 25, 778, 670)
+    attackInstruction = InstructionClass(3, 289, 25, 205, 202)
+    rollInstruction = InstructionClass(4, 230, 20, 1126, 330)
+    dJumpInstruction = InstructionClass(5, 305, 25, 728, 580)
+    blockInstruction = InstructionClass(6, 189, 20, 193, 120)
     coinInstruction = InstructionClass(8, 487, 27, 15, 26)
     fakeInstruction = InstructionClass(9, 354, 20, 15, 72)
     tutorial_list.add(moveInstruction, jumpInstruction, attackInstruction, rollInstruction, dJumpInstruction, blockInstruction, coinInstruction, fakeInstruction)
@@ -1376,12 +1376,12 @@ class InstructionClass(pygame.sprite.Sprite): #Instruction is a sprite, because 
         self.rect.x = x
         self.rect.y = y
         #Images
-        self.move = [pygame.transform.scale(pygame.image.load('Game_Images/Text/MoveInstruction.png'), (439, 27))]
-        self.jump = [pygame.transform.scale(pygame.image.load('Game_Images/Text/JumpInstruction.png'), (210, 25))]
-        self.dJump = [pygame.transform.scale(pygame.image.load('Game_Images/Text/DoubleJumpInstruction.png'), (305, 25))]
-        self.attack = [pygame.transform.scale(pygame.image.load('Game_Images/Text/AttackInstruction.png'), (289, 25))]
-        self.roll = [pygame.transform.scale(pygame.image.load('Game_Images/Text/RollInstruction.png'), (230, 20))]
-        self.block = [pygame.transform.scale(pygame.image.load('Game_Images/Text/BlockInstruction.png'), (189, 20))]
+        self.move = [pygame.transform.scale(pygame.image.load('Game_Images/Text/MoveInstruction.png'), (344, 27))]
+        self.jump = [pygame.transform.scale(pygame.image.load('Game_Images/Text/JumpInstruction.png'), (274, 25))]
+        self.dJump = [pygame.transform.scale(pygame.image.load('Game_Images/Text/DoubleJumpInstruction.png'), (369, 25))]
+        self.attack = [pygame.transform.scale(pygame.image.load('Game_Images/Text/AttackInstruction.png'), (229, 20))]
+        self.roll = [pygame.transform.scale(pygame.image.load('Game_Images/Text/RollInstruction.png'), (187, 20))]
+        self.block = [pygame.transform.scale(pygame.image.load('Game_Images/Text/BlockInstruction.png'), (254, 20))]
         self.minus = [pygame.transform.scale(pygame.image.load('Game_Images/Text/-.png'), (18, 8))]
         self.coin = [pygame.transform.scale(pygame.image.load('Game_Images/Text/CoinsInstruction.png'), (487, 27))]
         self.fake = [pygame.transform.scale(pygame.image.load('Game_Images/Text/FakeCoinInstruction.png'), (327, 20))]
@@ -1773,7 +1773,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
     def LevelSet(self, playerLevel):
         self.lvl = playerLevel[0]
         self.playerLevelNumber.UpdateLevel(self.lvl)
-        if self.lvl >= 1:
+        if self.lvl == 1:
             if self.star == 0:
                 self.star = 1
                 self.playerStar.StarUpdate(self.star)
@@ -2538,7 +2538,7 @@ class PlayerClass(pygame.sprite.Sprite): #Class of the player
         #endif
     #endmethod
     def SpellTrigger(self):
-        if not self.spell and not self.hurt and not self.blocked and not self.death and not self.freeze and not self.attacked and self.star > 0:
+        if not self.spell and not self.hurt and not self.blocked and not self.death and not self.freeze and not self.attacked and self.star > 0 and self.lvl >= 1:
             self.star -= 1
             self.playerStar.StarUpdate(self.star)
             self.spell = True
@@ -9901,55 +9901,55 @@ def Game():
                     #endif
                 #endif
             elif level >= 2 and event.type == pygame.KEYDOWN: #Press Key Down
-                if event.key == pygame.K_SPACE:
+                if event.key == pygame.K_q:
                     for player in player_list:
                         player.AttackTrigger()
                     #endfor
-                if event.key == pygame.K_w:
+                if event.key == pygame.K_SPACE:
                     for player in player_list:
                         player.Jump()
                     #endfor
-                if event.key == pygame.K_a:
+                if event.key == pygame.K_LEFT:
                     for player in player_list:
                         player.ChangeSpeed(0)
                         player.KeepMove(1)
                     #endfor
                     currentSpeed = -1
                     horiSpeed = -1
-                if event.key == pygame.K_d:
+                if event.key == pygame.K_RIGHT:
                     for player in player_list:
                         player.ChangeSpeed(1)
                         player.KeepMove(1)
                     #endfor
                     currentSpeed = 1
                     horiSpeed = 1
-                if event.key == pygame.K_s:
+                if event.key == pygame.K_LSHIFT:
                     for player in player_list:
                         player.BlockTrigger(1)
                     #endfor
-                if event.key == pygame.K_LSHIFT:
+                if event.key == pygame.K_e:
                     for player in player_list:
                         player.RollTrigger()
                     #endfor
-                if event.key == pygame.K_e:
+                if event.key == pygame.K_w:
                     for player in player_list:
                         player.SpellTrigger()
                     #endfor
                 #endif
             elif level >= 2 and event.type == pygame.KEYUP: #Release Key
-                if event.key == pygame.K_a and currentSpeed < 0:
+                if event.key == pygame.K_LEFT and currentSpeed < 0:
                     for player in player_list:
                         player.ChangeSpeed(2)
                         player.KeepMove(0)
                     #endfor
                     horiSpeed = 0
-                if event.key == pygame.K_d and currentSpeed > 0:
+                if event.key == pygame.K_RIGHT and currentSpeed > 0:
                     for player in player_list:
                         player.ChangeSpeed(2)
                         player.KeepMove(0)
                     #endfor
                     horiSpeed = 0
-                if event.key == pygame.K_s:
+                if event.key == pygame.K_LSHIFT:
                     for player in player_list:
                         player.BlockTrigger(0)
                     #endfor
@@ -13831,6 +13831,8 @@ def Game():
                         #endif
                     elif gamePhase == 2:
                         if enemyCount == [0] and live[0] > 0:
+                            DrawOrRemove(0, levelThree_list, shadowBolt_list)
+                            DrawOrRemove(0, shadowBolt_list, shadowBolt_list)
                             if timeUp[0] == 0:
                                 for player in player_list:
                                     player.FreezeTrigger(0)
