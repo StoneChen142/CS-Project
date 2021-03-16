@@ -517,12 +517,12 @@ def CreateTutorialPlatform(tutorialBlock_list, tutorial_list, button_list):
     startBlock = BlockClass(0, 10, 800, -10, 0)
     tutorialBlock_list.add(block)
     #Instructions
-    moveInstruction = InstructionClass(1, 439, 27, 88, 670)
-    jumpInstruction = InstructionClass(2, 210, 25, 778, 670)
-    attackInstruction = InstructionClass(3, 289, 25, 205, 202)
-    rollInstruction = InstructionClass(4, 230, 20, 1126, 330)
-    dJumpInstruction = InstructionClass(5, 305, 25, 728, 580)
-    blockInstruction = InstructionClass(6, 189, 20, 193, 120)
+    moveInstruction = InstructionClass(1, 334, 27, 88, 670)
+    jumpInstruction = InstructionClass(2, 274, 25, 778, 670)
+    attackInstruction = InstructionClass(3, 229, 20, 205, 182)
+    rollInstruction = InstructionClass(4, 187, 20, 1126, 330)
+    dJumpInstruction = InstructionClass(5, 369, 25, 728, 580)
+    blockInstruction = InstructionClass(6, 327, 20, 157, 102)
     coinInstruction = InstructionClass(8, 487, 27, 15, 26)
     fakeInstruction = InstructionClass(9, 354, 20, 15, 72)
     tutorial_list.add(moveInstruction, jumpInstruction, attackInstruction, rollInstruction, dJumpInstruction, blockInstruction, coinInstruction, fakeInstruction)
@@ -1381,7 +1381,7 @@ class InstructionClass(pygame.sprite.Sprite): #Instruction is a sprite, because 
         self.dJump = [pygame.transform.scale(pygame.image.load('Game_Images/Text/DoubleJumpInstruction.png'), (369, 25))]
         self.attack = [pygame.transform.scale(pygame.image.load('Game_Images/Text/AttackInstruction.png'), (229, 20))]
         self.roll = [pygame.transform.scale(pygame.image.load('Game_Images/Text/RollInstruction.png'), (187, 20))]
-        self.block = [pygame.transform.scale(pygame.image.load('Game_Images/Text/BlockInstruction.png'), (254, 20))]
+        self.block = [pygame.transform.scale(pygame.image.load('Game_Images/Text/BlockInstruction.png'), (327, 20))]#254
         self.minus = [pygame.transform.scale(pygame.image.load('Game_Images/Text/-.png'), (18, 8))]
         self.coin = [pygame.transform.scale(pygame.image.load('Game_Images/Text/CoinsInstruction.png'), (487, 27))]
         self.fake = [pygame.transform.scale(pygame.image.load('Game_Images/Text/FakeCoinInstruction.png'), (327, 20))]
@@ -5078,13 +5078,6 @@ class ArunClass(pygame.sprite.Sprite): #Class of the Arun Swordsmith
             self.deathNum = 1
         elif num == 0:
             self.deathNum = 0
-        #endif
-    #endmethod
-    def InstantKill(self, num):
-        if num == 1:
-            self.instantDeath = True
-        else:
-            self.instantDeath = False
         #endif
     #endmethod
     def InstantKill(self, num):
